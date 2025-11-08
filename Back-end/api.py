@@ -333,5 +333,238 @@ def ticket_cancel():
 
     purchased = bool(row["trang_thai"] == 1)
     return jsonify({"ok": True, "message": "Đã huỷ xác nhận", "user": row, "purchased": purchased})
+
+
+
+# =============== CHECKIN Qr ===============
+
+import urllib.parse
+
+def ensure_checkin_table():
+    """Đảm bảo bảng checkin tồn tại (không tạo database mới)."""
+    sql = """
+    CREATE TABLE IF NOT EXISTS checkin (
+      id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+      user VARCHAR(190) NOT NULL,
+      dia_diem VARCHAR(255) NOT NULL,
+      checkin TINYINT(1) NOT NULL DEFAULT 0,
+      PRIMARY KEY (id),
+      UNIQUE KEY uk_user_dia_diem (user, dia_diem)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    """
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute(sql)
+ensure_checkin_table()  # gọi khi app khởi động  (bảng theo checkin.sql)
+
+def upsert_checkin(user_id: str, dia_diem: str, checked: int = 1):
+    """Tạo mới hoặc cập nhật checkin cho (user, dia_diem)."""
+    with get_conn() as conn, conn.cursor() as cur:
+        # cố gắng cập nhật trước
+        cur.execute(
+            "UPDATE checkin SET checkin=%s WHERE user=%s AND dia_diem=%s",
+            (checked, user_id, dia_diem)
+        )
+        if cur.rowcount == 0:
+            # chưa có bản ghi -> chèn mới
+            cur.execute(
+                "INSERT INTO checkin(user, dia_diem, checkin) VALUES (%s,%s,%s)",
+                (user_id, dia_diem, checked)
+            )
+        # trả về trạng thái sau cùng
+        cur.execute(
+            "SELECT user, dia_diem, checkin FROM checkin WHERE user=%s AND dia_diem=%s",
+            (user_id, dia_diem)
+        )
+        return cur.fetchone()
+
+def get_checkin(user_id: str, dia_diem: str):
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute(
+            "SELECT user, dia_diem, checkin FROM checkin WHERE user=%s AND dia_diem=%s",
+            (user_id, dia_diem)
+        )
+        return cur.fetchone()
+
+@app.route("/api/qr/link", methods=["GET"])
+def qr_link():
+    """
+    Tạo link để nhúng vào QR cho một địa điểm.
+    Yêu cầu: đã đăng nhập (Bearer token).
+    Query: ?dia_diem=...
+    Trả: { url }  -> ví dụ: http://<host>:3000/api/checkin/scan?dia_diem=Ch%E1%BB%A3%20B%E1%BA%BFn%20Th%C3%A0nh
+    """
+    user_id = verify_token(request)
+    if not user_id:
+        return jsonify({"ok": False, "error": "Chưa đăng nhập"}), 401
+
+    dia_diem = (request.args.get("dia_diem") or "").strip()
+    if not dia_diem:
+        return jsonify({"ok": False, "error": "Thiếu dia_diem"}), 400
+
+    # Tạo URL duy nhất cho địa điểm (token không nhúng vào link để tránh lộ; client phải gửi Authorization khi quét)
+    encoded = urllib.parse.quote(dia_diem, safe="")
+    host = request.host_url.rstrip("/")  # ví dụ http://localhost:3000
+    url = f"{host}/api/checkin/scan?dia_diem={encoded}"
+    return jsonify({"ok": True, "url": url})
+
+@app.route("/api/checkin/scan", methods=["GET"])
+def checkin_scan():
+    """
+    Endpoint đích của QR. Khi quét QR mở link này:
+      - Trình gọi cần gửi kèm Authorization: Bearer <token> (ví dụ app/web đã lưu token).
+      - Query: ?dia_diem=...
+    Thành công -> đánh dấu checkin=1 cho user hiện tại tại địa điểm đó.
+    """
+    user_id = verify_token(request)
+    if not user_id:
+        # Không tự chuyển hướng login vì đây là API; trả lời rõ để frontend/app xử lý
+        return jsonify({"ok": False, "error": "Chưa đăng nhập. Hãy đăng nhập rồi quét lại."}), 401
+
+    dia_diem = (request.args.get("dia_diem") or "").strip()
+    if not dia_diem:
+        return jsonify({"ok": False, "error": "Thiếu dia_diem"}), 400
+
+    row = upsert_checkin(user_id, dia_diem, checked=1)
+    return jsonify({
+        "ok": True,
+        "message": f"Đã check-in {dia_diem}",
+        "data": row,
+    })
+
+@app.route("/api/checkin/mark", methods=["POST"])
+def checkin_mark():
+    """
+    Đánh dấu checkin bằng JSON (không cần dùng QR).
+    Body: { "dia_diem": "..." }
+    Yêu cầu: Bearer token.
+    """
+    user_id = verify_token(request)
+    if not user_id:
+        return jsonify({"ok": False, "error": "Chưa đăng nhập"}), 401
+
+    d = request.get_json(silent=True) or {}
+    dia_diem = (d.get("dia_diem") or "").strip()
+    if not dia_diem:
+        return jsonify({"ok": False, "error": "Thiếu dia_diem"}), 400
+
+    row = upsert_checkin(user_id, dia_diem, checked=1)
+    return jsonify({"ok": True, "data": row})
+
+@app.route("/api/checkin/status", methods=["GET"])
+def checkin_status():
+    """
+    Trả trạng thái check-in của user hiện tại tại 1 địa điểm.
+    Query: ?dia_diem=...
+    Yêu cầu: Bearer token.
+    """
+    user_id = verify_token(request)
+    if not user_id:
+        return jsonify({"ok": False, "error": "Chưa đăng nhập"}), 401
+
+    dia_diem = (request.args.get("dia_diem") or "").strip()
+    if not dia_diem:
+        return jsonify({"ok": False, "error": "Thiếu dia_diem"}), 400
+
+    row = get_checkin(user_id, dia_diem)
+    return jsonify({
+        "ok": True,
+        "user": user_id,
+        "dia_diem": dia_diem,
+        "checked": bool(row and row.get("checkin") == 1)
+    })
+
+@app.route("/api/checkin/list", methods=["GET"])
+def checkin_list():
+    """
+    Liệt kê các địa điểm user hiện tại đã check-in.
+    Yêu cầu: Bearer token.
+    """
+    user_id = verify_token(request)
+    if not user_id:
+        return jsonify({"ok": False, "error": "Chưa đăng nhập"}), 401
+
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute(
+            "SELECT dia_diem, checkin FROM checkin WHERE user=%s AND checkin=1 ORDER BY dia_diem",
+            (user_id,)
+        )
+        rows = cur.fetchall()
+    return jsonify({"ok": True, "data": rows})
+# =============== CHECKIN: danh sách địa điểm đã đi ===============
+
+@app.route("/api/checkin/visited", methods=["GET"])
+def checkin_visited():
+    """
+    Trả danh sách địa điểm user hiện tại đã check-in (checkin=1).
+    Yêu cầu: Authorization: Bearer <token>
+
+    Query params (tùy chọn):
+      - q: từ khóa tìm kiếm theo tên địa điểm (LIKE)
+      - limit: số bản ghi mỗi trang (mặc định 50, tối đa 200)
+      - offset: vị trí bắt đầu (mặc định 0)
+
+    Response:
+    {
+      "ok": true,
+      "user": "khoa",
+      "total": 3,
+      "limit": 50,
+      "offset": 0,
+      "data": [
+        {"dia_diem": "Chợ Bến Thành", "checkin": 1},
+        {"dia_diem": "Dinh Độc Lập", "checkin": 1},
+        ...
+      ]
+    }
+    """
+    user_id = verify_token(request)
+    if not user_id:
+        return jsonify({"ok": False, "error": "Chưa đăng nhập"}), 401
+
+    q = (request.args.get("q") or "").strip()
+    try:
+        limit = int(request.args.get("limit", 50))
+        offset = int(request.args.get("offset", 0))
+    except ValueError:
+        return jsonify({"ok": False, "error": "limit/offset không hợp lệ"}), 400
+
+    limit = max(1, min(limit, 200))
+    offset = max(0, offset)
+
+    where = ["user=%s", "checkin=1"]
+    args = [user_id]
+    if q:
+        where.append("dia_diem LIKE %s")
+        args.append(f"%{q}%")
+
+    where_sql = " AND ".join(where)
+
+    with get_conn() as conn, conn.cursor() as cur:
+        # đếm tổng
+        cur.execute(f"SELECT COUNT(*) AS total FROM checkin WHERE {where_sql}", args)
+        total = (cur.fetchone() or {}).get("total", 0)
+
+        # lấy dữ liệu (sắp xếp id giảm dần ~ gần đúng theo thời điểm tạo)
+        cur.execute(
+            f"""
+            SELECT dia_diem, checkin
+            FROM checkin
+            WHERE {where_sql}
+            ORDER BY id DESC
+            LIMIT %s OFFSET %s
+            """,
+            args + [limit, offset],
+        )
+        rows = cur.fetchall()
+
+    return jsonify({
+        "ok": True,
+        "user": user_id,
+        "total": total,
+        "limit": limit,
+        "offset": offset,
+        "data": rows,
+    })
+
 if __name__ == "__main__":
     app.run(debug=True, port=3000, use_reloader=False,host='0.0.0.0')
