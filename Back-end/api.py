@@ -22,7 +22,7 @@ app.config.update(
 )
 Session(app)
 
-# CORS cấu hình cho dev (cho phép credentials)
+# ✅ CORS cấu hình cho dev (cho phép credentials)
 CORS(app, supports_credentials=True, origins=["http://localhost:5173", "http://127.0.0.1:5500"])
 
 # ---------- DB ----------
@@ -77,7 +77,7 @@ def feedbacks():
     return jsonify({"success": True, "data": data})
 
 
-# Tìm kiếm hiện vật hoặc hình ảnh trưng bày
+# ✅ Tìm kiếm hiện vật hoặc hình ảnh trưng bày
 @app.route('/api/search', methods=['GET'])
 def search_artifacts():
     query = request.args.get('name', '').lower().strip()
@@ -263,7 +263,6 @@ def logout():
         session_cache.pop(token, None)
     return jsonify({"ok": True, "message": "Đã đăng xuất"})
 
-<<<<<<< HEAD
 from flask import request, jsonify
 
 @app.route("/api/ticket/confirm", methods=["POST"])
@@ -334,31 +333,5 @@ def ticket_cancel():
 
     purchased = bool(row["trang_thai"] == 1)
     return jsonify({"ok": True, "message": "Đã huỷ xác nhận", "user": row, "purchased": purchased})
-=======
-# ================= GENERATE INFORMATION =================
-@app.route("/api/museum-data", methods=["GET"])
-def get_museum_data():
-    """
-    Trả về toàn bộ thông tin của Bảo tàng Chứng tích Chiến tranh:
-    - Tên bảo tàng
-    - Địa chỉ
-    - Tổng số hiện vật
-    - Phân loại hiện vật (ảnh, di vật)
-    """
-
-    phan_loai = bao_tang_chung_tich.get("phan_loai", {})
-    # Tính tổng số hiện vật an toàn
-    total_items = sum(len(phan_loai.get(k, [])) for k in ["anh", "di_vat"])
-
-    response_data = {
-        "ten_bao_tang": bao_tang_chung_tich.get("ten", ""),
-        "dia_chi": bao_tang_chung_tich.get("dia_chi", ""),
-        "total_items": total_items,
-        "phan_loai_hien_vat": phan_loai
-    }
-
-    return jsonify(response_data)
-
->>>>>>> 4721db1cac81377cbc803270d5e44fe5f70b0761
 if __name__ == "__main__":
     app.run(debug=True, port=3000, use_reloader=False,host='0.0.0.0')
