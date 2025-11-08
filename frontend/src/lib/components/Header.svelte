@@ -13,6 +13,7 @@
   // State đăng nhập
   const username = writable(null);
   const isLoggedIn = writable(false);
+  const rewardPoints = writable(0);
 
   // UI state
   let mobileOpen = false;      // mở menu mobile
@@ -26,6 +27,22 @@
   let mobileMenuRef;
   let headerRef;
 
+  // Load user profile to get reward points
+  async function loadUserProfile() {
+    try {
+      const res = await fetch('http://localhost:3000/api/profile', {
+        method: 'GET',
+        credentials: 'include'
+      });
+      const data = await res.json();
+      if (data.ok) {
+        rewardPoints.set(data.reward_points || 0);
+      }
+    } catch (e) {
+      console.error('Failed to load profile:', e);
+    }
+  }
+
   // Mount: kiểm tra phiên
   onMount(async () => {
     try {
@@ -33,14 +50,18 @@
       if (res && res.username) {
         username.set(res.username);
         isLoggedIn.set(true);
+        // Load reward points
+        await loadUserProfile();
       } else {
         username.set(null);
         isLoggedIn.set(false);
+        rewardPoints.set(0);
       }
     } catch (e) {
       console.error('checkSession error:', e);
       username.set(null);
       isLoggedIn.set(false);
+      rewardPoints.set(0);
     }
 
     // Lắng nghe click outside
@@ -124,7 +145,7 @@
 </script>
 
 <!-- Header - Dark theme inspired by War Remnants Museum -->
-<header bind:this={headerRef} class="sticky top-0 z-50 bg-[#2a2a2a] border-b border-[#3a3a3a] backdrop-blur-lg bg-opacity-95 transition-all duration-300">
+<header bind:this={headerRef} class="sticky top-0 z-50 bg-[#1a1a1a]/80 border-b border-[#3a3a3a] backdrop-blur-xl transition-all duration-300 shadow-lg">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="flex h-20 items-center justify-between animate-fadeIn">
       <!-- Logo & Title -->

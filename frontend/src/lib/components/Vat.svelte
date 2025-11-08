@@ -78,13 +78,13 @@
   <div class="container mx-auto px-4 py-12">
     <!-- Section Title -->
     <div class="mb-8 text-center animate-fadeIn">
-      <h2 class="text-4xl font-bold text-[#c4a574] mb-2">Bộ Sưu Tập Vật</h2>
-      <p class="text-gray-400">Khám phá những hiện vật lịch sử quý giá</p>
+      <h2 class="text-4xl font-bold text-[#c4a574] mb-2">Bộ Sưu Tập Di Vật</h2>
+      <p class="text-gray-300">Khám phá những hiện vật lịch sử quý giá</p>
     </div>
 
     <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
       {#each items as item, index}
-        <article class="stagger-item group relative rounded-3xl overflow-hidden bg-white shadow-smooth hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 transform-smooth">
+        <article class="stagger-item group relative rounded-3xl overflow-hidden bg-black/30 backdrop-blur-sm border border-gray-700/50 shadow-smooth hover:shadow-2xl hover:border-[#556b2f] transition-all duration-500 hover:-translate-y-2 transform-smooth">
           <button class="block w-full text-left" on:click={() => clickItem(item)}>
             <div class="relative overflow-hidden">
               {#if Array.isArray(item.hinh_anh)}
@@ -102,17 +102,17 @@
                   loading="lazy"
                 />
               {/if}
-              <div class="absolute inset-0 bg-linear-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-gray-700 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div class="absolute top-3 right-3 bg-[#556b2f]/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-white opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
                 Xem chi tiết
               </div>
             </div>
             <div class="p-5">
-              <h3 class="font-semibold text-lg text-gray-900 group-hover:text-indigo-600 transition-colors duration-300 mb-2">
+              <h3 class="font-semibold text-lg text-white group-hover:text-[#c4a574] transition-colors duration-300 mb-2">
                 {item.ten}
               </h3>
               {#if item.mo_ta}
-                <p class="text-sm text-gray-600 leading-relaxed line-clamp-2 group-hover:text-gray-700 transition-colors duration-300">
+                <p class="text-sm text-gray-300 leading-relaxed line-clamp-2 group-hover:text-gray-200 transition-colors duration-300">
                   {item.mo_ta}
                 </p>
               {/if}

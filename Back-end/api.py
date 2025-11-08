@@ -1174,6 +1174,20 @@ def scan_checkin_qr():
         # First time check-in
         checkin_record = upsert_checkin(user_id, dia_diem, checked=1)
 
+        # Award 1000 points for first-time check-in
+        CHECKIN_REWARD = 1000
+        with get_conn() as conn, conn.cursor() as cur:
+            cur.execute("""
+                UPDATE users
+                SET diem_thuong = diem_thuong + %s
+                WHERE user_id=%s
+            """, (CHECKIN_REWARD, user_id))
+
+            # Get updated points
+            cur.execute("SELECT diem_thuong FROM users WHERE user_id=%s", (user_id,))
+            user_data = cur.fetchone()
+            total_points = user_data.get("diem_thuong", 0) if user_data else 0
+
         # Generate AI info about location
         location_info = generate_location_info(dia_diem)
 
@@ -1182,7 +1196,7 @@ def scan_checkin_qr():
 
         return jsonify({
             "ok": True,
-            "message": f"Check-in thành công tại {dia_diem}",
+            "message": f"Check-in thành công tại {dia_diem}! +{CHECKIN_REWARD} điểm",
             "already_visited": False,
             "user_id": user_id,
             "ma_ve": ma_ve,
@@ -1190,7 +1204,9 @@ def scan_checkin_qr():
             "checkin_time": checkin_record.get("checkin_time").strftime("%Y-%m-%d %H:%M:%S") if checkin_record.get("checkin_time") else None,
             "location_info": location_info,
             "quiz": quiz_questions,
-            "quiz_completed": False
+            "quiz_completed": False,
+            "points_earned": CHECKIN_REWARD,
+            "total_points": total_points
         })
 
     except Exception as e:
