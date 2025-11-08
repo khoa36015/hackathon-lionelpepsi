@@ -6,6 +6,7 @@
   export let show = false;
   export let itemName = '';
   export let onClose = () => {};
+  export let isGeneralAgent = false; // New prop: true = general AI, false = museum AI
 
   let state = 'initial'; // 'initial', 'listening', 'processing', 'speaking', 'error'
   let transcript = '';
@@ -21,13 +22,10 @@
   let synthesis = null;
   let currentUtterance = null;
 
-  // Voice selection
-  let availableVoices = [];
-  let selectedVoice = null;
-  let selectedLanguage = 'vi-VN'; // Default to Vietnamese
+  // Vietnamese-only voice settings
   let showVoiceSettings = false;
 
-  // FPT.AI TTS voices
+  // FPT.AI TTS voices (Vietnamese only)
   let fptVoices = [
     { code: 'banmai', name: 'Nữ Bắc (Ban Mai)', gender: 'female', region: 'north' },
     { code: 'lannhi', name: 'Nữ Nam (Lan Nhi)', gender: 'female', region: 'south' },
@@ -38,16 +36,19 @@
     { code: 'linhsan', name: 'Nữ Nam (Linh San)', gender: 'female', region: 'south' }
   ];
   let selectedFptVoice = 'banmai'; // Default voice
-  let useFptTts = true; // Use FPT.AI by default for Vietnamese
 
-  // Initialize speech recognition and synthesis
+  // Browser TTS fallback (Vietnamese only)
+  let availableVietnameseVoices = [];
+  let selectedBrowserVoice = null;
+
+  // Initialize speech recognition and synthesis (Vietnamese only)
   onMount(() => {
     if (typeof window !== 'undefined') {
-      // Speech Recognition (Speech-to-Text)
+      // Speech Recognition (Speech-to-Text) - Vietnamese only
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (SpeechRecognition) {
         recognition = new SpeechRecognition();
-        recognition.lang = selectedLanguage; // Use selected language
+        recognition.lang = 'vi-VN'; // Always Vietnamese
         recognition.continuous = false;
         recognition.interimResults = false;
         recognition.maxAlternatives = 1;
@@ -55,36 +56,51 @@
         recognition.onresult = (event) => {
           const speechResult = event.results[0][0].transcript;
           transcript = speechResult;
-          console.log('Speech recognized:', speechResult, 'Language:', selectedLanguage);
+          console.log('✅ Nhận diện thành công:', speechResult);
+          debugInfo = `✅ Đã nghe: "${speechResult}"`;
           handleUserQuestion(speechResult);
         };
 
         recognition.onerror = (event) => {
-          console.error('Speech recognition error:', event.error);
-          errorMessage = `Không thể nhận diện giọng nói: ${event.error}. Vui lòng thử lại.`;
+          console.error('❌ Lỗi nhận diện giọng nói:', event.error);
+
+          // Handle specific errors
+          let errorMsg = 'Không thể nhận diện giọng nói. ';
+          if (event.error === 'not-allowed' || event.error === 'permission-denied') {
+            errorMsg = 'Vui lòng cho phép truy cập microphone trong trình duyệt.';
+          } else if (event.error === 'no-speech') {
+            errorMsg = 'Không nghe thấy giọng nói. Vui lòng thử lại.';
+          } else if (event.error === 'network') {
+            errorMsg = 'Lỗi kết nối mạng. Vui lòng kiểm tra internet.';
+          } else {
+            errorMsg += `Lỗi: ${event.error}`;
+          }
+
+          errorMessage = errorMsg;
+          debugInfo = `❌ ${errorMsg}`;
           state = 'error';
           isRecording = false;
         };
 
         recognition.onend = () => {
+          console.log('🎤 Kết thúc ghi âm');
           isRecording = false;
           if (state === 'listening') {
             state = 'processing';
+            debugInfo = '⏳ Đang xử lý...';
           }
         };
       } else {
-        console.warn('Speech Recognition not supported');
+        console.warn('⚠️ Trình duyệt không hỗ trợ nhận diện giọng nói');
         errorMessage = 'Trình duyệt không hỗ trợ nhận diện giọng nói.';
         state = 'error';
       }
 
-      // Speech Synthesis (Text-to-Speech)
+      // Speech Synthesis (Text-to-Speech) - Load Vietnamese voices only
       synthesis = window.speechSynthesis;
-
-      // Load available voices
-      loadVoices();
+      loadVietnameseVoices();
       if (synthesis.onvoiceschanged !== undefined) {
-        synthesis.onvoiceschanged = loadVoices;
+        synthesis.onvoiceschanged = loadVietnameseVoices;
       }
     }
 
@@ -108,23 +124,22 @@
     resetState();
   }
 
-  function loadVoices() {
+  function loadVietnameseVoices() {
     if (!synthesis) return;
 
-    availableVoices = synthesis.getVoices();
-    console.log('Available voices:', availableVoices.length);
+    const allVoices = synthesis.getVoices();
 
-    // Try to find a Vietnamese voice
-    const vietnameseVoice = availableVoices.find(voice =>
+    // Filter for Vietnamese voices only
+    availableVietnameseVoices = allVoices.filter(voice =>
       voice.lang.startsWith('vi') || voice.lang.includes('VN')
     );
 
-    if (vietnameseVoice && !selectedVoice) {
-      selectedVoice = vietnameseVoice;
-      console.log('Selected Vietnamese voice:', vietnameseVoice.name);
-    } else if (!selectedVoice && availableVoices.length > 0) {
-      // Fallback to first available voice
-      selectedVoice = availableVoices[0];
+    console.log('🇻🇳 Giọng tiếng Việt có sẵn:', availableVietnameseVoices.length);
+
+    // Select first Vietnamese voice as default
+    if (availableVietnameseVoices.length > 0 && !selectedBrowserVoice) {
+      selectedBrowserVoice = availableVietnameseVoices[0];
+      console.log('✅ Chọn giọng:', selectedBrowserVoice.name);
     }
   }
 
@@ -144,11 +159,11 @@
   }
 
   async function speak(text, onEnd = null) {
-    // Use FPT.AI TTS for Vietnamese
-    if (useFptTts && selectedLanguage === 'vi-VN') {
+    // Always try FPT.AI first for Vietnamese
+    try {
       await speakWithFptAi(text, onEnd);
-    } else {
-      // Fallback to browser TTS
+    } catch (error) {
+      console.error('❌ FPT.AI failed, using browser TTS:', error);
       speakWithBrowser(text, onEnd);
     }
   }
@@ -159,7 +174,8 @@
       console.log('📝 Text to speak:', text);
       console.log('📏 Text length:', text.length, 'characters');
 
-      // Show loading indicator
+      // Set state to speaking
+      state = 'speaking';
       debugInfo = `⏳ Đang tạo giọng đọc từ FPT.AI...`;
 
       // Check text length (FPT.AI limit is 5000 chars)
@@ -267,12 +283,14 @@
       audio.onended = () => {
         console.log('✅ Audio playback ended');
         debugInfo = `✅ Hoàn thành`;
+        state = 'initial'; // Reset to initial state when done
         if (onEnd) onEnd();
       };
 
       audio.onerror = (error) => {
         console.error('❌ Audio playback error:', error);
         debugInfo = `❌ Lỗi phát audio`;
+        state = 'initial'; // Reset to initial state on error
         throw new Error('Audio playback failed');
       };
 
@@ -311,62 +329,148 @@
   }
 
   function speakWithBrowser(text, onEnd = null) {
-    if (!synthesis) return;
+    if (!synthesis) {
+      console.error('❌ Browser TTS không khả dụng');
+      if (onEnd) onEnd();
+      return;
+    }
+
+    // MUST have Vietnamese voice - no fallback to English
+    if (availableVietnameseVoices.length === 0) {
+      console.error('❌ Không có giọng tiếng Việt trong trình duyệt');
+      debugInfo = '❌ Không có giọng tiếng Việt';
+      if (onEnd) onEnd();
+      return;
+    }
 
     stopSpeaking();
 
     currentUtterance = new SpeechSynthesisUtterance(text);
-    currentUtterance.lang = selectedLanguage;
+    currentUtterance.lang = 'vi-VN'; // Always Vietnamese
 
-    // Use selected voice if available
-    if (selectedVoice) {
-      currentUtterance.voice = selectedVoice;
+    // ONLY use Vietnamese voices - NO English fallback
+    if (selectedBrowserVoice && selectedBrowserVoice.lang.startsWith('vi')) {
+      currentUtterance.voice = selectedBrowserVoice;
+      console.log('🔊 Sử dụng giọng đã chọn:', selectedBrowserVoice.name);
+    } else {
+      // Force use first Vietnamese voice
+      currentUtterance.voice = availableVietnameseVoices[0];
+      selectedBrowserVoice = availableVietnameseVoices[0];
+      console.log('🔊 Sử dụng giọng tiếng Việt:', availableVietnameseVoices[0].name);
     }
 
-    currentUtterance.rate = 1.0;
+    currentUtterance.rate = 0.9; // Slightly slower for better clarity
     currentUtterance.pitch = 1.0;
     currentUtterance.volume = 1.0;
 
     currentUtterance.onend = () => {
+      console.log('✅ Browser TTS hoàn thành');
+      debugInfo = '✅ Hoàn thành';
+      state = 'initial'; // Reset to initial state when done speaking
       if (onEnd) onEnd();
     };
 
     currentUtterance.onerror = (event) => {
-      console.error('Speech synthesis error:', event);
+      console.error('❌ Lỗi Browser TTS:', event);
+      debugInfo = `❌ Lỗi phát giọng: ${event.error}`;
+      state = 'initial'; // Reset to initial state on error
+      if (onEnd) onEnd();
     };
 
-    console.log('Speaking with browser TTS, voice:', selectedVoice?.name || 'default', 'Language:', selectedLanguage);
+    state = 'speaking'; // Set state to speaking
+    debugInfo = '🔊 Đang phát giọng đọc (trình duyệt)...';
     synthesis.speak(currentUtterance);
   }
 
   function stopSpeaking() {
+    // Stop browser TTS
     if (synthesis && synthesis.speaking) {
       synthesis.cancel();
     }
+
+    // Stop any audio playback (FPT.AI)
+    const audioElements = document.querySelectorAll('audio');
+    audioElements.forEach(audio => {
+      audio.pause();
+      audio.currentTime = 0;
+    });
+
+    // Reset state
+    if (state === 'speaking') {
+      state = 'initial';
+      debugInfo = '⏹️ Đã dừng giọng đọc';
+      console.log('⏹️ Stopped speaking');
+    }
   }
 
-  function startListening() {
+  async function checkMicrophonePermission() {
+    try {
+      // Request microphone permission
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Stop the stream immediately after getting permission
+      stream.getTracks().forEach(track => track.stop());
+      console.log('✅ Microphone permission granted');
+      return true;
+    } catch (error) {
+      console.error('❌ Microphone permission denied:', error);
+      errorMessage = 'Vui lòng cho phép truy cập microphone để sử dụng tính năng này.';
+      debugInfo = '❌ Không có quyền truy cập microphone';
+      state = 'error';
+      return false;
+    }
+  }
+
+  async function startListening() {
     if (!recognition) {
       errorMessage = 'Trình duyệt không hỗ trợ nhận diện giọng nói.';
       state = 'error';
       return;
     }
 
+    // Check microphone permission first
+    const hasPermission = await checkMicrophonePermission();
+    if (!hasPermission) {
+      return;
+    }
+
+    // Stop any ongoing speech first
+    stopSpeaking();
+
     state = 'listening';
     isRecording = true;
     transcript = '';
     errorMessage = '';
+    debugInfo = '🎤 Đang lắng nghe... Hãy nói câu hỏi của bạn';
 
     try {
-      // Update recognition language before starting
-      recognition.lang = selectedLanguage;
-      console.log('Starting recognition with language:', selectedLanguage);
+      // Always use Vietnamese
+      recognition.lang = 'vi-VN';
+      console.log('🎤 Bắt đầu ghi âm tiếng Việt...');
       recognition.start();
     } catch (error) {
-      console.error('Error starting recognition:', error);
-      errorMessage = 'Không thể bắt đầu ghi âm. Vui lòng thử lại.';
-      state = 'error';
-      isRecording = false;
+      console.error('❌ Lỗi bắt đầu ghi âm:', error);
+
+      // Handle "already started" error
+      if (error.message && error.message.includes('already started')) {
+        console.log('⚠️ Recognition already running, stopping and restarting...');
+        recognition.stop();
+        setTimeout(() => {
+          try {
+            recognition.start();
+          } catch (retryError) {
+            console.error('❌ Retry failed:', retryError);
+            errorMessage = 'Không thể bắt đầu ghi âm. Vui lòng thử lại.';
+            state = 'error';
+            isRecording = false;
+            debugInfo = '❌ Lỗi ghi âm';
+          }
+        }, 100);
+      } else {
+        errorMessage = `Không thể bắt đầu ghi âm: ${error.message}`;
+        state = 'error';
+        isRecording = false;
+        debugInfo = `❌ Lỗi: ${error.message}`;
+      }
     }
   }
 
@@ -444,13 +548,6 @@
     }
   }
 
-  function handleClose() {
-    stopSpeaking();
-    stopListening();
-    resetState();
-    onClose();
-  }
-
   function resetState() {
     state = 'initial';
     transcript = '';
@@ -468,9 +565,27 @@
   }
 
   function handleNo() {
+    // Don't allow closing while speaking or listening
+    if (state === 'speaking' || state === 'listening') {
+      debugInfo = '⚠️ Vui lòng đợi hoàn thành';
+      return;
+    }
+
     speak('Cảm ơn bạn!', () => {
       setTimeout(handleClose, 500);
     });
+  }
+
+  function handleClose() {
+    // Don't allow closing while speaking or listening
+    if (state === 'speaking' || state === 'listening') {
+      debugInfo = '⚠️ Vui lòng đợi AI nói xong hoặc dừng ghi âm';
+      return;
+    }
+
+    stopSpeaking();
+    resetState();
+    onClose();
   }
 
   function toggleTextInput() {
@@ -514,83 +629,55 @@
 
       {#if showVoiceSettings}
         <div class="mt-4 space-y-3 bg-gray-50 p-4 rounded-lg">
-          <!-- Language Selection -->
+          <!-- Vietnamese Voice Selection (FPT.AI) -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              🌐 Ngôn ngữ nhận diện
+              🎤 Chọn giọng đọc tiếng Việt
             </label>
             <select
-              bind:value={selectedLanguage}
+              bind:value={selectedFptVoice}
               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
-              <option value="vi-VN">🇻🇳 Tiếng Việt (Vietnamese)</option>
-              <option value="en-US">🇺🇸 English (US)</option>
-              <option value="en-GB">🇬🇧 English (UK)</option>
-              <option value="zh-CN">🇨🇳 中文 (Chinese)</option>
-              <option value="ja-JP">🇯🇵 日本語 (Japanese)</option>
-              <option value="ko-KR">🇰🇷 한국어 (Korean)</option>
-              <option value="fr-FR">🇫🇷 Français (French)</option>
-              <option value="de-DE">🇩🇪 Deutsch (German)</option>
-              <option value="es-ES">🇪🇸 Español (Spanish)</option>
+              {#each fptVoices as voice}
+                <option value={voice.code}>
+                  {voice.name}
+                </option>
+              {/each}
             </select>
+            <p class="text-xs text-gray-500 mt-1">
+              ✨ Giọng đọc tự nhiên từ FPT.AI
+            </p>
           </div>
 
-          <!-- FPT.AI Vietnamese Voice Selection -->
-          {#if selectedLanguage === 'vi-VN'}
+          <!-- Browser Vietnamese Voice Fallback -->
+          {#if availableVietnameseVoices.length > 0}
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
-                🎤 Giọng đọc tiếng Việt (FPT.AI)
+                🔊 Giọng dự phòng (Trình duyệt)
               </label>
               <select
-                bind:value={selectedFptVoice}
+                bind:value={selectedBrowserVoice}
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                {#each fptVoices as voice}
-                  <option value={voice.code}>
+                {#each availableVietnameseVoices as voice}
+                  <option value={voice}>
                     {voice.name}
                   </option>
                 {/each}
               </select>
               <p class="text-xs text-gray-500 mt-1">
-                ✨ Giọng đọc tự nhiên từ FPT.AI
+                Sử dụng khi FPT.AI không khả dụng
               </p>
             </div>
-
-            <!-- Test Voice Button -->
-            <button
-              class="w-full px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition text-sm font-medium"
-              on:click={() => speak('Xin chào! Đây là giọng đọc tiếng Việt từ FPT.AI.')}
-            >
-              🔊 Nghe thử giọng đọc
-            </button>
-          {:else}
-            <!-- Browser Voice Selection for other languages -->
-            {#if availableVoices.length > 0}
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                  🔊 Giọng đọc (Trình duyệt)
-                </label>
-                <select
-                  bind:value={selectedVoice}
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  {#each availableVoices as voice}
-                    <option value={voice}>
-                      {voice.name} ({voice.lang})
-                    </option>
-                  {/each}
-                </select>
-              </div>
-
-              <!-- Test Voice Button -->
-              <button
-                class="w-full px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition text-sm font-medium"
-                on:click={() => speak('Hello! This is a test voice.')}
-              >
-                🔊 Test voice
-              </button>
-            {/if}
           {/if}
+
+          <!-- Test Voice Button -->
+          <button
+            class="w-full px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition text-sm font-medium"
+            on:click={() => speak('Xin chào! Đây là giọng đọc tiếng Việt từ FPT.AI.')}
+          >
+            🔊 Nghe thử giọng đọc
+          </button>
         </div>
       {/if}
     </div>
@@ -618,7 +705,8 @@
           </button>
           <button
             on:click={handleNo}
-            class="px-6 py-3 bg-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-300 transition-all duration-200"
+            disabled={state === 'speaking' || state === 'listening'}
+            class="px-6 py-3 bg-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-300 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Không
           </button>
@@ -655,13 +743,14 @@
           </div>
           <div class="absolute inset-0 w-24 h-24 bg-red-500 rounded-full animate-ping opacity-20"></div>
         </div>
-        <p class="text-lg font-semibold text-gray-900">Đang lắng nghe...</p>
+        <p class="text-lg font-semibold text-gray-900">🎤 Đang lắng nghe...</p>
         <p class="text-sm text-gray-600">Hãy nói câu hỏi của bạn</p>
+        <p class="text-xs text-yellow-600 font-medium">⚠️ Không thể đóng khi đang ghi âm</p>
         <button
           on:click={stopListening}
-          class="mt-4 px-6 py-2 bg-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-300 transition"
+          class="mt-4 px-6 py-3 bg-red-600 text-white rounded-full font-semibold hover:bg-red-700 transition"
         >
-          Dừng
+          ⏹️ Dừng ghi âm
         </button>
       </div>
     {/if}
@@ -686,13 +775,21 @@
             <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z" />
           </svg>
         </div>
-        <p class="text-lg font-semibold text-gray-900">Đang trả lời...</p>
+        <p class="text-lg font-semibold text-gray-900">🔊 Đang phát giọng đọc...</p>
+        <p class="text-sm text-gray-500">Vui lòng đợi AI nói xong</p>
         {#if aiResponse}
           <div class="mt-4 p-4 bg-green-50 rounded-lg text-left">
             <p class="text-sm text-gray-600 mb-2">Trả lời:</p>
             <p class="text-gray-900 leading-relaxed">{aiResponse}</p>
           </div>
         {/if}
+        <!-- Stop button -->
+        <button
+          on:click={stopSpeaking}
+          class="mt-4 px-6 py-3 bg-red-600 text-white rounded-full font-semibold hover:bg-red-700 transition"
+        >
+          ⏹️ Dừng giọng đọc
+        </button>
       </div>
     {/if}
 
