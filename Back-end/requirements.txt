@@ -2,6 +2,7 @@ flask
 flask_bcrypt
 flask_session
 flask_cors
-datetime
 pymysql
-secrets
+mysql-connector-python
+requests
+werkzeug

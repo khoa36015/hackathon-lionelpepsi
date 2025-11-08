@@ -1,4 +1,5 @@
-# data_baotang.py
+# -*- coding: utf-8 -*-
+# File: data_baotang.py
 
 bao_tang_chung_tich = {
     "ten": "Bảo tàng Chứng tích Chiến tranh",

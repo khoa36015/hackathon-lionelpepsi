@@ -1,5 +1,5 @@
 # ======================== IMPORTS ========================
-from flask import Flask, jsonify, request, abort
+from flask import Flask, jsonify, request, abort, session
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_session import Session
@@ -10,7 +10,6 @@ import mysql.connector
 import secrets
 import urllib.parse
 import requests  # ✅ cần cho OpenWeather
-
 # Dữ liệu bảo tàng
 from data import  bao_tang_chung_tich  # ✅ bạn đã có file data.py
 
@@ -43,16 +42,17 @@ app.config.update(
 )
 Session(app)
 
-# ---- CORS (mở rộng cho dev) ----
-CORS(app, supports_credentials=True)
+# ---- CORS (fixed for frontend) ----
+CORS(app, supports_credentials=True, origins=["http://localhost:5173", "http://127.0.0.1:5173"])
 
 @app.after_request
 def add_cors_headers(resp):
-    resp.headers["Access-Control-Allow-Origin"] = "*"
+    origin = request.headers.get('Origin')
+    if origin in ["http://localhost:5173", "http://127.0.0.1:5173"]:
+        resp.headers["Access-Control-Allow-Origin"] = origin
     resp.headers["Access-Control-Allow-Credentials"] = "true"
     resp.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
     resp.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
-    resp.headers["Vary"] = "Origin"
     return resp
 
 @app.route("/api/<path:_path>", methods=["OPTIONS"])
@@ -89,63 +89,79 @@ def verify_token(req) -> str | None:
         return None
     return data["user_id"]
 
+def verify_session_or_token(req):
+    # Check session first (for cookie-based auth)
+    if 'user_id' in session:
+        return session['user_id']
+    
+    # Fallback to token-based auth
+    return verify_token(req)
+
 # ======================== AUTH ============================
 @app.route("/api/register", methods=["POST"])
 def register():
     data = request.get_json(silent=True) or {}
-    user_id = (data.get("user_id") or "").strip()
+    username = (data.get("username") or "").strip()  # Frontend sends 'username'
     password = data.get("password") or ""
-    if not user_id or not password:
-        return jsonify({"ok": False, "error": "Thiếu user_id hoặc password"}), 400
+    if not username or not password:
+        return jsonify({"message": "Thiếu username hoặc password"}), 400
 
     hashed_pw = generate_password_hash(password)
     try:
         with get_conn() as conn, conn.cursor() as cur:
-            cur.execute("INSERT INTO users (user_id, mat_khau) VALUES (%s, %s)", (user_id, hashed_pw))
-        return jsonify({"ok": True, "message": "Đăng ký thành công"})
+            cur.execute("INSERT INTO users (user_id, mat_khau) VALUES (%s, %s)", (username, hashed_pw))
+        return jsonify({"message": "Registered successfully!"})  # Frontend expects this exact message
     except pymysql.err.IntegrityError:
-        return jsonify({"ok": False, "error": "user_id đã tồn tại"}), 409
+        return jsonify({"message": "Username đã tồn tại"}), 409
     except Exception as e:
-        return jsonify({"ok": False, "error": str(e)}), 500
+        return jsonify({"message": str(e)}), 500
 
 @app.route("/api/login", methods=["POST"])
 def login():
     data = request.get_json(silent=True) or {}
-    user_id = (data.get("user_id") or "").strip()
+    username = (data.get("username") or "").strip()  # Frontend sends 'username'
     password = data.get("password") or ""
-    if not user_id or not password:
-        return jsonify({"ok": False, "error": "Thiếu user_id hoặc password"}), 400
+    if not username or not password:
+        return jsonify({"isLoggedIn": False, "message": "Thiếu username hoặc password"}), 400
 
     with get_conn() as conn, conn.cursor() as cur:
-        cur.execute("SELECT * FROM users WHERE user_id=%s", (user_id,))
+        cur.execute("SELECT * FROM users WHERE user_id=%s", (username,))
         user = cur.fetchone()
     if not user:
-        return jsonify({"ok": False, "error": "Không tìm thấy user"}), 404
+        return jsonify({"isLoggedIn": False, "message": "Không tìm thấy user"}), 404
     if not check_password_hash(user["mat_khau"], password):
-        return jsonify({"ok": False, "error": "Sai mật khẩu"}), 401
+        return jsonify({"isLoggedIn": False, "message": "Sai mật khẩu"}), 401
 
-    token = create_token(user_id)
-    return jsonify({"ok": True, "message": "Đăng nhập thành công", "user_id": user_id, "token": token})
+    # Set session for cookie-based auth
+    session['user_id'] = username
+    session.permanent = True
+    
+    token = create_token(username)
+    return jsonify({"isLoggedIn": True, "message": "Đăng nhập thành công", "username": username, "token": token})
 
 @app.route("/api/check-session", methods=["GET"])
 def check_session():
-    user_id = verify_token(request)
+    user_id = verify_session_or_token(request)
     if not user_id:
-        return jsonify({"logged_in": False, "user": None})
+        return jsonify({"isLoggedIn": False, "username": None})
     with get_conn() as conn, conn.cursor() as cur:
         cur.execute("SELECT user_id, trang_thai, diem_thuong FROM users WHERE user_id=%s", (user_id,))
         user = cur.fetchone()
     if not user:
-        return jsonify({"logged_in": False, "user": None})
-    return jsonify({"logged_in": True, "user": user})
+        return jsonify({"isLoggedIn": False, "username": None})
+    return jsonify({"isLoggedIn": True, "username": user["user_id"]})
 
 @app.route("/api/logout", methods=["POST"])
 def logout():
+    # Clear session
+    session.pop('user_id', None)
+    
+    # Clear token
     auth = request.headers.get("Authorization", "")
     if auth.startswith("Bearer "):
         token = auth.split(" ", 1)[1].strip()
         session_cache.pop(token, None)
-    return jsonify({"ok": True, "message": "Đã đăng xuất"})
+    return jsonify({"message": "Đã đăng xuất"})
 
 # ======================== TICKET ==========================
 @app.route("/api/ticket/confirm", methods=["POST"])
@@ -219,7 +235,7 @@ def get_checkin(user_id: str, dia_diem: str):
 
 @app.route("/api/qr/link", methods=["GET"])
 def qr_link():
-    user_id = verify_token(request)
+    user_id = verify_session_or_token(request)
     if not user_id:
         return jsonify({"ok": False, "error": "Chưa đăng nhập"}), 401
     dia_diem = (request.args.get("dia_diem") or "").strip()
@@ -232,7 +248,7 @@ def qr_link():
 
 @app.route("/api/checkin/scan", methods=["GET"])
 def checkin_scan():
-    user_id = verify_token(request)
+    user_id = verify_session_or_token(request)
     if not user_id:
         return jsonify({"ok": False, "error": "Chưa đăng nhập. Hãy đăng nhập rồi quét lại."}), 401
     dia_diem = (request.args.get("dia_diem") or "").strip()
@@ -243,7 +259,7 @@ def checkin_scan():
 
 @app.route("/api/checkin/mark", methods=["POST"])
 def checkin_mark():
-    user_id = verify_token(request)
+    user_id = verify_session_or_token(request)
     if not user_id:
         return jsonify({"ok": False, "error": "Chưa đăng nhập"}), 401
     d = request.get_json(silent=True) or {}
@@ -255,7 +271,7 @@ def checkin_mark():
 
 @app.route("/api/checkin/status", methods=["GET"])
 def checkin_status():
-    user_id = verify_token(request)
+    user_id = verify_session_or_token(request)
     if not user_id:
         return jsonify({"ok": False, "error": "Chưa đăng nhập"}), 401
     dia_diem = (request.args.get("dia_diem") or "").strip()
@@ -266,7 +282,7 @@ def checkin_status():
 
 @app.route("/api/checkin/list", methods=["GET"])
 def checkin_list():
-    user_id = verify_token(request)
+    user_id = verify_session_or_token(request)
     if not user_id:
         return jsonify({"ok": False, "error": "Chưa đăng nhập"}), 401
     with get_conn() as conn, conn.cursor() as cur:
@@ -276,7 +292,7 @@ def checkin_list():
 
 @app.route("/api/checkin/visited", methods=["GET"])
 def checkin_visited():
-    user_id = verify_token(request)
+    user_id = verify_session_or_token(request)
     if not user_id:
         return jsonify({"ok": False, "error": "Chưa đăng nhập"}), 401
     q = (request.args.get("q") or "").strip()
@@ -308,6 +324,41 @@ def checkin_visited():
         )
         rows = cur.fetchall()
     return jsonify({"ok": True, "user": user_id, "total": total, "limit": limit, "offset": offset, "data": rows})
+
+# ======================== AI AGENT ========================
+@app.route("/api/ai/agent", methods=["POST"])
+def ai_agent():
+    data = request.get_json(silent=True) or {}
+    message = data.get("message", "")
+    if not message:
+        return jsonify({"error": "Message required"}), 400
+    
+    # Simple echo response - replace with actual AI integration
+    response = f"AI Response to: {message}"
+    return jsonify({"response": response, "success": True})
+
+@app.route("/api/ask", methods=["POST"])
+def ask_ai():
+    data = request.get_json(silent=True) or {}
+    message = data.get("message", "")
+    if not message:
+        return jsonify({"error": "Message required"}), 400
+    
+    # Simple response - replace with actual AI integration
+    response = f"Thông tin về {message}: Đây là thông tin chi tiết từ AI."
+    return jsonify({"response": response, "success": True})
+
+# ======================== PROVINCES ========================
+@app.route("/api/provinces", methods=["GET"])
+def get_provinces():
+    provinces = [
+        {"id": 1, "name": "Hồ Chí Minh"},
+        {"id": 2, "name": "Hà Nội"},
+        {"id": 3, "name": "Đà Nẵng"},
+        {"id": 4, "name": "Cần Thơ"},
+        {"id": 5, "name": "Hải Phòng"}
+    ]
+    return jsonify({"provinces": provinces})
 
 # ======================== FEEDBACK =======================
 @app.route("/api/feedback", methods=["POST"])
@@ -353,18 +404,24 @@ def search_artifacts():
     if not query:
         return jsonify({"message": "Thiếu từ khóa tìm kiếm"}), 400
     results = []
-    for key, info in dulieu.items():
-        hien_vat_list = info.get("hien_vat", [])
-        for hv in hien_vat_list:
-            if (query in hv.get("ten", "").lower()
-                or query in hv.get("mo_ta", "").lower()
-                or query in hv.get("hinh_anh", "").lower()):
+    # Search in both di_vat and anh categories
+    phan_loai = bao_tang_chung_tich.get("phan_loai", {})
+    for category_name, items in phan_loai.items():
+        for item in items:
+            if (query in item.get("ten", "").lower()
+                or query in item.get("mo_ta", "").lower()):
+                hinh_anh = item.get("hinh_anh", "")
+                # Handle both string and list for hinh_anh
+                if isinstance(hinh_anh, list):
+                    hinh_anh_str = ", ".join(hinh_anh)
+                else:
+                    hinh_anh_str = hinh_anh
                 results.append({
-                    "id": key,
-                    "ten_khu_vuc": info.get("ten", "Không rõ"),
-                    "ten_hien_vat": hv.get("ten"),
-                    "mo_ta": hv.get("mo_ta"),
-                    "hinh_anh": hv.get("hinh_anh")
+                    "id": item.get("id"),
+                    "category": category_name,
+                    "ten": item.get("ten"),
+                    "mo_ta": item.get("mo_ta"),
+                    "hinh_anh": item.get("hinh_anh")
                 })
     if not results:
         abort(404, description="Không tìm thấy hiện vật hoặc hình ảnh nào phù hợp.")
@@ -410,12 +467,12 @@ DIA_CHI_BAO_TANG = bao_tang_chung_tich.get("dia_chi", "Không rõ địa chỉ")
 @app.route("/api/artifacts", methods=["GET"])
 def get_artifacts():
     items = PHAN_LOAI.get("di_vat", [])
-    return jsonify({"museum_name": TEN_BAO_TANG, "category": "Di vật / Artifacts", "total": len(items), "items": items})
+    return jsonify(items)  # Return items directly
 
 @app.route("/api/photos", methods=["GET"])
 def get_photos():
     items = PHAN_LOAI.get("anh", [])
-    return jsonify({"museum_name": TEN_BAO_TANG, "category": "Ảnh & Mô phỏng / Photos & Exhibits", "total": len(items), "items": items})
+    return jsonify(items)  # Return items directly
 
 @app.route("/", methods=["GET"])
 def index():
@@ -434,7 +491,10 @@ def index():
             "/api/ticket/*": "Vé",
             "/api/checkin/*": "Check-in QR",
             "/api/feedback": "Gửi feedback",
-            "/api/feedbacks": "List feedback"
+            "/api/feedbacks": "List feedback",
+            "/api/ai/agent": "AI Agent",
+            "/api/ask": "Ask AI",
+            "/api/provinces": "Provinces list"
         }
     })
 

@@ -1,6 +1,6 @@
-export const API_BASE = 'http://34.158.61.248';
+export const API_BASE = 'http://localhost';
 export const API_AUTH = `${API_BASE}:3000/api`;
-export const API_AGENT = `${API_BASE}:8000/api`;
+export const API_AGENT = `${API_BASE}:3000/api`;
 
 export async function register(username, password) {
   const res = await fetch(`${API_AUTH}/register`, {
@@ -57,19 +57,43 @@ export async function sendAgentMessage(message) {
 }
 
 export async function Anh() {
-  const res = await fetch(`${API_AUTH}/photos`, {
-    method: 'GET',
-    credentials: 'include'
-  })
-  return await res.json();
+  try {
+    const res = await fetch(`${API_AUTH}/photos`, {
+      method: 'GET',
+      credentials: 'include'
+    });
+    
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    }
+    
+    const data = await res.json();
+    console.log('Anh API response:', data);
+    return data;
+  } catch (error) {
+    console.error('Anh API error:', error);
+    throw error;
+  }
 }
 
 export async function Vat() {
-  const res = await fetch(`${API_AUTH}/artifacts`, {
-    method: 'GET',
-    credentials: 'include'
-  })
-  return await res.json();
+  try {
+    const res = await fetch(`${API_AUTH}/artifacts`, {
+      method: 'GET',
+      credentials: 'include'
+    });
+    
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    }
+    
+    const data = await res.json();
+    console.log('Vat API response:', data);
+    return data;
+  } catch (error) {
+    console.error('Vat API error:', error);
+    throw error;
+  }
 }
 
 export async function notifyAI(name) {

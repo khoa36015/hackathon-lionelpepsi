@@ -11,16 +11,31 @@
     try {
       loading = true;
       const data = await getOptionData('vat');
-      items = Array.isArray(data) ? data : (data?.items || data?.data || data) || [];
+      console.log('Vat data received:', data);
+      
+      // Handle different response formats from backend
+      if (Array.isArray(data)) {
+        items = data;
+      } else if (data && Array.isArray(data.data)) {
+        items = data.data;
+      } else if (data && Array.isArray(data.items)) {
+        items = data.items;
+      } else if (data && Array.isArray(data.provinces)) {
+        items = data.provinces;
+      } else {
+        console.warn('Unexpected data format:', data);
+        items = [];
+      }
     } catch (e) {
-      error = 'Không tải được dữ liệu Vật';
+      console.error('Error loading Vat data:', e);
+      error = `Không tải được dữ liệu Vật: ${e.message}`;
     } finally {
       loading = false;
     }
   });
 
   function clickItem(item) {
-    notifyAI({ name: item.ten});
+    notifyAI(item.ten);
   }
 </script>
 
@@ -43,8 +58,14 @@
             <img src={item.hinh_anh} alt={item.ten} class="w-full h-44 object-cover" loading="lazy" />
           {/if}
           <div class="p-4">
-            <h4 class="font-bold text-base">{item.ten}</h4>
-            <p class="text-sm text-gray-600 mt-1 line-clamp-3">{item.mo_ta}</p>
+            <h3 class="font-medium text-gray-900 group-hover:text-blue-600 transition">
+              {item.ten}
+            </h3>
+            {#if item.mo_ta}
+              <p class="text-sm text-gray-600 mt-1 line-clamp-2">
+                {item.mo_ta}
+              </p>
+            {/if}
           </div>
         </button>
       </article>
