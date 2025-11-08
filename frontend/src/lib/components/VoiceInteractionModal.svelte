@@ -1,5 +1,6 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
+  import { browser } from '$app/environment';
   import Modal from './Modal.svelte';
   import { API_AI } from '$lib/api';
 
@@ -43,6 +44,9 @@
 
   // Initialize speech recognition and synthesis (Vietnamese only)
   onMount(() => {
+    // Only initialize in browser
+    if (!browser) return;
+
     if (typeof window !== 'undefined') {
       // Speech Recognition (Speech-to-Text) - Vietnamese only
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -125,7 +129,7 @@
   }
 
   function loadVietnameseVoices() {
-    if (!synthesis) return;
+    if (!browser || !synthesis) return;
 
     const allVoices = synthesis.getVoices();
 
@@ -144,13 +148,30 @@
   }
 
   function playInitialPrompt() {
-    // More natural greeting variations
-    const greetings = [
-      `Xin chào! Mình là trợ lý AI của bảo tàng. Bạn muốn tìm hiểu gì về ${itemName}?`,
-      `Chào bạn! Bạn có câu hỏi nào về ${itemName} không?`,
-      `Xin chào! Mình có thể giúp bạn tìm hiểu về ${itemName}. Bạn muốn biết điều gì?`,
-      `Chào bạn! Đây là ${itemName}. Bạn muốn mình kể gì về nó?`
-    ];
+    // Only run in browser
+    if (!browser) return;
+
+    // Different greetings for general vs museum agent
+    let greetings;
+
+    if (isGeneralAgent) {
+      // General AI greetings - can answer anything
+      greetings = [
+        `Xin chào! Mình là AI Trợ Lý Thông Minh. Bạn có thể hỏi mình bất cứ điều gì!`,
+        `Chào bạn! Mình có thể giúp bạn về nhiều chủ đề: học tập, công việc, đời sống. Bạn cần gì?`,
+        `Xin chào! Mình sẵn sàng trả lời mọi câu hỏi của bạn. Hãy hỏi mình nhé!`,
+        `Chào bạn! Mình là trợ lý AI đa năng. Bạn muốn tìm hiểu về điều gì?`
+      ];
+    } else {
+      // Museum AI greetings - focused on museum items
+      greetings = [
+        `Xin chào! Mình là trợ lý AI của bảo tàng. Bạn muốn tìm hiểu gì về ${itemName}?`,
+        `Chào bạn! Bạn có câu hỏi nào về ${itemName} không?`,
+        `Xin chào! Mình có thể giúp bạn tìm hiểu về ${itemName}. Bạn muốn biết điều gì?`,
+        `Chào bạn! Đây là ${itemName}. Bạn muốn mình kể gì về nó?`
+      ];
+    }
+
     const promptText = greetings[Math.floor(Math.random() * greetings.length)];
     speak(promptText, () => {
       // After prompt finishes, show options
@@ -169,6 +190,9 @@
   }
 
   async function speakWithFptAi(text, onEnd = null) {
+    // Only run in browser
+    if (!browser) return;
+
     try {
       console.log('🎤 Using FPT.AI TTS with voice:', selectedFptVoice);
       console.log('📝 Text to speak:', text);
@@ -329,6 +353,9 @@
   }
 
   function speakWithBrowser(text, onEnd = null) {
+    // Only run in browser
+    if (!browser) return;
+
     if (!synthesis) {
       console.error('❌ Browser TTS không khả dụng');
       if (onEnd) onEnd();
@@ -383,6 +410,9 @@
   }
 
   function stopSpeaking() {
+    // Only run in browser
+    if (!browser) return;
+
     // Stop browser TTS
     if (synthesis && synthesis.speaking) {
       synthesis.cancel();
@@ -404,6 +434,9 @@
   }
 
   async function checkMicrophonePermission() {
+    // Only run in browser
+    if (!browser) return false;
+
     try {
       // Request microphone permission
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -421,6 +454,9 @@
   }
 
   async function startListening() {
+    // Only run in browser
+    if (!browser) return;
+
     if (!recognition) {
       errorMessage = 'Trình duyệt không hỗ trợ nhận diện giọng nói.';
       state = 'error';
@@ -475,6 +511,9 @@
   }
 
   function stopListening() {
+    // Only run in browser
+    if (!browser) return;
+
     if (recognition && isRecording) {
       recognition.stop();
       isRecording = false;
@@ -485,11 +524,19 @@
     state = 'processing';
 
     try {
-      const message = `${question} (Về ${itemName})`;
+      // Choose endpoint based on agent type
+      const endpoint = isGeneralAgent ? `${API_AI}/ask-general` : `${API_AI}/ask`;
 
-      console.log('Sending to AI:', { message, endpoint: `${API_AI}/ask` });
+      // For general agent, send question as-is. For museum agent, add context
+      const message = isGeneralAgent ? question : `${question} (Về ${itemName})`;
 
-      const res = await fetch(`${API_AI}/ask`, {
+      console.log('Sending to AI:', {
+        message,
+        endpoint,
+        mode: isGeneralAgent ? 'general' : 'museum'
+      });
+
+      const res = await fetch(endpoint, {
         method: 'POST',
         // Don't send credentials to AI API (different port, no auth needed)
         headers: { 'Content-Type': 'application/json' },
@@ -683,48 +730,51 @@
     </div>
 
     {#if state === 'initial'}
-      <div class="text-center space-y-4">
-        <p class="text-gray-600 mb-4 text-lg">
+      <div class="text-center space-y-4 animate-fadeIn">
+        <p class="text-gray-600 mb-4 text-lg animate-slideInUp">
           💬 Bạn muốn hỏi gì về <span class="font-semibold text-indigo-600">{itemName}</span>?
         </p>
-        <p class="text-sm text-gray-500 mb-4">
+        <p class="text-sm text-gray-500 mb-4 animate-slideInUp" style="animation-delay: 0.1s;">
           Bạn có thể hỏi về lịch sử, đặc điểm, hoặc bất kỳ điều gì bạn tò mò!
         </p>
         <div class="flex gap-4 justify-center">
           <button
             on:click={handleYes}
-            class="px-6 py-3 bg-indigo-600 text-white rounded-full font-semibold hover:bg-indigo-700 transition-all duration-200 shadow-soft hover:shadow-fluffy"
+            class="px-6 py-3 bg-indigo-600 text-white rounded-full font-semibold hover:bg-indigo-700 hover:shadow-lg transform hover:scale-105 transition-all duration-300 shadow-smooth animate-slideInUp"
+            style="animation-delay: 0.2s;"
           >
             🎤 Nói
           </button>
           <button
             on:click={toggleTextInput}
-            class="px-6 py-3 bg-green-600 text-white rounded-full font-semibold hover:bg-green-700 transition-all duration-200"
+            class="px-6 py-3 bg-green-600 text-white rounded-full font-semibold hover:bg-green-700 hover:shadow-lg transform hover:scale-105 transition-all duration-300 animate-slideInUp"
+            style="animation-delay: 0.25s;"
           >
             ⌨️ Gõ
           </button>
           <button
             on:click={handleNo}
             disabled={state === 'speaking' || state === 'listening'}
-            class="px-6 py-3 bg-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-300 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="px-6 py-3 bg-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-300 hover:shadow-md transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none animate-slideInUp"
+            style="animation-delay: 0.3s;"
           >
             Không
           </button>
         </div>
 
         {#if showTextInput}
-          <div class="mt-6 space-y-3">
+          <div class="mt-6 space-y-3 animate-scaleIn">
             <input
               type="text"
               bind:value={textInput}
               placeholder="Nhập câu hỏi của bạn..."
-              class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
+              class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none transition-all duration-300"
               on:keypress={(e) => e.key === 'Enter' && handleTextSubmit()}
             />
             <button
               on:click={handleTextSubmit}
               disabled={!textInput.trim()}
-              class="w-full px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition disabled:bg-gray-300 disabled:cursor-not-allowed"
+              class="w-full px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 hover:shadow-lg transform hover:scale-105 transition-all duration-300 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:transform-none"
             >
               Gửi câu hỏi
             </button>
@@ -734,21 +784,23 @@
     {/if}
 
     {#if state === 'listening'}
-      <div class="text-center space-y-4">
+      <div class="text-center space-y-4 animate-fadeIn">
         <div class="relative inline-block">
-          <div class="w-24 h-24 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
+          <div class="w-24 h-24 bg-red-500 rounded-full flex items-center justify-center animate-smoothPulse shadow-lg">
             <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clip-rule="evenodd" />
             </svg>
           </div>
           <div class="absolute inset-0 w-24 h-24 bg-red-500 rounded-full animate-ping opacity-20"></div>
+          <div class="absolute inset-0 w-24 h-24 bg-red-400 rounded-full animate-ping opacity-10" style="animation-delay: 0.5s;"></div>
         </div>
-        <p class="text-lg font-semibold text-gray-900">🎤 Đang lắng nghe...</p>
-        <p class="text-sm text-gray-600">Hãy nói câu hỏi của bạn</p>
-        <p class="text-xs text-yellow-600 font-medium">⚠️ Không thể đóng khi đang ghi âm</p>
+        <p class="text-lg font-semibold text-gray-900 animate-slideInUp">🎤 Đang lắng nghe...</p>
+        <p class="text-sm text-gray-600 animate-slideInUp" style="animation-delay: 0.1s;">Hãy nói câu hỏi của bạn</p>
+        <p class="text-xs text-yellow-600 font-medium animate-slideInUp" style="animation-delay: 0.2s;">⚠️ Không thể đóng khi đang ghi âm</p>
         <button
           on:click={stopListening}
-          class="mt-4 px-6 py-3 bg-red-600 text-white rounded-full font-semibold hover:bg-red-700 transition"
+          class="mt-4 px-6 py-3 bg-red-600 text-white rounded-full font-semibold hover:bg-red-700 hover:shadow-lg transform hover:scale-105 transition-all duration-300 animate-slideInUp"
+          style="animation-delay: 0.3s;"
         >
           ⏹️ Dừng ghi âm
         </button>
@@ -756,11 +808,11 @@
     {/if}
 
     {#if state === 'processing'}
-      <div class="text-center space-y-4">
-        <div class="w-16 h-16 mx-auto border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-lg font-semibold text-gray-900">Đang xử lý...</p>
+      <div class="text-center space-y-4 animate-fadeIn">
+        <div class="w-16 h-16 mx-auto border-4 border-indigo-600 border-t-transparent rounded-full animate-smoothSpin shadow-lg"></div>
+        <p class="text-lg font-semibold text-gray-900 animate-slideInUp">Đang xử lý...</p>
         {#if transcript}
-          <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+          <div class="mt-4 p-4 bg-gray-50 rounded-lg animate-scaleIn shadow-smooth">
             <p class="text-sm text-gray-600 mb-1">Câu hỏi của bạn:</p>
             <p class="text-gray-900 font-medium">{transcript}</p>
           </div>
@@ -769,16 +821,16 @@
     {/if}
 
     {#if state === 'speaking'}
-      <div class="text-center space-y-4">
-        <div class="w-24 h-24 mx-auto bg-green-500 rounded-full flex items-center justify-center animate-pulse">
+      <div class="text-center space-y-4 animate-fadeIn">
+        <div class="w-24 h-24 mx-auto bg-green-500 rounded-full flex items-center justify-center animate-smoothPulse shadow-lg">
           <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
             <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z" />
           </svg>
         </div>
-        <p class="text-lg font-semibold text-gray-900">🔊 Đang phát giọng đọc...</p>
-        <p class="text-sm text-gray-500">Vui lòng đợi AI nói xong</p>
+        <p class="text-lg font-semibold text-gray-900 animate-slideInUp">🔊 Đang phát giọng đọc...</p>
+        <p class="text-sm text-gray-500 animate-slideInUp" style="animation-delay: 0.1s;">Vui lòng đợi AI nói xong</p>
         {#if aiResponse}
-          <div class="mt-4 p-4 bg-green-50 rounded-lg text-left">
+          <div class="mt-4 p-4 bg-green-50 rounded-lg text-left animate-scaleIn shadow-smooth">
             <p class="text-sm text-gray-600 mb-2">Trả lời:</p>
             <p class="text-gray-900 leading-relaxed">{aiResponse}</p>
           </div>
@@ -786,7 +838,8 @@
         <!-- Stop button -->
         <button
           on:click={stopSpeaking}
-          class="mt-4 px-6 py-3 bg-red-600 text-white rounded-full font-semibold hover:bg-red-700 transition"
+          class="mt-4 px-6 py-3 bg-red-600 text-white rounded-full font-semibold hover:bg-red-700 hover:shadow-lg transform hover:scale-105 transition-all duration-300 animate-slideInUp"
+          style="animation-delay: 0.2s;"
         >
           ⏹️ Dừng giọng đọc
         </button>
@@ -843,7 +896,8 @@
         <summary class="cursor-pointer hover:text-gray-700 font-medium">🔍 Debug Info</summary>
         <div class="mt-2 space-y-1 text-left bg-gray-50 p-3 rounded">
           <p><strong>State:</strong> {state}</p>
-          <p><strong>API Endpoint:</strong> {API_AI}/ask (Port 8000)</p>
+          <p><strong>Mode:</strong> {isGeneralAgent ? '🌐 General AI (Tất cả câu hỏi)' : '🏛️ Museum AI (Bảo tàng)'}</p>
+          <p><strong>API Endpoint:</strong> {isGeneralAgent ? `${API_AI}/ask-general` : `${API_AI}/ask`} (Port 8000)</p>
           {#if transcript}
             <p><strong>Transcript:</strong> {transcript}</p>
           {/if}

@@ -28,11 +28,11 @@
     {#if loading}
       Đang tải...
     {:else if $chosenOption === 'anh'}
-      🖼️ Ảnh
+      Chuyển sang Ảnh
     {:else if $chosenOption === 'vat'}
-      📦 Vật
+      Chuyển sang Vật
     {:else}
-      Chọn kiểu dữ liệu
+      Tùy chọn
     {/if}
   </button>
 </div>

@@ -10,7 +10,6 @@
   import VoiceInteractionModal from '$lib/components/VoiceInteractionModal.svelte';
   import { checkSession, logout } from '$lib/api';
 
-
   // State đăng nhập
   const username = writable(null);
   const isLoggedIn = writable(false);
@@ -116,41 +115,44 @@
     };
   }
 
-  // Fake nav items — thay bằng dữ liệu thực tế của Lead
+  // Navigation items
   const navItems = [
     { title: 'Trang chủ', href: '/' },
-    { title: 'Địa danh', href: '/places' },
     { title: 'Bộ sưu tập', href: '/gallery' },
-    { title: 'Liên hệ', href: '/contact' }
+    { title: 'Trưng bày ngoài trời', href: '/outdoor' }
   ];
 </script>
 
-<!-- Header sticky với blur nền, dark mode, shadow nhẹ -->
-<header bind:this={headerRef} class="sticky top-0 z-40 bg-white/70 dark:bg-neutral-900/60 backdrop-blur supports-[backdrop-filter]:bg-white/50 border-b border-black/5 dark:border-white/10">
+<!-- Header - Dark theme inspired by War Remnants Museum -->
+<header bind:this={headerRef} class="sticky top-0 z-50 bg-[#2a2a2a] border-b border-[#3a3a3a] backdrop-blur-lg bg-opacity-95 transition-all duration-300">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <div class="flex h-16 items-center justify-between">
-      <!-- Logo -->
-      <div class="flex items-center gap-3">
+    <div class="flex h-20 items-center justify-between animate-fadeIn">
+      <!-- Logo & Title -->
+      <div class="flex items-center gap-4">
         <button
-          class="inline-flex items-center gap-2 rounded-xl px-2 py-1 focus:outline-none focus-visible:ring ring-offset-2 ring-neutral-300 dark:ring-neutral-600"
+          class="flex items-center gap-3 focus:outline-none focus-visible:ring-2 ring-[#c4a574] rounded-lg px-2 py-1"
           on:click={() => navTo('/')}
           aria-label="Về trang chủ"
         >
-          <!-- Placeholder Logo -->
-          <div class="size-8 rounded-lg bg-linear-to-tr from-indigo-500 to-cyan-400"></div>
-          <span class="text-base font-semibold tracking-tight select-none">AI TOUR GUI</span>
+          <!-- Museum Icon -->
+          <div class="w-10 h-10 flex items-center justify-center">
+            <svg class="w-8 h-8 text-[#c4a574]" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 3L2 9v2h20V9L12 3zm0 2.84L18.16 9H5.84L12 5.84zM4 11v9h3v-6h10v6h3v-9H4zm5 9v-4h6v4H9z"/>
+            </svg>
+          </div>
+          <!-- Title -->
+          <div class="flex flex-col items-start">
+            <span class="text-[#c4a574] text-xs font-medium tracking-wider uppercase">Bảo Tàng</span>
+            <span class="text-white text-sm font-bold tracking-wide uppercase" style="font-family: 'Arial', sans-serif; letter-spacing: 0.05em;">Chứng Tích Chiến Tranh</span>
+          </div>
         </button>
       </div>
 
-      <div class="">
-         °C
-      </div>
-
       <!-- Desktop Nav -->
-      <nav class="md:flex items-center gap-1">
+      <nav class="hidden md:flex items-center gap-1">
         {#each navItems as item}
           <button
-            class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-black/5 dark:hover:bg-white/10 transition"
+            class="px-4 py-2 text-sm font-medium text-[#c4a574] hover:text-white hover:bg-[#3a3a3a] rounded transition-all duration-300 uppercase tracking-wide transform hover:scale-105"
             on:click={() => navTo(item.href)}
           >
             {item.title}
@@ -158,11 +160,22 @@
         {/each}
 
         <!-- Divider -->
-        <span class="mx-2 h-6 w-px bg-neutral-200 dark:bg-neutral-700" aria-hidden="true"></span>
+        <span class="mx-2 h-6 w-px bg-[#4a4a4a]" aria-hidden="true"></span>
+
+        <!-- Mua Vé Button -->
+        <button
+          class="px-5 py-2 bg-[#c4a574] text-[#1a1a1a] text-sm font-bold uppercase tracking-wide hover:bg-[#d4b584] hover:shadow-lg transform hover:scale-105 transition-all duration-300 rounded"
+          on:click={() => navTo('/tickets')}
+        >
+          Mua Vé
+        </button>
+
+        <!-- Divider -->
+        <span class="mx-2 h-6 w-px bg-[#4a4a4a]" aria-hidden="true"></span>
 
         <!-- AI Agent Button -->
         <button
-          class="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus-visible:ring-2 ring-offset-2 ring-indigo-500"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-[#6b4fa0] text-white text-sm font-medium uppercase tracking-wide hover:bg-[#7b5fb0] hover:shadow-lg transform hover:scale-105 transition-all duration-300 rounded"
           on:click={() => aiAgentOpen = true}
           aria-label="Mở AI Agent"
         >
@@ -173,14 +186,14 @@
         </button>
 
         <!-- Divider -->
-        <span class="mx-2 h-6 w-px bg-neutral-200 dark:bg-neutral-700" aria-hidden="true"></span>
+        <span class="mx-2 h-6 w-px bg-[#4a4a4a]" aria-hidden="true"></span>
 
         <!-- Account -->
         {#if $isLoggedIn}
           <div class="relative">
             <button
               bind:this={accountBtnRef}
-              class="group inline-flex items-center gap-2 rounded-lg px-3 py-2 focus:outline-none focus-visible:ring ring-offset-2 ring-neutral-300 dark:ring-neutral-600 hover:bg-black/5 dark:hover:bg-white/10 transition"
+              class="group inline-flex items-center gap-2 px-3 py-2 text-[#c4a574] hover:text-white transition-colors duration-200 focus:outline-none focus-visible:ring-2 ring-[#c4a574] rounded"
               aria-haspopup="menu"
               aria-expanded={accountOpen}
               on:click={() => (accountOpen = !accountOpen)}
@@ -198,14 +211,14 @@
                 role="menu"
                 aria-label="Menu tài khoản"
                 transition:fade|local={{ start: 0.98, duration: prefersReduced ? 0 : 120 }}
-                class="absolute right-0 mt-2 w-56 rounded-xl border border-black/5 dark:border-white/10 bg-white dark:bg-neutral-900 shadow-lg overflow-hidden"
+                class="absolute right-0 mt-2 w-56 rounded-lg border border-[#3a3a3a] bg-[#2a2a2a] shadow-xl overflow-hidden"
               >
                 <div class="p-1">
                   <a role="menuitem" tabindex="0" href="/dashboard"
-                     class="block rounded-lg px-3 py-2 text-sm hover:bg-black/5 dark:hover:bg-white/10">Bảng điều khiển</a>
+                     class="block rounded px-3 py-2 text-sm text-[#c4a574] hover:bg-[#3a3a3a] hover:text-white transition">Bảng điều khiển</a>
                   <a role="menuitem" tabindex="0" href="/profile"
-                     class="block rounded-lg px-3 py-2 text-sm hover:bg-black/5 dark:hover:bg-white/10">Hồ sơ</a>
-                  <button role="menuitem" class="w-full text-left rounded-lg px-3 py-2 text-sm hover:bg-black/5 dark:hover:bg-white/10"
+                     class="block rounded px-3 py-2 text-sm text-[#c4a574] hover:bg-[#3a3a3a] hover:text-white transition">Hồ sơ</a>
+                  <button role="menuitem" class="w-full text-left rounded px-3 py-2 text-sm text-[#c4a574] hover:bg-[#3a3a3a] hover:text-white transition"
                           on:click={handleLogout}>Đăng xuất</button>
                 </div>
               </div>
@@ -214,10 +227,10 @@
         {:else}
           <div class="flex items-center gap-2">
             <button
-              class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-black/5 dark:hover:bg-white/10 transition focus:outline-none focus-visible:ring ring-offset-2 ring-neutral-300 dark:ring-neutral-600"
+              class="px-4 py-2 text-sm font-medium text-[#c4a574] hover:text-white transition-colors duration-200 uppercase tracking-wide focus:outline-none focus-visible:ring-2 ring-[#c4a574] rounded"
               on:click={() => authOpen = true}
             >
-              Đăng ký
+              Đăng nhập
             </button>
           </div>
         {/if}
@@ -225,16 +238,15 @@
 
       <!-- Mobile toggles -->
       <div class="flex md:hidden items-center gap-2">
-
         <button
-          class="inline-flex items-center justify-center rounded-lg p-2 hover:bg-black/5 dark:hover:bg-white/10 transition focus:outline-none focus-visible:ring ring-offset-2 ring-neutral-300 dark:ring-neutral-600"
+          class="inline-flex items-center justify-center p-2 text-[#c4a574] hover:text-white transition-colors duration-200 focus:outline-none focus-visible:ring-2 ring-[#c4a574] rounded"
           aria-label="Mở menu"
           aria-expanded={mobileOpen}
           aria-controls="mobile-menu"
           on:click={() => (mobileOpen = !mobileOpen)}
         >
-          <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 6h16M4 12h16M4 18h16"/>
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
         </button>
       </div>
@@ -246,27 +258,35 @@
     <div
       bind:this={mobileMenuRef}
       id="mobile-menu"
-      class="md:hidden border-t border-black/5 dark:border-white/10"
+      class="md:hidden border-t border-[#3a3a3a] bg-[#2a2a2a]"
       transition:fade={{ duration: prefersReduced ? 0 : 150 }}
     >
       <div
-        class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 space-y-1"
+        class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 space-y-2"
         transition:fly={{ y: prefersReduced ? 0 : 8, duration: prefersReduced ? 0 : 180 }}
       >
         {#each navItems as item}
           <button
-            class="block w-full text-left rounded-lg px-3 py-2 text-sm font-medium hover:bg-black/5 dark:hover:bg-white/10 transition"
+            class="block w-full text-left px-4 py-2 text-sm font-medium text-[#c4a574] hover:text-white hover:bg-[#3a3a3a] transition-colors duration-200 rounded uppercase tracking-wide"
             on:click={() => navTo(item.href)}
           >
             {item.title}
           </button>
         {/each}
 
-        <div class="h-px bg-neutral-200 dark:bg-neutral-700 my-2" aria-hidden="true"></div>
+        <div class="h-px bg-[#3a3a3a] my-2" aria-hidden="true"></div>
+
+        <!-- Mua Vé Button (Mobile) -->
+        <button
+          class="w-full px-4 py-2 bg-[#c4a574] text-[#1a1a1a] text-sm font-bold uppercase tracking-wide hover:bg-[#d4b584] transition-colors duration-200 rounded"
+          on:click={() => { navTo('/tickets'); mobileOpen = false; }}
+        >
+          Mua Vé
+        </button>
 
         <!-- AI Agent Button (Mobile) -->
         <button
-          class="w-full flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 transition-all duration-200 shadow-md"
+          class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-[#6b4fa0] text-white text-sm font-medium uppercase tracking-wide hover:bg-[#7b5fb0] transition-colors duration-200 rounded"
           on:click={() => { aiAgentOpen = true; mobileOpen = false; }}
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -275,23 +295,25 @@
           <span>AI Trợ Lý</span>
         </button>
 
-        <div class="h-px bg-neutral-200 dark:bg-neutral-700 my-2" aria-hidden="true"></div>
+        <div class="h-px bg-[#3a3a3a] my-2" aria-hidden="true"></div>
 
         {#if $isLoggedIn}
-          <div class="rounded-xl bg-black/2 dark:bg-white/4 p-2">
-            <div class="flex items-center gap-2 px-2 py-1.5">
-              <div class="size-7 rounded-full bg-linear-to-tr from-fuchsia-500 to-amber-400"></div>
-              <div class="text-sm font-semibold">{$username}</div>
+          <div class="rounded-lg bg-[#3a3a3a] p-3">
+            <div class="flex items-center gap-3 px-2 py-2">
+              <div class="w-8 h-8 rounded-full bg-[#c4a574] flex items-center justify-center">
+                <span class="text-[#1a1a1a] font-bold text-sm">{$username.charAt(0).toUpperCase()}</span>
+              </div>
+              <div class="text-sm font-semibold text-white">{$username}</div>
             </div>
-            <div class="mt-1 grid grid-cols-2 gap-1">
-              <button class="rounded-lg px-3 py-2 text-sm hover:bg-black/5 dark:hover:bg-white/10 transition" on:click={() => navTo('/dashboard')}>Bảng điều khiển</button>
-              <button class="rounded-lg px-3 py-2 text-sm hover:bg-black/5 dark:hover:bg-white/10 transition" on:click={() => navTo('/profile')}>Hồ sơ</button>
-              <button class="col-span-2 rounded-lg px-3 py-2 text-sm hover:bg-black/5 dark:hover:bg-white/10 transition" on:click={handleLogout}>Đăng xuất</button>
+            <div class="mt-2 space-y-1">
+              <button class="w-full text-left rounded px-3 py-2 text-sm text-[#c4a574] hover:bg-[#4a4a4a] hover:text-white transition" on:click={() => navTo('/dashboard')}>Bảng điều khiển</button>
+              <button class="w-full text-left rounded px-3 py-2 text-sm text-[#c4a574] hover:bg-[#4a4a4a] hover:text-white transition" on:click={() => navTo('/profile')}>Hồ sơ</button>
+              <button class="w-full text-left rounded px-3 py-2 text-sm text-[#c4a574] hover:bg-[#4a4a4a] hover:text-white transition" on:click={handleLogout}>Đăng xuất</button>
             </div>
           </div>
         {:else}
-          <button class="w-full rounded-lg px-3 py-2 text-sm font-medium hover:bg-black/5 dark:hover:bg-white/10 transition" on:click={() => { authOpen = true; mobileOpen = false; }}>
-            Đăng nhập / Đăng ký
+          <button class="w-full px-4 py-2 text-sm font-medium text-[#c4a574] hover:text-white hover:bg-[#3a3a3a] transition-colors duration-200 rounded uppercase tracking-wide" on:click={() => { authOpen = true; mobileOpen = false; }}>
+            Đăng nhập
           </button>
         {/if}
       </div>
@@ -308,10 +330,37 @@
 <VoiceInteractionModal
   show={aiAgentOpen}
   itemName="AI Trợ Lý Thông Minh"
+  isGeneralAgent={true}
   onClose={() => (aiAgentOpen = false)}
 />
 
 <style>
-  /* Giữ bóng nhẹ cho header, tránh đổ bóng quá đậm */
-  header { box-shadow: 0 2px 10px 0 color(display-p3 0 0 0 / 0.02); }
+  /* War Remnants Museum inspired header styling */
+  header {
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.3);
+    font-family: 'Arial', 'Helvetica', sans-serif;
+  }
+
+  /* Custom scrollbar for dark theme */
+  :global(body) {
+    scrollbar-width: thin;
+    scrollbar-color: #c4a574 #2a2a2a;
+  }
+
+  :global(body::-webkit-scrollbar) {
+    width: 8px;
+  }
+
+  :global(body::-webkit-scrollbar-track) {
+    background: #2a2a2a;
+  }
+
+  :global(body::-webkit-scrollbar-thumb) {
+    background: #c4a574;
+    border-radius: 4px;
+  }
+
+  :global(body::-webkit-scrollbar-thumb:hover) {
+    background: #d4b584;
+  }
 </style>

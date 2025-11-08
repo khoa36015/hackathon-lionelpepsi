@@ -64,33 +64,36 @@
 {:else}
   <div class="container mx-auto px-4 py-8">
     <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-      {#each items as item}
-        <article class="group relative rounded-3xl overflow-hidden bg-white shadow-soft hover:shadow-fluffy transition-all duration-300 hover:-translate-y-1">
+      {#each items as item, index}
+        <article class="stagger-item group relative rounded-3xl overflow-hidden bg-white shadow-smooth hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 transform-smooth">
           <button class="block w-full text-left" on:click={() => clickItem(item)}>
             <div class="relative overflow-hidden">
               {#if Array.isArray(item.hinh_anh)}
                 <img
                   src={item.hinh_anh[0]}
                   alt={item.ten}
-                  class="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-105"
+                  class="w-full h-56 object-cover transition-transform duration-700 group-hover:scale-110"
                   loading="lazy"
                 />
               {:else}
                 <img
                   src={item.hinh_anh}
                   alt={item.ten}
-                  class="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-105"
+                  class="w-full h-56 object-cover transition-transform duration-700 group-hover:scale-110"
                   loading="lazy"
                 />
               {/if}
-              <div class="absolute inset-0 bg-linear-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div class="absolute inset-0 bg-linear-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-gray-700 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                Xem chi tiết
+              </div>
             </div>
             <div class="p-5">
-              <h3 class="font-semibold text-lg text-gray-900 group-hover:text-indigo-600 transition-colors duration-200 mb-2">
+              <h3 class="font-semibold text-lg text-gray-900 group-hover:text-indigo-600 transition-colors duration-300 mb-2">
                 {item.ten}
               </h3>
               {#if item.mo_ta}
-                <p class="text-sm text-gray-600 leading-relaxed line-clamp-2">
+                <p class="text-sm text-gray-600 leading-relaxed line-clamp-2 group-hover:text-gray-700 transition-colors duration-300">
                   {item.mo_ta}
                 </p>
               {/if}
