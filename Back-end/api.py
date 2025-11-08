@@ -263,5 +263,75 @@ def logout():
         session_cache.pop(token, None)
     return jsonify({"ok": True, "message": "Đã đăng xuất"})
 
+from flask import request, jsonify
+
+@app.route("/api/ticket/confirm", methods=["POST"])
+def ticket_confirm():
+    """
+    Body JSON: { "user_id": "khoa" }
+    -> Đánh dấu đã mua vé: trang_thai = 1
+    """
+    data = request.get_json(silent=True) or {}
+    user_id = (data.get("user_id") or "").strip()
+    if not user_id:
+        return jsonify({"ok": False, "error": "Thiếu user_id"}), 400
+
+    with get_conn() as conn, conn.cursor() as cur:
+        # cập nhật trạng_thai = 1 (đã mua vé)
+        cur.execute("UPDATE users SET trang_thai = 1 WHERE user_id = %s", (user_id,))
+        # lấy lại thông tin sau cập nhật
+        cur.execute("SELECT user_id, trang_thai, diem_thuong FROM users WHERE user_id = %s", (user_id,))
+        row = cur.fetchone()
+
+    if not row:
+        return jsonify({"ok": False, "error": "Không tìm thấy user"}), 404
+
+    purchased = bool(row["trang_thai"] == 1)
+    return jsonify({"ok": True, "message": "Đã xác nhận mua vé", "user": row, "purchased": purchased})
+
+
+@app.route("/api/ticket/status", methods=["GET"])
+def ticket_status():
+    """
+    Query: /api/ticket/status?user_id=khoa
+    -> Trả về trạng thái đã mua hay chưa (purchased: true/false)
+    """
+    user_id = (request.args.get("user_id") or "").strip()
+    if not user_id:
+        return jsonify({"ok": False, "error": "Thiếu user_id"}), 400
+
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute("SELECT user_id, trang_thai, diem_thuong FROM users WHERE user_id = %s", (user_id,))
+        row = cur.fetchone()
+
+    if not row:
+        return jsonify({"ok": False, "error": "Không tìm thấy user"}), 404
+
+    purchased = bool(row["trang_thai"] == 1)
+    return jsonify({"ok": True, "user": row, "purchased": purchased})
+
+
+# (tuỳ chọn) bỏ xác nhận mua vé -> trang_thai = 0
+@app.route("/api/ticket/cancel", methods=["POST"])
+def ticket_cancel():
+    """
+    Body JSON: { "user_id": "khoa" }
+    -> Đặt về chưa mua: trang_thai = 0
+    """
+    data = request.get_json(silent=True) or {}
+    user_id = (data.get("user_id") or "").strip()
+    if not user_id:
+        return jsonify({"ok": False, "error": "Thiếu user_id"}), 400
+
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute("UPDATE users SET trang_thai = 0 WHERE user_id = %s", (user_id,))
+        cur.execute("SELECT user_id, trang_thai, diem_thuong FROM users WHERE user_id = %s", (user_id,))
+        row = cur.fetchone()
+
+    if not row:
+        return jsonify({"ok": False, "error": "Không tìm thấy user"}), 404
+
+    purchased = bool(row["trang_thai"] == 1)
+    return jsonify({"ok": True, "message": "Đã huỷ xác nhận", "user": row, "purchased": purchased})
 if __name__ == "__main__":
     app.run(debug=True, port=3000, use_reloader=False,host='0.0.0.0')

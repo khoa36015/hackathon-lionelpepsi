@@ -1,87 +1,61 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Token Auth Test</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <title>Đăng ký tài khoản</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { font-family: system-ui; margin: 24px auto; max-width: 800px; }
-    input, button { padding: 8px; margin: 4px; }
-    pre { background: #f5f5f5; padding: 10px; border-radius: 8px; border: 1px solid #ddd; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; 
+           margin: 40px auto; max-width: 400px; padding: 0 12px; }
+    h1 { text-align: center; }
+    input, button { width: 100%; padding: 10px; margin-top: 10px; font-size: 16px; }
+    button { background: #000; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
+    button:hover { background: #222; }
+    pre { background: #f7f7f7; border: 1px solid #ddd; padding: 10px; border-radius: 8px; margin-top: 12px; white-space: pre-wrap; word-break: break-word; }
+    label { font-weight: 500; margin-top: 12px; display: block; }
+    small { color: #666; }
   </style>
 </head>
 <body>
-  <h1>Flask Token Auth Tester (port 3000)</h1>
+  <h1>📝 Đăng ký tài khoản</h1>
+  
+  <label>API Base URL:</label>
+  <input id="api" value="http://localhost:3000" />
+  <small>Thay bằng IP nếu backend chạy trên máy khác.</small>
 
-  <section>
-    <h3>Đăng ký</h3>
-    <input id="reg_user" placeholder="user_id">
-    <input id="reg_pass" type="password" placeholder="password">
-    <button onclick="register()">Register</button>
-    <pre id="reg_out"></pre>
-  </section>
+  <label>Tên đăng nhập (user_id):</label>
+  <input id="user_id" placeholder="vd: khoa" />
 
-  <section>
-    <h3>Đăng nhập</h3>
-    <input id="login_user" placeholder="user_id">
-    <input id="login_pass" type="password" placeholder="password">
-    <button onclick="login()">Login</button>
-    <pre id="login_out"></pre>
-  </section>
+  <label>Mật khẩu:</label>
+  <input id="password" type="password" placeholder="Nhập mật khẩu" />
 
-  <section>
-    <h3>Check Session / Logout</h3>
-    <button onclick="checkSession()">Check Session</button>
-    <button onclick="logout()">Logout</button>
-    <pre id="session_out"></pre>
-  </section>
+  <button onclick="register()">Đăng ký</button>
+
+  <pre id="result"></pre>
 
   <script>
-    let token = null;
-    const API = "http://localhost:3000";
-
+    const el = id => document.getElementById(id);
     async function register() {
+      const API = el("api").value.replace(/\/+$/, "");
+      const user_id = el("user_id").value.trim();
+      const password = el("password").value.trim();
+      if (!user_id || !password) {
+        el("result").textContent = "⚠️ Vui lòng nhập đầy đủ user_id và password.";
+        return;
+      }
+
       const res = await fetch(`${API}/api/register`, {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-          user_id: document.getElementById("reg_user").value,
-          password: document.getElementById("reg_pass").value
-        })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id, password })
       });
-      document.getElementById("reg_out").textContent = await res.text();
-    }
 
-    async function login() {
-      const res = await fetch(`${API}/api/login`, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-          user_id: document.getElementById("login_user").value,
-          password: document.getElementById("login_pass").value
-        })
-      });
-      const data = await res.json();
-      token = data.token;
-      document.getElementById("login_out").textContent = JSON.stringify(data, null, 2);
-    }
-
-    async function checkSession() {
-      const res = await fetch(`${API}/api/check-session`, {
-        headers: token ? {"Authorization": "Bearer " + token} : {}
-      });
-      const data = await res.json();
-      document.getElementById("session_out").textContent = JSON.stringify(data, null, 2);
-    }
-
-    async function logout() {
-      const res = await fetch(`${API}/api/logout`, {
-        method: "POST",
-        headers: token ? {"Authorization": "Bearer " + token} : {}
-      });
-      const data = await res.json();
-      document.getElementById("session_out").textContent = JSON.stringify(data, null, 2);
-      token = null;
+      try {
+        const data = await res.json();
+        el("result").textContent = JSON.stringify(data, null, 2);
+      } catch {
+        el("result").textContent = "Lỗi phản hồi từ server.";
+      }
     }
   </script>
 </body>
