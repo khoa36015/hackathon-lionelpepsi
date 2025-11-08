@@ -1,116 +1,87 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8" />
-  <title>Auth Tester — Flask @3000</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <title>Token Auth Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    :root { --b:#111; --m:#555; --g:#08a045; --r:#d12; }
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 24px auto; max-width: 900px; padding: 0 12px; color: var(--b); }
-    h1 { margin: 0 0 8px; }
-    section { border: 1px solid #eee; border-radius: 12px; padding: 16px; margin: 12px 0; }
-    .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-    input, button, select { padding: 8px 10px; }
-    button { cursor: pointer; border-radius: 10px; border: 1px solid #ddd; background: #f9f9f9; }
-    button.primary { background: #000; color: #fff; border-color: #000; }
-    code.badge { background:#f2f2f2; border:1px solid #e5e5e5; padding:2px 6px; border-radius:8px; }
-    pre { background: #fafafa; border: 1px solid #eee; padding: 12px; border-radius: 10px; overflow: auto; }
-    small.tip { color: var(--m); }
+    body { font-family: system-ui; margin: 24px auto; max-width: 800px; }
+    input, button { padding: 8px; margin: 4px; }
+    pre { background: #f5f5f5; padding: 10px; border-radius: 8px; border: 1px solid #ddd; }
   </style>
 </head>
 <body>
-  <h1>Auth Tester <small class="tip">Flask API @ <code class="badge">http://localhost:3000</code></small></h1>
-  <p class="tip">API endpoints: <code>/api/register</code>, <code>/api/login</code>, <code>/api/logout</code>, <code>/api/check-session</code></p>
+  <h1>Flask Token Auth Tester (port 3000)</h1>
 
   <section>
-    <h3>Cấu hình</h3>
-    <div class="row">
-      <label>API Base:
-        <input id="api" size="40" value="http://localhost:3000" />
-      </label>
-      <button onclick="ping()" title="Gọi /api/check-session">Ping</button>
-    </div>
-    <pre id="ping_out"></pre>
-    <small class="tip">
-      Gợi ý chạy frontend: Live Server (port 5500) hoặc Vite (5173) để khớp CORS của backend.
-    </small>
-  </section>
-
-  <section>
-    <h3>Register</h3>
-    <div class="row">
-      <input id="reg_user" placeholder="user_id (vd: khoa)" />
-      <input id="reg_pass" placeholder="password" type="password" />
-      <button class="primary" onclick="register()">Register</button>
-    </div>
+    <h3>Đăng ký</h3>
+    <input id="reg_user" placeholder="user_id">
+    <input id="reg_pass" type="password" placeholder="password">
+    <button onclick="register()">Register</button>
     <pre id="reg_out"></pre>
   </section>
 
   <section>
-    <h3>Login / Logout / Check Session</h3>
-    <div class="row">
-      <input id="login_user" placeholder="user_id" />
-      <input id="login_pass" placeholder="password" type="password" />
-      <button class="primary" onclick="login()">Login</button>
-      <button onclick="logout()">Logout</button>
-      <button onclick="checkSession()">Check Session</button>
-    </div>
-    <pre id="auth_out"></pre>
+    <h3>Đăng nhập</h3>
+    <input id="login_user" placeholder="user_id">
+    <input id="login_pass" type="password" placeholder="password">
+    <button onclick="login()">Login</button>
+    <pre id="login_out"></pre>
+  </section>
+
+  <section>
+    <h3>Check Session / Logout</h3>
+    <button onclick="checkSession()">Check Session</button>
+    <button onclick="logout()">Logout</button>
+    <pre id="session_out"></pre>
   </section>
 
   <script>
-    // ===== Helpers =====
-    const el = id => document.getElementById(id);
-    const apiBase = () => el('api').value.replace(/\/+$/, '');
-    const show = (where, data) => el(where).textContent = JSON.stringify(data, null, 2);
-
-    async function safeFetch(url, opts={}) {
-      const res = await fetch(url, { credentials: "include", ...opts });
-      let body;
-      try { body = await res.json(); } catch { body = { error: "Không phải JSON", status: res.status }; }
-      return { status: res.status, ok: res.ok, body };
-    }
-
-    // ===== Actions =====
-    async function ping() {
-      const r = await safeFetch(apiBase() + "/api/check-session");
-      show("ping_out", r);
-    }
+    let token = null;
+    const API = "http://localhost:3000";
 
     async function register() {
-      const user_id = el('reg_user').value.trim();
-      const password = el('reg_pass').value;
-      if (!user_id || !password) return show("reg_out", { ok:false, error:"user_id/password required" });
-
-      const r = await safeFetch(apiBase() + "/api/register", {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ user_id, password })
+      const res = await fetch(`${API}/api/register`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          user_id: document.getElementById("reg_user").value,
+          password: document.getElementById("reg_pass").value
+        })
       });
-      show("reg_out", r);
+      document.getElementById("reg_out").textContent = await res.text();
     }
 
     async function login() {
-      const user_id = el('login_user').value.trim();
-      const password = el('login_pass').value;
-      if (!user_id || !password) return show("auth_out", { ok:false, error:"user_id/password required" });
-
-      const r = await safeFetch(apiBase() + "/api/login", {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ user_id, password })
+      const res = await fetch(`${API}/api/login`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          user_id: document.getElementById("login_user").value,
+          password: document.getElementById("login_pass").value
+        })
       });
-      show("auth_out", r);
-    }
-
-    async function logout() {
-      const r = await safeFetch(apiBase() + "/api/logout", { method:"POST" });
-      show("auth_out", r);
+      const data = await res.json();
+      token = data.token;
+      document.getElementById("login_out").textContent = JSON.stringify(data, null, 2);
     }
 
     async function checkSession() {
-      const r = await safeFetch(apiBase() + "/api/check-session");
-      show("auth_out", r);
+      const res = await fetch(`${API}/api/check-session`, {
+        headers: token ? {"Authorization": "Bearer " + token} : {}
+      });
+      const data = await res.json();
+      document.getElementById("session_out").textContent = JSON.stringify(data, null, 2);
+    }
+
+    async function logout() {
+      const res = await fetch(`${API}/api/logout`, {
+        method: "POST",
+        headers: token ? {"Authorization": "Bearer " + token} : {}
+      });
+      const data = await res.json();
+      document.getElementById("session_out").textContent = JSON.stringify(data, null, 2);
+      token = null;
     }
   </script>
 </body>

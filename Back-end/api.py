@@ -5,10 +5,9 @@ from flask_cors import CORS
 from datetime import datetime, timedelta
 import mysql.connector
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import timedelta
 import pymysql
-
-
+import secrets
+from datetime import datetime, timedelta
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 
@@ -156,34 +155,47 @@ app.config.update(
 CORS(app, supports_credentials=True)
 
 
+session_cache = {}
+
+app = Flask(__name__)
+CORS(app, supports_credentials=True)
+
+# ================= DB CONNECT =================
 def get_conn():
-    """Kết nối MySQL"""
     return pymysql.connect(
-        host=DB_HOST,
-        port=DB_PORT,
-        user=DB_USER,
-        password=DB_PASS,
-        database=DB_NAME,
-        charset="utf8mb4",
+        host=DB_HOST, port=DB_PORT,
+        user=DB_USER, password=DB_PASS,
+        database=DB_NAME, charset="utf8mb4",
         cursorclass=pymysql.cursors.DictCursor,
         autocommit=True,
     )
 
+# ================= HÀM TIỆN ÍCH =================
+def create_token(user_id):
+    token = secrets.token_hex(16)
+    session_cache[token] = {
+        "user_id": user_id,
+        "expires": datetime.utcnow() + timedelta(hours=12)
+    }
+    return token
 
-@app.after_request
-def add_cors_headers(resp):
-    """Thêm CORS header"""
-    resp.headers["Access-Control-Allow-Origin"] = request.headers.get("Origin", "*")
-    resp.headers["Access-Control-Allow-Credentials"] = "true"
-    resp.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
-    resp.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-    return resp
+def verify_token(req):
+    auth = req.headers.get("Authorization", "")
+    if not auth.startswith("Bearer "):
+        return None
+    token = auth.split(" ", 1)[1].strip()
+    data = session_cache.get(token)
+    if not data:
+        return None
+    if data["expires"] < datetime.utcnow():
+        del session_cache[token]
+        return None
+    return data["user_id"]
 
-
-# ==================== REGISTER ====================
+# ================= API =================
 @app.route("/api/register", methods=["POST"])
 def register():
-    data = request.get_json(force=True)
+    data = request.get_json(silent=True) or {}
     user_id = (data.get("user_id") or "").strip()
     password = data.get("password") or ""
 
@@ -191,13 +203,9 @@ def register():
         return jsonify({"ok": False, "error": "Thiếu user_id hoặc password"}), 400
 
     hashed_pw = generate_password_hash(password)
-
     try:
         with get_conn() as conn, conn.cursor() as cur:
-            cur.execute(
-                "INSERT INTO users (user_id, mat_khau) VALUES (%s, %s)",
-                (user_id, hashed_pw),
-            )
+            cur.execute("INSERT INTO users (user_id, mat_khau) VALUES (%s, %s)", (user_id, hashed_pw))
         return jsonify({"ok": True, "message": "Đăng ký thành công"})
     except pymysql.err.IntegrityError:
         return jsonify({"ok": False, "error": "user_id đã tồn tại"}), 409
@@ -205,10 +213,9 @@ def register():
         return jsonify({"ok": False, "error": str(e)}), 500
 
 
-# ==================== LOGIN ====================
 @app.route("/api/login", methods=["POST"])
 def login():
-    data = request.get_json(force=True)
+    data = request.get_json(silent=True) or {}
     user_id = (data.get("user_id") or "").strip()
     password = data.get("password") or ""
 
@@ -216,66 +223,45 @@ def login():
         return jsonify({"ok": False, "error": "Thiếu user_id hoặc password"}), 400
 
     with get_conn() as conn, conn.cursor() as cur:
-        cur.execute("SELECT * FROM users WHERE user_id = %s", (user_id,))
+        cur.execute("SELECT * FROM users WHERE user_id=%s", (user_id,))
         user = cur.fetchone()
 
     if not user:
         return jsonify({"ok": False, "error": "Không tìm thấy user"}), 404
-
     if not check_password_hash(user["mat_khau"], password):
         return jsonify({"ok": False, "error": "Sai mật khẩu"}), 401
 
-    session.permanent = True
-    session["user_id"] = user_id
-    return jsonify({"ok": True, "message": "Đăng nhập thành công", "user_id": user_id})
+    token = create_token(user_id)
+    return jsonify({
+        "ok": True,
+        "message": "Đăng nhập thành công",
+        "user_id": user_id,
+        "token": token
+    })
 
 
-# ==================== LOGOUT ====================
-@app.route("/api/logout", methods=["POST"])
-def logout():
-    session.pop("user_id", None)
-    return jsonify({"ok": True, "message": "Đã đăng xuất"})
-
-
-# ==================== CHECK SESSION ====================
 @app.route("/api/check-session", methods=["GET"])
 def check_session():
-    # Chỉ cho phép các origin dev mà bạn đang dùng (thêm/bớt tại đây nếu cần)
-    allowed = {
-        "http://localhost:5500",
-        "http://127.0.0.1:5500",
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-    }
-    origin = request.headers.get("Origin")
-
-    uid = session.get("user_id")
-    if not uid:
-        resp = jsonify({"logged_in": False, "user": None})
-        if origin in allowed:
-            resp.headers["Access-Control-Allow-Origin"] = origin
-        resp.headers["Access-Control-Allow-Credentials"] = "true"
-        resp.headers["Vary"] = "Origin"
-        return resp
+    user_id = verify_token(request)
+    if not user_id:
+        return jsonify({"logged_in": False, "user": None})
 
     with get_conn() as conn, conn.cursor() as cur:
-        cur.execute(
-            "SELECT user_id, trang_thai, diem_thuong FROM users WHERE user_id = %s",
-            (uid,),
-        )
+        cur.execute("SELECT user_id, trang_thai, diem_thuong FROM users WHERE user_id=%s", (user_id,))
         user = cur.fetchone()
 
     if not user:
-        resp = jsonify({"logged_in": False, "user": None})
-    else:
-        resp = jsonify({"logged_in": True, "user": user})
+        return jsonify({"logged_in": False, "user": None})
+    return jsonify({"logged_in": True, "user": user})
 
-    # 🔒 Echo đúng Origin (không dùng '*') và bật credentials cho route này
-    if origin in allowed:
-        resp.headers["Access-Control-Allow-Origin"] = origin
-    resp.headers["Access-Control-Allow-Credentials"] = "true"
-    resp.headers["Vary"] = "Origin"
-    return resp
+
+@app.route("/api/logout", methods=["POST"])
+def logout():
+    auth = request.headers.get("Authorization", "")
+    if auth.startswith("Bearer "):
+        token = auth.split(" ", 1)[1].strip()
+        session_cache.pop(token, None)
+    return jsonify({"ok": True, "message": "Đã đăng xuất"})
 
 if __name__ == "__main__":
     app.run(debug=True, port=3000, use_reloader=False,host='0.0.0.0')
