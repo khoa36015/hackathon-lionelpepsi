@@ -22,7 +22,7 @@ app.config.update(
 )
 Session(app)
 
-# ✅ CORS cấu hình cho dev (cho phép credentials)
+# CORS cấu hình cho dev (cho phép credentials)
 CORS(app, supports_credentials=True, origins=["http://localhost:5173", "http://127.0.0.1:5500"])
 
 # ---------- DB ----------
@@ -77,7 +77,7 @@ def feedbacks():
     return jsonify({"success": True, "data": data})
 
 
-# ✅ Tìm kiếm hiện vật hoặc hình ảnh trưng bày
+#Tìm kiếm hiện vật hoặc hình ảnh trưng bày
 @app.route('/api/search', methods=['GET'])
 def search_artifacts():
     query = request.args.get('name', '').lower().strip()
@@ -567,7 +567,7 @@ def checkin_visited():
     })
 # ---------- GENERATE INFO ----------
 
-# --- Chuẩn bị dữ liệu gốc ---
+# --- Chuẩn bị dữ liệu gốc ---                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
 PHAN_LOAI = bao_tang_chung_tich.get("phan_loai", {})
 TEN_BAO_TANG = bao_tang_chung_tich.get("ten", "Bảo tàng Chứng tích Chiến tranh")
 DIA_CHI_BAO_TANG = bao_tang_chung_tich.get("dia_chi", "Không rõ địa chỉ")
