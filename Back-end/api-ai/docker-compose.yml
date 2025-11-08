@@ -1,0 +1,12 @@
+
+version: "3.8"
+services:
+  rag:
+    build: .
+    container_name: rag_museum_ai
+    env_file: .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./vectorstore:/app/vectorstore
+      - ./data:/app/data

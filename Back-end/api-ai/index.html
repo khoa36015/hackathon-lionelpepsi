@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RAG Museum AI — Demo</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;margin:24px;max-width:900px}
+    .card{border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:16px}
+    .row{display:flex;gap:8px}
+    input,button,textarea{padding:10px;border-radius:8px;border:1px solid #d1d5db}
+    button{cursor:pointer}
+    .answer{white-space:pre-wrap}
+    .small{color:#6b7280;font-size:12px}
+    .citations span{display:inline-block;background:#f3f4f6;border-radius:999px;padding:4px 8px;margin:2px}
+  </style>
+</head>
+<body>
+  <h1>RAG Museum AI — Demo</h1>
+  <div class="card">
+    <div class="row">
+      <input id="apiUrl" style="flex:1" value="http://localhost:8000/api/ask" />
+      <button onclick="ask()">Hỏi</button>
+    </div>
+    <textarea id="q" rows="3" style="width:100%;margin-top:8px" placeholder="Ví dụ: Kể cho tôi nghe về bức ảnh Em bé Napalm?"></textarea>
+    <div id="out" class="answer" style="margin-top:12px"></div>
+    <div class="citations" id="cites"></div>
+    <div class="small">Tip: thay đổi API URL nếu bạn deploy trên VPS.</div>
+  </div>
+<script>
+async function ask(){
+  const url = document.getElementById('apiUrl').value;
+  const q = document.getElementById('q').value.trim();
+  if(!q){ alert('Nhập câu hỏi'); return; }
+  document.getElementById('out').textContent = 'Đang hỏi...';
+  document.getElementById('cites').innerHTML = '';
+  try{
+    const res = await fetch(url, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({question:q})
+    });
+    const js = await res.json();
+    if(js.error){ document.getElementById('out').textContent = 'Lỗi: '+js.error; return; }
+    document.getElementById('out').textContent = js.answer || '(không có trả lời)';
+    const cites = js.citations || [];
+    document.getElementById('cites').innerHTML = cites.map(c => `<span>${c.name || 'context'} • ${(c.score||0).toFixed(3)}</span>`).join('');
+  }catch(e){
+    document.getElementById('out').textContent = 'Lỗi mạng: '+e.message;
+  }
+}
+</script>
+</body>
+</html>
