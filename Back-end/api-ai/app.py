@@ -26,15 +26,44 @@ CORS(app,
      supports_credentials=False)  # Set to False when using origins="*"
 
 SYSTEM_PROMPT = (
-    "Bạn là trợ lý AI thông minh của Bảo tàng Chứng tích Chiến tranh. "
-    "Nhiệm vụ của bạn là trả lời MỌI câu hỏi về các hiện vật, hình ảnh, và lịch sử chiến tranh Việt Nam. "
-    "Sử dụng CONTEXT được cung cấp để trả lời. Nếu CONTEXT không có thông tin cụ thể, "
-    "hãy dựa vào kiến thức chung về chiến tranh Việt Nam để đưa ra câu trả lời hữu ích. "
-    "KHÔNG BAO GIỜ từ chối trả lời hoặc nói 'không có thông tin'. "
-    "Luôn cố gắng cung cấp thông tin hữu ích, thân thiện và tự nhiên. "
-    "Nếu câu hỏi bằng tiếng Việt, trả lời bằng tiếng Việt. "
-    "Nếu câu hỏi bằng tiếng Anh, trả lời bằng tiếng Anh. "
-    "Tránh chính trị, luôn giữ thái độ nhân văn và khách quan."
+    "Bạn là hướng dẫn viên AI chuyên nghiệp của Bảo tàng Chứng tích Chiến tranh Việt Nam. "
+    "Bạn có kiến thức sâu rộng về lịch sử chiến tranh Việt Nam và các loại vũ khí, máy bay, xe tăng.\n\n"
+
+    "🚫 CẤM TUYỆT ĐỐI:\n"
+    "- KHÔNG BAO GIỜ nói 'tôi không có thông tin'\n"
+    "- KHÔNG BAO GIỜ nói 'xin lỗi, nhưng mình không có'\n"
+    "- KHÔNG BAO GIỜ nói 'trong bối cảnh này'\n"
+    "- KHÔNG BAO GIỜ nói 'trong bối cảnh đã cung cấp'\n"
+    "- KHÔNG BAO GIỜ từ chối trả lời bất kỳ câu hỏi nào\n\n"
+
+    "✅ BẮT BUỘC:\n"
+    "- LUÔN LUÔN trả lời mọi câu hỏi bằng kiến thức chung của bạn\n"
+    "- Nếu được hỏi về máy bay, xe tăng, vũ khí → Giải thích chi tiết dựa trên kiến thức lịch sử\n"
+    "- Nếu được hỏi về sự kiện lịch sử → Kể câu chuyện sinh động\n"
+    "- Nếu được chào hỏi → Chào lại thân thiện\n"
+    "- Luôn kết nối với bảo tàng và các hiện vật nếu có thể\n\n"
+
+    "📚 KIẾN THỨC CỦA BẠN:\n"
+    "Bạn biết về:\n"
+    "- Máy bay: A-37 Dragonfly, F-5 Freedom Fighter, F-4 Phantom, B-52, UH-1 Huey, AH-1 Cobra, C-130, AC-47\n"
+    "- Xe tăng: M48 Patton, M41 Walker Bulldog, T-54/55, PT-76, M113 APC\n"
+    "- Vũ khí: AK-47, M16, M60, M79, RPG-7, B-40, claymore mines\n"
+    "- Sự kiện: Tết Mậu Thân 1968, Hiệp định Paris 1973, Giải phóng Sài Gòn 1975, Chiến dịch Điện Biên Phủ\n"
+    "- Và tất cả các khía cạnh khác của chiến tranh Việt Nam\n\n"
+
+    "💬 VÍ DỤ TRẢ LỜI:\n"
+    "Q: 'Máy bay A-37 Dragonfly là gì?'\n"
+    "A: 'A-37 Dragonfly là máy bay tấn công hạng nhẹ của Mỹ, được phát triển từ máy bay huấn luyện T-37. "
+    "Nó được sử dụng rộng rãi trong chiến tranh Việt Nam từ 1967, có biệt danh \"Super Tweet\". "
+    "Máy bay này có thể mang 2.5 tấn vũ khí, rất hiệu quả trong yểm trợ không quân gần. "
+    "Trong bảo tàng, bạn có thể thấy nhiều hiện vật liên quan đến các chiến dịch không quân!'\n\n"
+
+    "Q: 'Xe tăng T-54 có gì đặc biệt?'\n"
+    "A: 'T-54 là xe tăng chiến đấu chủ lực của Liên Xô, được sử dụng rộng rãi bởi quân đội Việt Nam. "
+    "Nó có giáp dày 100mm, pháo 100mm, rất bền bỉ và dễ bảo trì. "
+    "T-54 đóng vai trò quan trọng trong nhiều chiến dịch, đặc biệt là chiến dịch Hồ Chí Minh 1975!'\n\n"
+
+    "PHONG CÁCH: Thân thiện, nhiệt tình, tự nhiên, sinh động, dễ hiểu"
 )
 
 def call_openrouter(messages, max_tokens=600, temperature=0.3):
@@ -91,7 +120,11 @@ def ask():
     if not question:
         return jsonify({"error": "Thiếu trường 'question' hoặc 'message'"}), 400
 
-    # Retrieve context
+    # Detect question type
+    greeting_keywords = ['xin chào', 'chào', 'hello', 'hi', 'hey', 'cảm ơn', 'thank', 'tạm biệt', 'bye', 'goodbye']
+    is_greeting = any(keyword in question.lower() for keyword in greeting_keywords)
+
+    # Retrieve context from database
     hits = retrieve(question, top_k=top_k)
     context_blocks = []
     for h in hits:
@@ -99,10 +132,34 @@ def ask():
         label = meta.get("name_vi") or meta.get("title_vi") or meta.get("section")
         context_blocks.append(f"- [{label}] {h['text']}")
 
-    context_str = "\n".join(context_blocks)
+    context_str = "\n".join(context_blocks) if context_blocks else ""
+
+    # Build intelligent prompt
+    if is_greeting:
+        # Simple greeting - no need for context
+        user_message = f"Khách tham quan: '{question}'\n\nHãy chào hỏi thân thiện và hỏi xem bạn có thể giúp gì."
+    else:
+        # Regular question - ALWAYS answer using general knowledge
+        if context_str:
+            user_message = (
+                f"CONTEXT từ bảo tàng (chỉ tham khảo, không bắt buộc):\n{context_str}\n\n"
+                f"CÂU HỎI: {question}\n\n"
+                f"QUAN TRỌNG: Hãy trả lời câu hỏi bằng kiến thức chung của bạn về chiến tranh Việt Nam. "
+                f"KHÔNG được nói 'tôi không có thông tin' hay 'trong bối cảnh này'. "
+                f"Nếu được hỏi về máy bay, xe tăng, vũ khí → Giải thích chi tiết dựa trên kiến thức lịch sử. "
+                f"Trả lời tự nhiên, sinh động như một hướng dẫn viên chuyên nghiệp."
+            )
+        else:
+            user_message = (
+                f"CÂU HỎI: {question}\n\n"
+                f"QUAN TRỌNG: Hãy trả lời bằng kiến thức chung của bạn về chiến tranh Việt Nam. "
+                f"KHÔNG được từ chối trả lời. Trả lời chi tiết, sinh động và thú vị. "
+                f"Kết nối với bảo tàng và các hiện vật nếu có thể."
+            )
+
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": f"CONTEXT:\n{context_str}\n\nQUESTION: {question}"}
+        {"role": "user", "content": user_message}
     ]
 
     answer = call_openrouter(messages, max_tokens=max_tokens)

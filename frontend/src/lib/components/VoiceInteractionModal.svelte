@@ -129,7 +129,14 @@
   }
 
   function playInitialPrompt() {
-    const promptText = `Bạn có muốn biết thêm gì về ${itemName} không?`;
+    // More natural greeting variations
+    const greetings = [
+      `Xin chào! Mình là trợ lý AI của bảo tàng. Bạn muốn tìm hiểu gì về ${itemName}?`,
+      `Chào bạn! Bạn có câu hỏi nào về ${itemName} không?`,
+      `Xin chào! Mình có thể giúp bạn tìm hiểu về ${itemName}. Bạn muốn biết điều gì?`,
+      `Chào bạn! Đây là ${itemName}. Bạn muốn mình kể gì về nó?`
+    ];
+    const promptText = greetings[Math.floor(Math.random() * greetings.length)];
     speak(promptText, () => {
       // After prompt finishes, show options
       state = 'initial';
@@ -590,8 +597,11 @@
 
     {#if state === 'initial'}
       <div class="text-center space-y-4">
-        <p class="text-gray-600 mb-4">
-          Bạn có muốn biết thêm gì về {itemName} không?
+        <p class="text-gray-600 mb-4 text-lg">
+          💬 Bạn muốn hỏi gì về <span class="font-semibold text-indigo-600">{itemName}</span>?
+        </p>
+        <p class="text-sm text-gray-500 mb-4">
+          Bạn có thể hỏi về lịch sử, đặc điểm, hoặc bất kỳ điều gì bạn tò mò!
         </p>
         <div class="flex gap-4 justify-center">
           <button
