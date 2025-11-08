@@ -118,8 +118,8 @@
   // Navigation items
   const navItems = [
     { title: 'Trang chủ', href: '/' },
-    { title: 'Bộ sưu tập', href: '/gallery' },
-    { title: 'Trưng bày ngoài trời', href: '/outdoor' }
+    { title: 'Lộ Trình', href: '/tours' },
+    { title: 'Feedback', href: '/feedback' }
   ];
 </script>
 
@@ -214,8 +214,6 @@
                 class="absolute right-0 mt-2 w-56 rounded-lg border border-[#3a3a3a] bg-[#2a2a2a] shadow-xl overflow-hidden"
               >
                 <div class="p-1">
-                  <a role="menuitem" tabindex="0" href="/dashboard"
-                     class="block rounded px-3 py-2 text-sm text-[#c4a574] hover:bg-[#3a3a3a] hover:text-white transition">Bảng điều khiển</a>
                   <a role="menuitem" tabindex="0" href="/profile"
                      class="block rounded px-3 py-2 text-sm text-[#c4a574] hover:bg-[#3a3a3a] hover:text-white transition">Hồ sơ</a>
                   <button role="menuitem" class="w-full text-left rounded px-3 py-2 text-sm text-[#c4a574] hover:bg-[#3a3a3a] hover:text-white transition"
@@ -306,7 +304,6 @@
               <div class="text-sm font-semibold text-white">{$username}</div>
             </div>
             <div class="mt-2 space-y-1">
-              <button class="w-full text-left rounded px-3 py-2 text-sm text-[#c4a574] hover:bg-[#4a4a4a] hover:text-white transition" on:click={() => navTo('/dashboard')}>Bảng điều khiển</button>
               <button class="w-full text-left rounded px-3 py-2 text-sm text-[#c4a574] hover:bg-[#4a4a4a] hover:text-white transition" on:click={() => navTo('/profile')}>Hồ sơ</button>
               <button class="w-full text-left rounded px-3 py-2 text-sm text-[#c4a574] hover:bg-[#4a4a4a] hover:text-white transition" on:click={handleLogout}>Đăng xuất</button>
             </div>

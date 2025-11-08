@@ -2,11 +2,13 @@
   import { onMount } from 'svelte';
   import { getOptionData } from '$lib/dataProvider';
   import VoiceInteractionModal from './VoiceInteractionModal.svelte';
+  import CheckinModal from './CheckinModal.svelte';
 
   let items = [];
   let loading = true;
   let error = '';
   let showVoiceModal = false;
+  let showCheckinModal = false;
   let selectedItem = null;
 
   onMount(async () => {
@@ -45,6 +47,17 @@
     showVoiceModal = false;
     selectedItem = null;
   }
+
+  function handleCheckin(item, event) {
+    event.stopPropagation();
+    selectedItem = item;
+    showCheckinModal = true;
+  }
+
+  function closeCheckinModal() {
+    showCheckinModal = false;
+    selectedItem = null;
+  }
 </script>
 
 {#if loading}
@@ -62,7 +75,13 @@
     </div>
   </div>
 {:else}
-  <div class="container mx-auto px-4 py-8">
+  <div class="container mx-auto px-4 py-12">
+    <!-- Section Title -->
+    <div class="mb-8 text-center animate-fadeIn">
+      <h2 class="text-4xl font-bold text-[#c4a574] mb-2">Bộ Sưu Tập Vật</h2>
+      <p class="text-gray-400">Khám phá những hiện vật lịch sử quý giá</p>
+    </div>
+
     <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
       {#each items as item, index}
         <article class="stagger-item group relative rounded-3xl overflow-hidden bg-white shadow-smooth hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 transform-smooth">
@@ -99,6 +118,19 @@
               {/if}
             </div>
           </button>
+
+          <!-- Check-in Button -->
+          <div class="px-5 pb-5">
+            <button
+              on:click={(e) => handleCheckin(item, e)}
+              class="w-full bg-[#c4a574] hover:bg-[#d4b584] text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+            >
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+              </svg>
+              Check-in
+            </button>
+          </div>
         </article>
       {/each}
     </div>
@@ -111,6 +143,15 @@
     show={showVoiceModal}
     itemName={selectedItem.ten}
     onClose={closeVoiceModal}
+  />
+{/if}
+
+<!-- Check-in Modal -->
+{#if selectedItem}
+  <CheckinModal
+    show={showCheckinModal}
+    locationName={selectedItem.ten}
+    onClose={closeCheckinModal}
   />
 {/if}
 

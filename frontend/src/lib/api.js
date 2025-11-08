@@ -116,3 +116,167 @@ export async function notifyAI(name) {
     return { error: true, message: 'Không thể truy vấn AI' };
   }
 }
+
+// ======================== TICKET API ========================
+export async function getBankAccounts() {
+  const res = await fetch(`${API_AUTH}/bank/accounts`, {
+    method: 'GET'
+  });
+  return await res.json();
+}
+
+export async function purchaseTicket(bankAccount, bankPassword) {
+  const res = await fetch(`${API_AUTH}/ticket/purchase`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      bank_account: bankAccount,
+      bank_password: bankPassword
+    })
+  });
+  return await res.json();
+}
+
+export async function getTicketStatus() {
+  const res = await fetch(`${API_AUTH}/ticket/status`, {
+    method: 'GET',
+    credentials: 'include'
+  });
+  return await res.json();
+}
+
+export async function getTicketQR() {
+  const res = await fetch(`${API_AUTH}/ticket/qr`, {
+    method: 'GET',
+    credentials: 'include'
+  });
+  return await res.json();
+}
+
+export async function verifyTicket(ticketCode) {
+  const res = await fetch(`${API_AUTH}/ticket/verify`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ticket_code: ticketCode })
+  });
+  return await res.json();
+}
+
+// ======================== CHECKIN API ========================
+export async function generateCheckinQR(diaDiem) {
+  const res = await fetch(`${API_AUTH}/checkin/generate-qr`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ dia_diem: diaDiem })
+  });
+  return await res.json();
+}
+
+export async function scanCheckinQR(qrData) {
+  const res = await fetch(`${API_AUTH}/checkin/scan-qr`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ qr_data: qrData })
+  });
+  return await res.json();
+}
+
+export async function submitQuiz(diaDiem, answers, correctAnswers) {
+  const res = await fetch(`${API_AUTH}/checkin/submit-quiz`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      dia_diem: diaDiem,
+      answers,
+      correct_answers: correctAnswers
+    })
+  });
+  return await res.json();
+}
+
+export async function getCheckinList() {
+  const res = await fetch(`${API_AUTH}/checkin/list`, {
+    method: 'GET',
+    credentials: 'include'
+  });
+  return await res.json();
+}
+
+// ======================== TOURS API ========================
+export async function getTourLocations() {
+  const res = await fetch(`${API_AUTH}/tours/locations`, {
+    method: 'GET',
+    credentials: 'include'
+  });
+  return await res.json();
+}
+
+export async function getLocationInfo(location) {
+  const res = await fetch(`${API_AUTH}/tours/location-info`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ location })
+  });
+  return await res.json();
+}
+
+export async function getItemsByLocation(locations) {
+  const res = await fetch(`${API_AUTH}/tours/items-by-location`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ locations })
+  });
+  return await res.json();
+}
+
+export async function createTour(tourName, description, items) {
+  const res = await fetch(`${API_AUTH}/tours/create`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ tour_name: tourName, description, items })
+  });
+  return await res.json();
+}
+
+export async function getMyTours() {
+  const res = await fetch(`${API_AUTH}/tours/my`, {
+    method: 'GET',
+    credentials: 'include'
+  });
+  return await res.json();
+}
+
+export async function getTourDetail(tourId) {
+  const res = await fetch(`${API_AUTH}/tours/${tourId}`, {
+    method: 'GET',
+    credentials: 'include'
+  });
+  return await res.json();
+}
+
+// ======================== FEEDBACK API ========================
+export async function submitFeedback(rating, comment, category = 'general') {
+  const res = await fetch(`${API_AUTH}/feedback`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ rating, comment, category })
+  });
+  return await res.json();
+}
+
+export async function getFeedbackHistory() {
+  const res = await fetch(`${API_AUTH}/feedback`, {
+    method: 'GET',
+    credentials: 'include'
+  });
+  return await res.json();
+}

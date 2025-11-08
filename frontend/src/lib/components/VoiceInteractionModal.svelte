@@ -108,10 +108,7 @@
       }
     }
 
-    // Auto-play initial prompt when modal opens
-    if (show) {
-      playInitialPrompt();
-    }
+    // Don't auto-play - let user control when to start
   });
 
   onDestroy(() => {
@@ -121,10 +118,8 @@
     }
   });
 
-  // Watch for show prop changes
-  $: if (show) {
-    playInitialPrompt();
-  } else {
+  // Watch for show prop changes - only reset state, don't auto-play
+  $: if (!show) {
     resetState();
   }
 
@@ -173,9 +168,13 @@
     }
 
     const promptText = greetings[Math.floor(Math.random() * greetings.length)];
+
+    // Set state to speaking first
+    state = 'speaking';
+
     speak(promptText, () => {
-      // After prompt finishes, show options
-      state = 'initial';
+      // After prompt finishes, automatically start listening
+      startListening();
     });
   }
 
@@ -608,7 +607,8 @@
   }
 
   function handleYes() {
-    startListening();
+    // Play greeting first, then start listening
+    playInitialPrompt();
   }
 
   function handleNo() {
