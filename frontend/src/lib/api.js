@@ -1,6 +1,7 @@
 export const API_BASE = 'http://localhost';
 export const API_AUTH = `${API_BASE}:3000/api`;
-export const API_AGENT = `${API_BASE}:3000/api`;
+export const API_AI = `${API_BASE}:8000/api`; // AI RAG API on port 8000
+export const API_AGENT = `${API_BASE}:3000/api`; // Keep for backward compatibility
 
 export async function register(username, password) {
   const res = await fetch(`${API_AUTH}/register`, {
@@ -100,9 +101,9 @@ export async function notifyAI(name) {
   try {
     const message = `Hãy nói cho tôi về bối cảnh lịch sử của ${name} và thông tin chi tiết về ${name}.`;
 
-    const res = await fetch(`${API_AGENT}/ask`, {
+    const res = await fetch(`${API_AI}/ask`, {
       method: 'POST',
-      credentials: 'include',
+      // Don't send credentials to AI API (different port, no auth needed)
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message })
     });

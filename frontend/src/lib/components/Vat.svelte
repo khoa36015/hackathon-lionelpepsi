@@ -1,18 +1,20 @@
 <script>
   import { onMount } from 'svelte';
   import { getOptionData } from '$lib/dataProvider';
-  import { notifyAI } from '$lib/api';
+  import VoiceInteractionModal from './VoiceInteractionModal.svelte';
 
   let items = [];
   let loading = true;
   let error = '';
+  let showVoiceModal = false;
+  let selectedItem = null;
 
   onMount(async () => {
     try {
       loading = true;
       const data = await getOptionData('vat');
       console.log('Vat data received:', data);
-      
+
       // Handle different response formats from backend
       if (Array.isArray(data)) {
         items = data;
@@ -35,7 +37,13 @@
   });
 
   function clickItem(item) {
-    notifyAI(item.ten);
+    selectedItem = item;
+    showVoiceModal = true;
+  }
+
+  function closeVoiceModal() {
+    showVoiceModal = false;
+    selectedItem = null;
   }
 </script>
 
@@ -92,6 +100,15 @@
       {/each}
     </div>
   </div>
+{/if}
+
+<!-- Voice Interaction Modal -->
+{#if selectedItem}
+  <VoiceInteractionModal
+    show={showVoiceModal}
+    itemName={selectedItem.ten}
+    onClose={closeVoiceModal}
+  />
 {/if}
 
 <style>
