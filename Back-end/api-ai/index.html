@@ -1,54 +1,310 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>RAG Museum AI — Demo</title>
+  <meta charset="utf-8" />
+  <title>API Tester (auth/ticket/checkin/weather/feedback)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;margin:24px;max-width:900px}
-    .card{border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:16px}
-    .row{display:flex;gap:8px}
-    input,button,textarea{padding:10px;border-radius:8px;border:1px solid #d1d5db}
-    button{cursor:pointer}
-    .answer{white-space:pre-wrap}
-    .small{color:#6b7280;font-size:12px}
-    .citations span{display:inline-block;background:#f3f4f6;border-radius:999px;padding:4px 8px;margin:2px}
+    :root { --b:#111; --m:#666; --ok:#0a7f2e; --err:#b00020; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 24px auto; max-width: 1060px; padding: 0 12px; color: var(--b); }
+    h1 { margin: 0 0 8px; }
+    section { border: 1px solid #eee; border-radius: 12px; padding: 16px; margin: 14px 0; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    input, button, select { padding: 8px 10px; font-size: 15px; }
+    input[type="number"] { width: 100px; }
+    button { cursor: pointer; border: 1px solid #ddd; border-radius: 10px; background: #f9f9f9; }
+    button.primary { background: #000; color: #fff; border-color: #000; }
+    pre { background: #f7f7f7; border: 1px solid #eee; padding: 12px; border-radius: 10px; overflow: auto; }
+    small.tip { color: var(--m); }
+    .pill { display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid #ddd; background:#fafafa; font-size:12px; }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap:12px; }
   </style>
 </head>
 <body>
-  <h1>RAG Museum AI — Demo</h1>
-  <div class="card">
+  <h1>API Tester <small class="tip">Base: <code id="apiBaseText">http://localhost:3000</code></small></h1>
+  <p class="tip">Dùng để test các endpoint trong <b>api.py</b> (auth, ticket, check-in QR, weather, feedback, artifacts/photos). Token lưu ở <code>localStorage</code>. </p>
+
+  <section>
+    <h3>⚙️ Cấu hình</h3>
     <div class="row">
-      <input id="apiUrl" style="flex:1" value="http://localhost:8000/api/ask" />
-      <button onclick="ask()">Hỏi</button>
+      <label>API Base:
+        <input id="api" size="44" value="http://localhost:3000" />
+      </label>
+      <button onclick="setApiBase()">Set</button>
+      <span class="pill">Token: <span id="tokState">[chưa có]</span></span>
+      <button onclick="clearToken()">Xóa token</button>
     </div>
-    <textarea id="q" rows="3" style="width:100%;margin-top:8px" placeholder="Ví dụ: Kể cho tôi nghe về bức ảnh Em bé Napalm?"></textarea>
-    <div id="out" class="answer" style="margin-top:12px"></div>
-    <div class="citations" id="cites"></div>
-    <div class="small">Tip: thay đổi API URL nếu bạn deploy trên VPS.</div>
+    <pre id="cfg_out"></pre>
+  </section>
+
+  <div class="grid">
+    <section>
+      <h3>📝 Đăng ký</h3>
+      <div class="row">
+        <input id="reg_user" placeholder="user_id (vd: khoa)" />
+        <input id="reg_pass" type="password" placeholder="password" />
+        <button class="primary" onclick="register()">/api/register</button>
+      </div>
+      <pre id="reg_out"></pre>
+    </section>
+
+    <section>
+      <h3>🔐 Đăng nhập / Check session / Đăng xuất</h3>
+      <div class="row">
+        <input id="login_user" placeholder="user_id" />
+        <input id="login_pass" type="password" placeholder="password" />
+        <button class="primary" onclick="login()">/api/login</button>
+        <button onclick="checkSession()">/api/check-session</button>
+        <button onclick="logout()">/api/logout</button>
+      </div>
+      <pre id="auth_out"></pre>
+    </section>
+
+    <section>
+      <h3>🎫 Vé vào cửa</h3>
+      <div class="row">
+        <input id="ticket_user" placeholder="user_id để thao tác (nếu trống dùng user đã login)" />
+      </div>
+      <div class="row">
+        <button class="primary" onclick="ticketConfirm()">/api/ticket/confirm</button>
+        <button onclick="ticketStatus()">/api/ticket/status</button>
+        <button onclick="ticketCancel()">/api/ticket/cancel</button>
+      </div>
+      <pre id="ticket_out"></pre>
+    </section>
+
+    <section>
+      <h3>📍 QR Check-in (link & scan/mark/status/list/visited)</h3>
+      <div class="row">
+        <input id="place" placeholder="Tên địa điểm (vd: Bảo tàng Chứng tích)" size="40" />
+      </div>
+      <div class="row">
+        <button onclick="qrLink()">/api/qr/link</button>
+        <button onclick="checkinScan()">/api/checkin/scan</button>
+        <button onclick="checkinMark()">/api/checkin/mark</button>
+        <button onclick="checkinStatus()">/api/checkin/status</button>
+      </div>
+      <div class="row">
+        <label>q:<input id="v_q" placeholder="từ khóa" /></label>
+        <label>limit:<input id="v_limit" type="number" value="20"/></label>
+        <label>offset:<input id="v_offset" type="number" value="0"/></label>
+        <button onclick="checkinList()">/api/checkin/list</button>
+        <button onclick="checkinVisited()">/api/checkin/visited</button>
+      </div>
+      <pre id="checkin_out"></pre>
+    </section>
+
+    <section>
+      <h3>⛅ Thời tiết HCM</h3>
+      <div class="row">
+        <button onclick="weatherNow()">/api/weather/current</button>
+      </div>
+      <pre id="weather_out"></pre>
+    </section>
+
+    <section>
+      <h3>🖼️ Photos & 🧱 Artifacts</h3>
+      <div class="row">
+        <button onclick="getPhotos()">/api/photos</button>
+        <button onclick="getArtifacts()">/api/artifacts</button>
+      </div>
+      <pre id="museum_out"></pre>
+    </section>
+
+    <section>
+      <h3>💬 Feedback</h3>
+      <div class="row">
+        <input id="fb_user" placeholder="username (tùy chọn)" />
+        <input id="fb_msg" placeholder="message" size="28"/>
+        <input id="fb_rating" type="number" min="1" max="5" step="1" placeholder="rating 1-5"/>
+        <button class="primary" onclick="sendFeedback()">/api/feedback (POST)</button>
+        <button onclick="listFeedbacks()">/api/feedbacks</button>
+      </div>
+      <pre id="fb_out"></pre>
+      <small class="tip">Server có chặn trùng trong 5s cho cùng username+message.</small>
+    </section>
   </div>
-<script>
-async function ask(){
-  const url = document.getElementById('apiUrl').value;
-  const q = document.getElementById('q').value.trim();
-  if(!q){ alert('Nhập câu hỏi'); return; }
-  document.getElementById('out').textContent = 'Đang hỏi...';
-  document.getElementById('cites').innerHTML = '';
-  try{
-    const res = await fetch(url, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({question:q})
-    });
-    const js = await res.json();
-    if(js.error){ document.getElementById('out').textContent = 'Lỗi: '+js.error; return; }
-    document.getElementById('out').textContent = js.answer || '(không có trả lời)';
-    const cites = js.citations || [];
-    document.getElementById('cites').innerHTML = cites.map(c => `<span>${c.name || 'context'} • ${(c.score||0).toFixed(3)}</span>`).join('');
-  }catch(e){
-    document.getElementById('out').textContent = 'Lỗi mạng: '+e.message;
-  }
-}
-</script>
+
+  <script>
+    // ===== Helpers / Token store =====
+    const el = id => document.getElementById(id);
+    const show = (id, data) => el(id).textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+    let API = "http://localhost:3000";
+    const TOKEN_KEY = "auth_token";
+    const USER_KEY  = "auth_user";
+    const getToken = () => localStorage.getItem(TOKEN_KEY) || "";
+    const setToken = t => { t ? localStorage.setItem(TOKEN_KEY,t) : localStorage.removeItem(TOKEN_KEY); renderTokenState(); };
+    const setUser  = u => { u ? localStorage.setItem(USER_KEY,u) : localStorage.removeItem(USER_KEY); };
+    const getUser  = () => localStorage.getItem(USER_KEY) || "";
+
+    function renderTokenState(){ el("tokState").textContent = getToken() ? "ĐÃ LƯU" : "chưa có"; }
+    renderTokenState();
+    function clearToken(){ setToken(""); setUser(""); show("auth_out","Đã xóa token."); }
+
+    function setApiBase(){
+      API = el("api").value.replace(/\/+$/,"");
+      el("apiBaseText").textContent = API;
+      show("cfg_out", { api: API });
+    }
+
+    async function safeFetch(url, opts = {}) {
+      const headers = {...(opts.headers||{})};
+      const token = getToken();
+      if (token) headers["Authorization"] = "Bearer " + token;
+      try {
+        const res = await fetch(url, { ...opts, headers });
+        let body; try { body = await res.json(); } catch { body = await res.text(); }
+        return { status: res.status, ok: res.ok, body };
+      } catch (err) {
+        return { error: String(err) };
+      }
+    }
+
+    // ===== Register / Login / Session / Logout =====
+    async function register(){
+      const user_id = el("reg_user").value.trim();
+      const password = el("reg_pass").value;
+      if(!user_id || !password) return show("reg_out",{ok:false,error:"Thiếu user_id/password"});
+      const r = await safeFetch(`${API}/api/register`, {
+        method:"POST", headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ user_id, password })
+      });
+      show("reg_out", r);
+    }
+
+    async function login(){
+      const user_id = el("login_user").value.trim();
+      const password = el("login_pass").value;
+      if(!user_id || !password) return show("auth_out",{ok:false,error:"Thiếu user_id/password"});
+      const r = await safeFetch(`${API}/api/login`, {
+        method:"POST", headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ user_id, password })
+      });
+      show("auth_out", r);
+      if(r.ok && r.body?.token){
+        setToken(r.body.token); setUser(r.body.user_id || user_id);
+      }
+    }
+
+    async function checkSession(){
+      const r = await safeFetch(`${API}/api/check-session`);
+      show("auth_out", r);
+    }
+
+    async function logout(){
+      const r = await safeFetch(`${API}/api/logout`, { method:"POST" });
+      show("auth_out", r);
+      clearToken();
+    }
+
+    // ===== Ticket =====
+    function userForTicket(){ return el("ticket_user").value.trim() || getUser(); }
+
+    async function ticketConfirm(){
+      const user_id = userForTicket(); if(!user_id) return show("ticket_out",{ok:false,error:"Thiếu user_id"});
+      const r = await safeFetch(`${API}/api/ticket/confirm`, {
+        method:"POST", headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ user_id })
+      });
+      show("ticket_out", r);
+    }
+
+    async function ticketStatus(){
+      const user_id = userForTicket(); if(!user_id) return show("ticket_out",{ok:false,error:"Thiếu user_id"});
+      const r = await safeFetch(`${API}/api/ticket/status?user_id=${encodeURIComponent(user_id)}`);
+      show("ticket_out", r);
+    }
+
+    async function ticketCancel(){
+      const user_id = userForTicket(); if(!user_id) return show("ticket_out",{ok:false,error:"Thiếu user_id"});
+      const r = await safeFetch(`${API}/api/ticket/cancel`, {
+        method:"POST", headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ user_id })
+      });
+      show("ticket_out", r);
+    }
+
+    // ===== Check-in QR =====
+    function getPlace(){ return el("place").value.trim(); }
+
+    async function qrLink(){
+      const dia_diem = getPlace(); if(!dia_diem) return show("checkin_out",{ok:false,error:"Thiếu dia_diem"});
+      const r = await safeFetch(`${API}/api/qr/link?dia_diem=${encodeURIComponent(dia_diem)}`);
+      show("checkin_out", r);
+    }
+
+    async function checkinScan(){
+      const dia_diem = getPlace(); if(!dia_diem) return show("checkin_out",{ok:false,error:"Thiếu dia_diem"});
+      const r = await safeFetch(`${API}/api/checkin/scan?dia_diem=${encodeURIComponent(dia_diem)}`);
+      show("checkin_out", r);
+    }
+
+    async function checkinMark(){
+      const dia_diem = getPlace(); if(!dia_diem) return show("checkin_out",{ok:false,error:"Thiếu dia_diem"});
+      const r = await safeFetch(`${API}/api/checkin/mark`, {
+        method:"POST", headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ dia_diem })
+      });
+      show("checkin_out", r);
+    }
+
+    async function checkinStatus(){
+      const dia_diem = getPlace(); if(!dia_diem) return show("checkin_out",{ok:false,error:"Thiếu dia_diem"});
+      const r = await safeFetch(`${API}/api/checkin/status?dia_diem=${encodeURIComponent(dia_diem)}`);
+      show("checkin_out", r);
+    }
+
+    async function checkinList(){
+      const r = await safeFetch(`${API}/api/checkin/list`);
+      show("checkin_out", r);
+    }
+
+    async function checkinVisited(){
+      const q = el("v_q").value.trim();
+      const limit = el("v_limit").value || 20;
+      const offset = el("v_offset").value || 0;
+      const url = new URL(`${API}/api/checkin/visited`);
+      if(q) url.searchParams.set("q", q);
+      url.searchParams.set("limit", limit);
+      url.searchParams.set("offset", offset);
+      const r = await safeFetch(url.toString());
+      show("checkin_out", r);
+    }
+
+    // ===== Weather / Museum / Feedback =====
+    async function weatherNow(){
+      const r = await safeFetch(`${API}/api/weather/current`);
+      show("weather_out", r);
+    }
+
+    async function getPhotos(){
+      const r = await safeFetch(`${API}/api/photos`);
+      show("museum_out", r);
+    }
+
+    async function getArtifacts(){
+      const r = await safeFetch(`${API}/api/artifacts`);
+      show("museum_out", r);
+    }
+
+    async function sendFeedback(){
+      const username = el("fb_user").value || null;
+      const message  = el("fb_msg").value;
+      const ratingV  = el("fb_rating").value;
+      if(!message) return show("fb_out",{message:"Message required"});
+      const rating = ratingV ? Number(ratingV) : null;
+      const r = await safeFetch(`${API}/api/feedback`, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ username, message, rating })
+      });
+      show("fb_out", r);
+    }
+
+    async function listFeedbacks(){
+      const r = await safeFetch(`${API}/api/feedbacks`);
+      show("fb_out", r);
+    }
+  </script>
 </body>
 </html>
