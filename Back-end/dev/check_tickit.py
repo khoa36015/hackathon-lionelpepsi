@@ -1,5 +1,5 @@
 import json
-from flask import Flask, request, jsonify2
+from flask import Flask, request, jsonify
 import database_connector 
 
 app = Flask(__name__)
