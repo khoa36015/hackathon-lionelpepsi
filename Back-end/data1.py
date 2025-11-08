@@ -3,7 +3,9 @@ data_hien_vat = [
     {
         "id": 1,
         "ten_khu_vuc": "Khu trưng bày ngoài trời",
-        "hinh_anh": "/khutrungbayngoaitroi.jpg",
+        "hinh_anh":[ "/khutrungbayngoaitroi.jpg",
+                        "/khutrungbayngoaitroi-2.jpg"
+        ],
         "hien_vat": [
             {
                 "id": 1,
@@ -40,7 +42,10 @@ data_hien_vat = [
     {
         "id": 2,
         "ten_khu_vuc": "Khu trưng bày trong nhà – Tội ác chiến tranh",
-        "hinh_anh": "/khutrungbaytrongnha.jpg",
+        "hinh_anh": [
+            "/khutrungbaytrongnha.jpg",
+            "/khutrungbaytrongnha-2.jpg"
+        ],
         "hien_vat": [
             {
                 "id": 6,
@@ -58,7 +63,8 @@ data_hien_vat = [
                 "id": 8,
                 "ten": "Khu trưng bày phòng tra tấn mô phỏng 'chuồng cọp'",
                 "mo_ta_dai": "Tái hiện khung cảnh các 'chuồng cọp' – nơi giam giữ và tra tấn tù nhân chính trị trong chiến tranh. Mô hình thể hiện sự khắc nghiệt và tàn bạo của chiến tranh đối với con người.",
-                "hinh_anh": "/khutrungbayphongtratan.jpg"
+                "hinh_anh": ["/khutrungbayphongtratan.jpg"
+                                , "/khutrungbayphongtratan-2.jpg"]
             },
             {
                 "id": 9,
@@ -71,7 +77,10 @@ data_hien_vat = [
     {
         "id": 3,
         "ten_khu_vuc": "Khu trưng bày vũ khí và bom mìn",
-        "hinh_anh": "/khutrungbayvukhi.jpg",
+        "hinh_anh": [
+            "/khutrungbayvukhi.jpg",
+            "/khutrungbayvukhi-2.jpg"],
+    
         "hien_vat": [
             {
                 "id": 10,
@@ -95,10 +104,11 @@ data_hien_vat = [
                 "id": 13,
                 "ten": "Lựu đạn M67",
                 "mo_ta_dai": "Lựu đạn do Mỹ sản xuất, được sử dụng trong nhiều trận chiến ở miền Nam. Hiện vật giúp người xem hiểu rõ hơn về sự khốc liệt của chiến trường cận chiến.",
-                "hinh_anh": "/luudanm67.jpg"
+                "hinh_anh": "/luudanm67.jpg",
             }
-        ]
+        ],
     },
+    
     {
         "id": 4,
         "ten_khu_vuc": "Khu triển lãm ảnh quốc tế & phong trào phản chiến",
