@@ -1,0 +1,1045 @@
+{
+  "version": "3.0.0",
+  "generated_at": "2025-11-08T05:42:07.302819",
+  "profile": {
+    "museum_vi": "Bảo tàng Chứng tích Chiến tranh (TP.HCM)",
+    "museum_en": "War Remnants Museum (Ho Chi Minh City)",
+    "language": [
+      "vi",
+      "en"
+    ],
+    "intended_use": "Voice guide + conversational assistant (M2 detail, style V3)"
+  },
+  "intro_voice_mode": {
+    "greeting_vi": "Chào bạn! Mình là hướng dẫn viên ảo đồng hành cùng bạn hôm nay—cứ hỏi bất kỳ điều gì nhé!",
+    "greeting_en": "Hey there! I’m your AI guide today—feel free to ask me anything along the way!",
+    "warmup_vi": "Trước khi bắt đầu, mình sẽ giúp bạn chọn lộ trình phù hợp—nhẹ nhàng hay chuyên sâu đều được.",
+    "warmup_en": "Before we start, I’ll help tailor your route—gentle or in-depth, it’s your call.",
+    "transition_vi": "Được rồi, mình cùng bước tới khu tiếp theo nhé…",
+    "transition_en": "Alright, let’s head to the next area…"
+  },
+  "historical_timeline": [
+    {
+      "id": "phase_1954_1960",
+      "title_vi": "1954–1960: Sau Hiệp định Genève – chia cắt và căng thẳng âm ỉ",
+      "title_en": "1954–1960: After the Geneva Accords – Division and rising tensions",
+      "narrative_vi": "Sau Hiệp định Genève năm 1954, Việt Nam tạm thời chia cắt. Hai miền đối diện với những lựa chọn\nchính trị          khác nhau, đời sống người dân biến động mạnh. Những di cư, đoàn tụ đứt quãng và\nnỗi nhớ nhà len lỏi trong các          lá thư. Không gian bảo tàng khi kể giai đoạn này thường nhẹ\nnhàng, như lời dạo đầu cho một bản nhạc có phần u uất.",
+      "narrative_en": "After the 1954 Geneva Accords, Vietnam was temporarily divided. The two regions moved toward\ndifferent political          paths while ordinary lives were disrupted. Families migrated, reunions\nwere postponed, and homesickness poured          into letters. In the museum, this phase feels like\na gentle prelude—soft tones before a darker movement.",
+      "ambience": [
+        "soft_wind",
+        "distant_radio",
+        "paper_rustle"
+      ]
+    },
+    {
+      "id": "phase_1961_1964",
+      "title_vi": "1961–1964: Leo thang xung đột – vùng quê đổi sắc",
+      "title_en": "1961–1964: Escalation – rural landscapes transforming",
+      "narrative_vi": "Xung đột leo thang. Những làng quê yên ả bắt đầu có tiếng trực thăng, loa phóng thanh, những trạm\nquân y dã chiến.          Người nông dân vừa cấy lúa vừa dõi mắt trên bầu trời. Trẻ nhỏ ghi lại\ntrong vở bài tập ánh đèn dầu và giấc mơ yên bình.",
+      "narrative_en": "The conflict escalated. Quiet villages heard helicopters, loudspeakers, and mobile field clinics.\nFarmers planted          rice while glancing at the sky. Children wrote in school notebooks about\noil-lamp nights and a longing for peace.",
+      "ambience": [
+        "helicopter_distant",
+        "field_crickets",
+        "radio_static"
+      ]
+    },
+    {
+      "id": "phase_1965_1968",
+      "title_vi": "1965–1968: Cao trào chiến sự – đô thị và chiến trường cùng nóng lên",
+      "title_en": "1965–1968: Peak of fighting – cities and battlefields heat up",
+      "narrative_vi": "Giai đoạn căng thẳng nhất: tần suất không kích cao, các đô thị liên tục báo động. Trong ký ức nhiều\nngười, đây          là những năm tháng âm thanh dồn dập của còi hụ, tiếng trực thăng và những bản\ntin cập nhật không dứt. Câu chuyện          ở bảo tàng không chỉ là số liệu, mà là hơi thở gấp gáp\ncủa đời sống thường ngày.",
+      "narrative_en": "This was the most intense period: frequent air raids and repeated alerts in cities. For many, these\nyears sounded          like sirens, rotor blades, and never-ending news bulletins. In the museum,\nthe story moves beyond numbers to the          short breaths of daily life under pressure.",
+      "ambience": [
+        "air_raid_siren_soft",
+        "rotor_blades",
+        "footsteps_fast"
+      ]
+    },
+    {
+      "id": "phase_1969_1972",
+      "title_vi": "1969–1972: Đàm phán, giằng co và nỗi chờ đợi",
+      "title_en": "1969–1972: Negotiations, stalemates, and waiting",
+      "narrative_vi": "Tiếng nói hòa bình bắt đầu vang lên mạnh hơn; cùng lúc, những trận đánh vẫn nổ ra. Trên bàn đàm phán\nlà giấy mực;          ngoài chiến trường là bùn đất. Nhiều nhiếp ảnh gia, bác sĩ, tình nguyện viên\nquốc tế đặt chân đến Việt Nam với          khát vọng cứu chữa và ghi chép sự thật.",
+      "narrative_en": "Voices for peace grew louder even as battles continued. Negotiations used ink and paper while\nsoldiers waded          through mud. Photographers, doctors, and volunteers came with a shared hope:\nto heal and to document the truth.",
+      "ambience": [
+        "pen_on_paper",
+        "distant_thunder",
+        "heartbeat_slow"
+      ]
+    },
+    {
+      "id": "phase_1973_1975",
+      "title_vi": "1973–1975: Hiệp định Paris và ngày trở về",
+      "title_en": "1973–1975: The Paris Agreement and homecoming",
+      "narrative_vi": "Sau Hiệp định Paris, những đoàn người trở về, những lá thư được mở ra, những bữa cơm đoàn tụ chan\nđầy nước mắt.          Nhiều năm sau, hậu quả chiến tranh vẫn còn – nhưng mầm xanh hòa bình bắt đầu\nphủ lên những vết sẹo. Bảo tàng kể          phần này bằng giọng nhẹ nhàng, để nhắc rằng hòa bình cần\nđược gìn giữ mỗi ngày.",
+      "narrative_en": "After the Paris Agreement, people returned home, envelopes were opened, and reunions were held with\ntears and warm          meals. The scars remained, yet green shoots covered the fields. The museum\nspeaks softly here, reminding us that          peace must be nurtured daily.",
+      "ambience": [
+        "soft_rain",
+        "home_chatter",
+        "kitchen_bowls"
+      ]
+    }
+  ],
+  "extended_artifacts": [
+    {
+      "name_vi": "Máy bay trực thăng UH-1",
+      "name_en": "UH-1 Helicopter",
+      "period": "1965–1975",
+      "location_hint": "Trên bầu trời và tại các bãi đáp dã chiến",
+      "tags": [
+        "aircraft",
+        "transport"
+      ],
+      "paragraphs_vi": [
+        "Máy bay trực thăng UH-1 xuất hiện trong bối cảnh 1965–1975. Khi đứng trước hiện vật này, bạn có thể\ncảm nhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai màu\ntheo năm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi\ntiết nhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê.\nTừng dấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Máy bay trực thăng UH-1 không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là\nnhững thân phận đã đi qua nó.      Trên bầu trời và tại các bãi đáp dã chiến như một “tọa độ ký ức”:\nnơi người ta nghe tiếng động cơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết\nđịnh sinh tử. Thay vì tô đậm chiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,\nvật dụng, hay hình ảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con\nngười và sự sống."
+      ],
+      "paragraphs_en": [
+        "UH-1 Helicopter emerged during 1965–1975. Standing before it, you can sense history’s breath:\nflaking paint, faded markings,      and serial numbers softening with time. In the museum, we often\ninvite visitors to pause and notice quiet details:      worn edges from repeated use and tiny\ninventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the UH-1 Helicopter goes beyond materials and specifications to the lives that\nintersected with it.      Trên bầu trời và tại các bãi đáp dã chiến becomes a “coordinate of\nmemory,” where people heard engines, footsteps, and long silences before      life-or-death\ndecisions. Rather than glorifying victory or assigning blame, the narrative turns toward compassion:\ntechnology, tools, and images ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "distant_helicopter"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_01"
+    },
+    {
+      "name_vi": "Xe tăng M41 Walker Bulldog",
+      "name_en": "M41 Walker Bulldog Tank",
+      "period": "1960s–1975",
+      "location_hint": "Dọc các trục đường chiến lược",
+      "tags": [
+        "armor",
+        "mechanized"
+      ],
+      "paragraphs_vi": [
+        "Xe tăng M41 Walker Bulldog xuất hiện trong bối cảnh 1960s–1975. Khi đứng trước hiện vật này, bạn có\nthể cảm nhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai\nmàu theo năm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi\ntiết nhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê.\nTừng dấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Xe tăng M41 Walker Bulldog không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là\nnhững thân phận đã đi qua nó.      Dọc các trục đường chiến lược như một “tọa độ ký ức”: nơi người\nta nghe tiếng động cơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử.\nThay vì tô đậm chiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật\ndụng, hay hình ảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người\nvà sự sống."
+      ],
+      "paragraphs_en": [
+        "M41 Walker Bulldog Tank emerged during 1960s–1975. Standing before it, you can sense history’s\nbreath: flaking paint, faded markings,      and serial numbers softening with time. In the museum,\nwe often invite visitors to pause and notice quiet details:      worn edges from repeated use and\ntiny inventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the M41 Walker Bulldog Tank goes beyond materials and specifications to the lives\nthat intersected with it.      Dọc các trục đường chiến lược becomes a “coordinate of memory,” where\npeople heard engines, footsteps, and long silences before      life-or-death decisions. Rather than\nglorifying victory or assigning blame, the narrative turns toward compassion:      technology,\ntools, and images ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_02"
+    },
+    {
+      "name_vi": "Ảnh 'Em bé Napalm'",
+      "name_en": "‘Napalm Girl’ Photograph",
+      "period": "1972",
+      "location_hint": "Trảng Bàng, Tây Ninh",
+      "tags": [
+        "photography",
+        "press"
+      ],
+      "paragraphs_vi": [
+        "Ảnh 'Em bé Napalm' xuất hiện trong bối cảnh 1972. Khi đứng trước hiện vật này, bạn có thể cảm nhận\nrõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai màu theo năm\ntháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi tiết nhỏ:\ngóc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê. Từng dấu\nvết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Ảnh 'Em bé Napalm' không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là những\nthân phận đã đi qua nó.      Trảng Bàng, Tây Ninh như một “tọa độ ký ức”: nơi người ta nghe tiếng\nđộng cơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì tô\nđậm chiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay hình\nảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự sống."
+      ],
+      "paragraphs_en": [
+        "‘Napalm Girl’ Photograph emerged during 1972. Standing before it, you can sense history’s breath:\nflaking paint, faded markings,      and serial numbers softening with time. In the museum, we often\ninvite visitors to pause and notice quiet details:      worn edges from repeated use and tiny\ninventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the ‘Napalm Girl’ Photograph goes beyond materials and specifications to the lives\nthat intersected with it.      Trảng Bàng, Tây Ninh becomes a “coordinate of memory,” where people\nheard engines, footsteps, and long silences before      life-or-death decisions. Rather than\nglorifying victory or assigning blame, the narrative turns toward compassion:      technology,\ntools, and images ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_03"
+    },
+    {
+      "name_vi": "Chuồng cọp Côn Đảo (mô phỏng)",
+      "name_en": "Con Dao 'Tiger Cages' Replica",
+      "period": "Trước 1975",
+      "location_hint": "Khu mô phỏng nhà tù",
+      "tags": [
+        "prison",
+        "replica"
+      ],
+      "paragraphs_vi": [
+        "Chuồng cọp Côn Đảo (mô phỏng) xuất hiện trong bối cảnh Trước 1975. Khi đứng trước hiện vật này, bạn\ncó thể cảm nhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã\nphai màu theo năm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan\nsát chi tiết nhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình\nkiểm kê. Từng dấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Chuồng cọp Côn Đảo (mô phỏng) không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn\nlà những thân phận đã đi qua nó.      Khu mô phỏng nhà tù như một “tọa độ ký ức”: nơi người ta nghe\ntiếng động cơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì\ntô đậm chiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay\nhình ảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự\nsống."
+      ],
+      "paragraphs_en": [
+        "Con Dao 'Tiger Cages' Replica emerged during Trước 1975. Standing before it, you can sense history’s\nbreath: flaking paint, faded markings,      and serial numbers softening with time. In the museum,\nwe often invite visitors to pause and notice quiet details:      worn edges from repeated use and\ntiny inventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the Con Dao 'Tiger Cages' Replica goes beyond materials and specifications to the\nlives that intersected with it.      Khu mô phỏng nhà tù becomes a “coordinate of memory,” where\npeople heard engines, footsteps, and long silences before      life-or-death decisions. Rather than\nglorifying victory or assigning blame, the narrative turns toward compassion:      technology,\ntools, and images ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_04"
+    },
+    {
+      "name_vi": "Phòng Da cam/Dioxin",
+      "name_en": "Agent Orange/Dioxin Exhibition",
+      "period": "1959–1971 hậu quả lâu dài",
+      "location_hint": "Khu trưng bày nạn nhân",
+      "tags": [
+        "health",
+        "humanitarian"
+      ],
+      "paragraphs_vi": [
+        "Phòng Da cam/Dioxin xuất hiện trong bối cảnh 1959–1971 hậu quả lâu dài. Khi đứng trước hiện vật này,\nbạn có thể cảm nhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã\nphai màu theo năm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan\nsát chi tiết nhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình\nkiểm kê. Từng dấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Phòng Da cam/Dioxin không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là những\nthân phận đã đi qua nó.      Khu trưng bày nạn nhân như một “tọa độ ký ức”: nơi người ta nghe tiếng\nđộng cơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì tô\nđậm chiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay hình\nảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự sống."
+      ],
+      "paragraphs_en": [
+        "Agent Orange/Dioxin Exhibition emerged during 1959–1971 hậu quả lâu dài. Standing before it, you can\nsense history’s breath: flaking paint, faded markings,      and serial numbers softening with time.\nIn the museum, we often invite visitors to pause and notice quiet details:      worn edges from\nrepeated use and tiny inventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the Agent Orange/Dioxin Exhibition goes beyond materials and specifications to the\nlives that intersected with it.      Khu trưng bày nạn nhân becomes a “coordinate of memory,” where\npeople heard engines, footsteps, and long silences before      life-or-death decisions. Rather than\nglorifying victory or assigning blame, the narrative turns toward compassion:      technology,\ntools, and images ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_05"
+    },
+    {
+      "name_vi": "Máy bay trinh sát hạng nhẹ",
+      "name_en": "Light Reconnaissance Aircraft",
+      "period": "1960s–1970s",
+      "location_hint": "Vùng đồng bằng và rừng thấp",
+      "tags": [
+        "aircraft",
+        "recon"
+      ],
+      "paragraphs_vi": [
+        "Máy bay trinh sát hạng nhẹ xuất hiện trong bối cảnh 1960s–1970s. Khi đứng trước hiện vật này, bạn có\nthể cảm nhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai\nmàu theo năm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi\ntiết nhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê.\nTừng dấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Máy bay trinh sát hạng nhẹ không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là\nnhững thân phận đã đi qua nó.      Vùng đồng bằng và rừng thấp như một “tọa độ ký ức”: nơi người ta\nnghe tiếng động cơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử.\nThay vì tô đậm chiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật\ndụng, hay hình ảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người\nvà sự sống."
+      ],
+      "paragraphs_en": [
+        "Light Reconnaissance Aircraft emerged during 1960s–1970s. Standing before it, you can sense\nhistory’s breath: flaking paint, faded markings,      and serial numbers softening with time. In the\nmuseum, we often invite visitors to pause and notice quiet details:      worn edges from repeated\nuse and tiny inventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the Light Reconnaissance Aircraft goes beyond materials and specifications to the\nlives that intersected with it.      Vùng đồng bằng và rừng thấp becomes a “coordinate of memory,”\nwhere people heard engines, footsteps, and long silences before      life-or-death decisions. Rather\nthan glorifying victory or assigning blame, the narrative turns toward compassion:      technology,\ntools, and images ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "distant_helicopter"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_06"
+    },
+    {
+      "name_vi": "Máy ảnh phóng viên (Nikon F)",
+      "name_en": "War Photographer’s Camera (Nikon F)",
+      "period": "1960s–1970s",
+      "location_hint": "Bên vai phóng viên trên chiến trường",
+      "tags": [
+        "photography",
+        "press"
+      ],
+      "paragraphs_vi": [
+        "Máy ảnh phóng viên (Nikon F) xuất hiện trong bối cảnh 1960s–1970s. Khi đứng trước hiện vật này, bạn\ncó thể cảm nhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã\nphai màu theo năm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan\nsát chi tiết nhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình\nkiểm kê. Từng dấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Máy ảnh phóng viên (Nikon F) không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn\nlà những thân phận đã đi qua nó.      Bên vai phóng viên trên chiến trường như một “tọa độ ký ức”:\nnơi người ta nghe tiếng động cơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết\nđịnh sinh tử. Thay vì tô đậm chiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,\nvật dụng, hay hình ảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con\nngười và sự sống."
+      ],
+      "paragraphs_en": [
+        "War Photographer’s Camera (Nikon F) emerged during 1960s–1970s. Standing before it, you can sense\nhistory’s breath: flaking paint, faded markings,      and serial numbers softening with time. In the\nmuseum, we often invite visitors to pause and notice quiet details:      worn edges from repeated\nuse and tiny inventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the War Photographer’s Camera (Nikon F) goes beyond materials and specifications to\nthe lives that intersected with it.      Bên vai phóng viên trên chiến trường becomes a “coordinate\nof memory,” where people heard engines, footsteps, and long silences before      life-or-death\ndecisions. Rather than glorifying victory or assigning blame, the narrative turns toward compassion:\ntechnology, tools, and images ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_07"
+    },
+    {
+      "name_vi": "Đài vô tuyến PRC-77",
+      "name_en": "PRC-77 Radio",
+      "period": "1960s–1970s",
+      "location_hint": "Điểm liên lạc tiền phương",
+      "tags": [
+        "communications",
+        "radio"
+      ],
+      "paragraphs_vi": [
+        "Đài vô tuyến PRC-77 xuất hiện trong bối cảnh 1960s–1970s. Khi đứng trước hiện vật này, bạn có thể\ncảm nhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai màu\ntheo năm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi\ntiết nhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê.\nTừng dấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Đài vô tuyến PRC-77 không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là những\nthân phận đã đi qua nó.      Điểm liên lạc tiền phương như một “tọa độ ký ức”: nơi người ta nghe\ntiếng động cơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì\ntô đậm chiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay\nhình ảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự\nsống."
+      ],
+      "paragraphs_en": [
+        "PRC-77 Radio emerged during 1960s–1970s. Standing before it, you can sense history’s breath: flaking\npaint, faded markings,      and serial numbers softening with time. In the museum, we often invite\nvisitors to pause and notice quiet details:      worn edges from repeated use and tiny inventory\nstamps—each trace a chapter in a very real journey.",
+        "The story behind the PRC-77 Radio goes beyond materials and specifications to the lives that\nintersected with it.      Điểm liên lạc tiền phương becomes a “coordinate of memory,” where people\nheard engines, footsteps, and long silences before      life-or-death decisions. Rather than\nglorifying victory or assigning blame, the narrative turns toward compassion:      technology,\ntools, and images ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_08"
+    },
+    {
+      "name_vi": "Bản đồ tác chiến",
+      "name_en": "Operations Map",
+      "period": "Nhiều giai đoạn",
+      "location_hint": "Phòng chỉ huy dã chiến",
+      "tags": [
+        "map",
+        "command"
+      ],
+      "paragraphs_vi": [
+        "Bản đồ tác chiến xuất hiện trong bối cảnh Nhiều giai đoạn. Khi đứng trước hiện vật này, bạn có thể\ncảm nhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai màu\ntheo năm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi\ntiết nhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê.\nTừng dấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Bản đồ tác chiến không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là những\nthân phận đã đi qua nó.      Phòng chỉ huy dã chiến như một “tọa độ ký ức”: nơi người ta nghe tiếng\nđộng cơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì tô\nđậm chiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay hình\nảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự sống."
+      ],
+      "paragraphs_en": [
+        "Operations Map emerged during Nhiều giai đoạn. Standing before it, you can sense history’s breath:\nflaking paint, faded markings,      and serial numbers softening with time. In the museum, we often\ninvite visitors to pause and notice quiet details:      worn edges from repeated use and tiny\ninventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the Operations Map goes beyond materials and specifications to the lives that\nintersected with it.      Phòng chỉ huy dã chiến becomes a “coordinate of memory,” where people\nheard engines, footsteps, and long silences before      life-or-death decisions. Rather than\nglorifying victory or assigning blame, the narrative turns toward compassion:      technology,\ntools, and images ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_09"
+    },
+    {
+      "name_vi": "Nhật ký người lính",
+      "name_en": "Soldier’s Field Journal",
+      "period": "1960s–1970s",
+      "location_hint": "Ba lô và túi áo ngực",
+      "tags": [
+        "paper",
+        "personal"
+      ],
+      "paragraphs_vi": [
+        "Nhật ký người lính xuất hiện trong bối cảnh 1960s–1970s. Khi đứng trước hiện vật này, bạn có thể cảm\nnhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai màu theo\nnăm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi tiết\nnhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê. Từng\ndấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Nhật ký người lính không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là những\nthân phận đã đi qua nó.      Ba lô và túi áo ngực như một “tọa độ ký ức”: nơi người ta nghe tiếng\nđộng cơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì tô\nđậm chiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay hình\nảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự sống."
+      ],
+      "paragraphs_en": [
+        "Soldier’s Field Journal emerged during 1960s–1970s. Standing before it, you can sense history’s\nbreath: flaking paint, faded markings,      and serial numbers softening with time. In the museum,\nwe often invite visitors to pause and notice quiet details:      worn edges from repeated use and\ntiny inventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the Soldier’s Field Journal goes beyond materials and specifications to the lives\nthat intersected with it.      Ba lô và túi áo ngực becomes a “coordinate of memory,” where people\nheard engines, footsteps, and long silences before      life-or-death decisions. Rather than\nglorifying victory or assigning blame, the narrative turns toward compassion:      technology,\ntools, and images ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_10"
+    },
+    {
+      "name_vi": "Thư gửi gia đình",
+      "name_en": "Letter to Family",
+      "period": "Nhiều giai đoạn",
+      "location_hint": "Hòm thư dã chiến",
+      "tags": [
+        "paper",
+        "personal"
+      ],
+      "paragraphs_vi": [
+        "Thư gửi gia đình xuất hiện trong bối cảnh Nhiều giai đoạn. Khi đứng trước hiện vật này, bạn có thể\ncảm nhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai màu\ntheo năm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi\ntiết nhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê.\nTừng dấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Thư gửi gia đình không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là những\nthân phận đã đi qua nó.      Hòm thư dã chiến như một “tọa độ ký ức”: nơi người ta nghe tiếng động\ncơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì tô đậm\nchiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay hình\nảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự sống."
+      ],
+      "paragraphs_en": [
+        "Letter to Family emerged during Nhiều giai đoạn. Standing before it, you can sense history’s breath:\nflaking paint, faded markings,      and serial numbers softening with time. In the museum, we often\ninvite visitors to pause and notice quiet details:      worn edges from repeated use and tiny\ninventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the Letter to Family goes beyond materials and specifications to the lives that\nintersected with it.      Hòm thư dã chiến becomes a “coordinate of memory,” where people heard\nengines, footsteps, and long silences before      life-or-death decisions. Rather than glorifying\nvictory or assigning blame, the narrative turns toward compassion:      technology, tools, and\nimages ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_11"
+    },
+    {
+      "name_vi": "Mũ sắt",
+      "name_en": "Steel Helmet",
+      "period": "1960s–1970s",
+      "location_hint": "Trên chiến trường và chốt chặn",
+      "tags": [
+        "protective",
+        "uniform"
+      ],
+      "paragraphs_vi": [
+        "Mũ sắt xuất hiện trong bối cảnh 1960s–1970s. Khi đứng trước hiện vật này, bạn có thể cảm nhận rõ\nràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai màu theo năm\ntháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi tiết nhỏ:\ngóc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê. Từng dấu\nvết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Mũ sắt không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là những thân phận đã\nđi qua nó.      Trên chiến trường và chốt chặn như một “tọa độ ký ức”: nơi người ta nghe tiếng động\ncơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì tô đậm\nchiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay hình\nảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự sống."
+      ],
+      "paragraphs_en": [
+        "Steel Helmet emerged during 1960s–1970s. Standing before it, you can sense history’s breath: flaking\npaint, faded markings,      and serial numbers softening with time. In the museum, we often invite\nvisitors to pause and notice quiet details:      worn edges from repeated use and tiny inventory\nstamps—each trace a chapter in a very real journey.",
+        "The story behind the Steel Helmet goes beyond materials and specifications to the lives that\nintersected with it.      Trên chiến trường và chốt chặn becomes a “coordinate of memory,” where\npeople heard engines, footsteps, and long silences before      life-or-death decisions. Rather than\nglorifying victory or assigning blame, the narrative turns toward compassion:      technology,\ntools, and images ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_12"
+    },
+    {
+      "name_vi": "Biển báo khu vực cấm",
+      "name_en": "Restricted Area Sign",
+      "period": "Nhiều giai đoạn",
+      "location_hint": "Cổng đơn vị/điểm kiểm soát",
+      "tags": [
+        "signage",
+        "security"
+      ],
+      "paragraphs_vi": [
+        "Biển báo khu vực cấm xuất hiện trong bối cảnh Nhiều giai đoạn. Khi đứng trước hiện vật này, bạn có\nthể cảm nhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai\nmàu theo năm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi\ntiết nhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê.\nTừng dấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Biển báo khu vực cấm không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là những\nthân phận đã đi qua nó.      Cổng đơn vị/điểm kiểm soát như một “tọa độ ký ức”: nơi người ta nghe\ntiếng động cơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì\ntô đậm chiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay\nhình ảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự\nsống."
+      ],
+      "paragraphs_en": [
+        "Restricted Area Sign emerged during Nhiều giai đoạn. Standing before it, you can sense history’s\nbreath: flaking paint, faded markings,      and serial numbers softening with time. In the museum,\nwe often invite visitors to pause and notice quiet details:      worn edges from repeated use and\ntiny inventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the Restricted Area Sign goes beyond materials and specifications to the lives that\nintersected with it.      Cổng đơn vị/điểm kiểm soát becomes a “coordinate of memory,” where people\nheard engines, footsteps, and long silences before      life-or-death decisions. Rather than\nglorifying victory or assigning blame, the narrative turns toward compassion:      technology,\ntools, and images ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_13"
+    },
+    {
+      "name_vi": "Cưa xương y tế dã chiến",
+      "name_en": "Field Surgical Saw",
+      "period": "1960s–1970s",
+      "location_hint": "Trạm quân y dã chiến",
+      "tags": [
+        "medical",
+        "surgery"
+      ],
+      "paragraphs_vi": [
+        "Cưa xương y tế dã chiến xuất hiện trong bối cảnh 1960s–1970s. Khi đứng trước hiện vật này, bạn có\nthể cảm nhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai\nmàu theo năm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi\ntiết nhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê.\nTừng dấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Cưa xương y tế dã chiến không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là\nnhững thân phận đã đi qua nó.      Trạm quân y dã chiến như một “tọa độ ký ức”: nơi người ta nghe\ntiếng động cơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì\ntô đậm chiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay\nhình ảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự\nsống."
+      ],
+      "paragraphs_en": [
+        "Field Surgical Saw emerged during 1960s–1970s. Standing before it, you can sense history’s breath:\nflaking paint, faded markings,      and serial numbers softening with time. In the museum, we often\ninvite visitors to pause and notice quiet details:      worn edges from repeated use and tiny\ninventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the Field Surgical Saw goes beyond materials and specifications to the lives that\nintersected with it.      Trạm quân y dã chiến becomes a “coordinate of memory,” where people heard\nengines, footsteps, and long silences before      life-or-death decisions. Rather than glorifying\nvictory or assigning blame, the narrative turns toward compassion:      technology, tools, and\nimages ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_14"
+    },
+    {
+      "name_vi": "Cáng cứu thương",
+      "name_en": "Stretcher",
+      "period": "1960s–1970s",
+      "location_hint": "Hành lang bệnh xá dã chiến",
+      "tags": [
+        "medical",
+        "rescue"
+      ],
+      "paragraphs_vi": [
+        "Cáng cứu thương xuất hiện trong bối cảnh 1960s–1970s. Khi đứng trước hiện vật này, bạn có thể cảm\nnhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai màu theo\nnăm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi tiết\nnhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê. Từng\ndấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Cáng cứu thương không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là những thân\nphận đã đi qua nó.      Hành lang bệnh xá dã chiến như một “tọa độ ký ức”: nơi người ta nghe tiếng\nđộng cơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì tô\nđậm chiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay hình\nảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự sống."
+      ],
+      "paragraphs_en": [
+        "Stretcher emerged during 1960s–1970s. Standing before it, you can sense history’s breath: flaking\npaint, faded markings,      and serial numbers softening with time. In the museum, we often invite\nvisitors to pause and notice quiet details:      worn edges from repeated use and tiny inventory\nstamps—each trace a chapter in a very real journey.",
+        "The story behind the Stretcher goes beyond materials and specifications to the lives that\nintersected with it.      Hành lang bệnh xá dã chiến becomes a “coordinate of memory,” where people\nheard engines, footsteps, and long silences before      life-or-death decisions. Rather than\nglorifying victory or assigning blame, the narrative turns toward compassion:      technology,\ntools, and images ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_15"
+    },
+    {
+      "name_vi": "Hộp đạn pháo rỗng",
+      "name_en": "Empty Artillery Shell Casing",
+      "period": "1960s–1970s",
+      "location_hint": "Trận địa pháo",
+      "tags": [
+        "artillery",
+        "metal"
+      ],
+      "paragraphs_vi": [
+        "Hộp đạn pháo rỗng xuất hiện trong bối cảnh 1960s–1970s. Khi đứng trước hiện vật này, bạn có thể cảm\nnhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai màu theo\nnăm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi tiết\nnhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê. Từng\ndấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Hộp đạn pháo rỗng không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là những\nthân phận đã đi qua nó.      Trận địa pháo như một “tọa độ ký ức”: nơi người ta nghe tiếng động cơ,\ntiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì tô đậm chiến\ncông hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay hình ảnh—cuối\ncùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự sống."
+      ],
+      "paragraphs_en": [
+        "Empty Artillery Shell Casing emerged during 1960s–1970s. Standing before it, you can sense history’s\nbreath: flaking paint, faded markings,      and serial numbers softening with time. In the museum,\nwe often invite visitors to pause and notice quiet details:      worn edges from repeated use and\ntiny inventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the Empty Artillery Shell Casing goes beyond materials and specifications to the\nlives that intersected with it.      Trận địa pháo becomes a “coordinate of memory,” where people\nheard engines, footsteps, and long silences before      life-or-death decisions. Rather than\nglorifying victory or assigning blame, the narrative turns toward compassion:      technology,\ntools, and images ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_16"
+    },
+    {
+      "name_vi": "Dây kẽm gai",
+      "name_en": "Barbed Wire Section",
+      "period": "Nhiều giai đoạn",
+      "location_hint": "Hàng rào phòng thủ",
+      "tags": [
+        "defense",
+        "material"
+      ],
+      "paragraphs_vi": [
+        "Dây kẽm gai xuất hiện trong bối cảnh Nhiều giai đoạn. Khi đứng trước hiện vật này, bạn có thể cảm\nnhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai màu theo\nnăm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi tiết\nnhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê. Từng\ndấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Dây kẽm gai không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là những thân\nphận đã đi qua nó.      Hàng rào phòng thủ như một “tọa độ ký ức”: nơi người ta nghe tiếng động cơ,\ntiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì tô đậm chiến\ncông hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay hình ảnh—cuối\ncùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự sống."
+      ],
+      "paragraphs_en": [
+        "Barbed Wire Section emerged during Nhiều giai đoạn. Standing before it, you can sense history’s\nbreath: flaking paint, faded markings,      and serial numbers softening with time. In the museum,\nwe often invite visitors to pause and notice quiet details:      worn edges from repeated use and\ntiny inventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the Barbed Wire Section goes beyond materials and specifications to the lives that\nintersected with it.      Hàng rào phòng thủ becomes a “coordinate of memory,” where people heard\nengines, footsteps, and long silences before      life-or-death decisions. Rather than glorifying\nvictory or assigning blame, the narrative turns toward compassion:      technology, tools, and\nimages ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_17"
+    },
+    {
+      "name_vi": "Bao cát",
+      "name_en": "Sandbag",
+      "period": "Nhiều giai đoạn",
+      "location_hint": "Công sự dã chiến",
+      "tags": [
+        "fortification",
+        "material"
+      ],
+      "paragraphs_vi": [
+        "Bao cát xuất hiện trong bối cảnh Nhiều giai đoạn. Khi đứng trước hiện vật này, bạn có thể cảm nhận\nrõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai màu theo năm\ntháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi tiết nhỏ:\ngóc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê. Từng dấu\nvết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Bao cát không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là những thân phận đã\nđi qua nó.      Công sự dã chiến như một “tọa độ ký ức”: nơi người ta nghe tiếng động cơ, tiếng bước\nchân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì tô đậm chiến công hay quy\nkết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay hình ảnh—cuối cùng cũng trở\nthành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự sống."
+      ],
+      "paragraphs_en": [
+        "Sandbag emerged during Nhiều giai đoạn. Standing before it, you can sense history’s breath: flaking\npaint, faded markings,      and serial numbers softening with time. In the museum, we often invite\nvisitors to pause and notice quiet details:      worn edges from repeated use and tiny inventory\nstamps—each trace a chapter in a very real journey.",
+        "The story behind the Sandbag goes beyond materials and specifications to the lives that intersected\nwith it.      Công sự dã chiến becomes a “coordinate of memory,” where people heard engines,\nfootsteps, and long silences before      life-or-death decisions. Rather than glorifying victory or\nassigning blame, the narrative turns toward compassion:      technology, tools, and images\nultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_18"
+    },
+    {
+      "name_vi": "Áo khoác quân phục",
+      "name_en": "Uniform Jacket",
+      "period": "1960s–1970s",
+      "location_hint": "Tại doanh trại và ngoài chiến trường",
+      "tags": [
+        "uniform",
+        "textile"
+      ],
+      "paragraphs_vi": [
+        "Áo khoác quân phục xuất hiện trong bối cảnh 1960s–1970s. Khi đứng trước hiện vật này, bạn có thể cảm\nnhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai màu theo\nnăm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi tiết\nnhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê. Từng\ndấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Áo khoác quân phục không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là những\nthân phận đã đi qua nó.      Tại doanh trại và ngoài chiến trường như một “tọa độ ký ức”: nơi người\nta nghe tiếng động cơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử.\nThay vì tô đậm chiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật\ndụng, hay hình ảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người\nvà sự sống."
+      ],
+      "paragraphs_en": [
+        "Uniform Jacket emerged during 1960s–1970s. Standing before it, you can sense history’s breath:\nflaking paint, faded markings,      and serial numbers softening with time. In the museum, we often\ninvite visitors to pause and notice quiet details:      worn edges from repeated use and tiny\ninventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the Uniform Jacket goes beyond materials and specifications to the lives that\nintersected with it.      Tại doanh trại và ngoài chiến trường becomes a “coordinate of memory,”\nwhere people heard engines, footsteps, and long silences before      life-or-death decisions. Rather\nthan glorifying victory or assigning blame, the narrative turns toward compassion:      technology,\ntools, and images ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_19"
+    },
+    {
+      "name_vi": "Miếng ghép phù hiệu",
+      "name_en": "Unit Patch and Insignia",
+      "period": "Nhiều giai đoạn",
+      "location_hint": "Trên tay áo, túi áo",
+      "tags": [
+        "uniform",
+        "symbol"
+      ],
+      "paragraphs_vi": [
+        "Miếng ghép phù hiệu xuất hiện trong bối cảnh Nhiều giai đoạn. Khi đứng trước hiện vật này, bạn có\nthể cảm nhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai\nmàu theo năm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi\ntiết nhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê.\nTừng dấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Miếng ghép phù hiệu không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là những\nthân phận đã đi qua nó.      Trên tay áo, túi áo như một “tọa độ ký ức”: nơi người ta nghe tiếng\nđộng cơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì tô\nđậm chiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay hình\nảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự sống."
+      ],
+      "paragraphs_en": [
+        "Unit Patch and Insignia emerged during Nhiều giai đoạn. Standing before it, you can sense history’s\nbreath: flaking paint, faded markings,      and serial numbers softening with time. In the museum,\nwe often invite visitors to pause and notice quiet details:      worn edges from repeated use and\ntiny inventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the Unit Patch and Insignia goes beyond materials and specifications to the lives\nthat intersected with it.      Trên tay áo, túi áo becomes a “coordinate of memory,” where people\nheard engines, footsteps, and long silences before      life-or-death decisions. Rather than\nglorifying victory or assigning blame, the narrative turns toward compassion:      technology,\ntools, and images ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_20"
+    },
+    {
+      "name_vi": "Biên lai tiếp tế",
+      "name_en": "Supply Receipt",
+      "period": "Nhiều giai đoạn",
+      "location_hint": "Kho quân nhu",
+      "tags": [
+        "logistics",
+        "paper"
+      ],
+      "paragraphs_vi": [
+        "Biên lai tiếp tế xuất hiện trong bối cảnh Nhiều giai đoạn. Khi đứng trước hiện vật này, bạn có thể\ncảm nhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai màu\ntheo năm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi\ntiết nhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê.\nTừng dấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Biên lai tiếp tế không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là những\nthân phận đã đi qua nó.      Kho quân nhu như một “tọa độ ký ức”: nơi người ta nghe tiếng động cơ,\ntiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì tô đậm chiến\ncông hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay hình ảnh—cuối\ncùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự sống."
+      ],
+      "paragraphs_en": [
+        "Supply Receipt emerged during Nhiều giai đoạn. Standing before it, you can sense history’s breath:\nflaking paint, faded markings,      and serial numbers softening with time. In the museum, we often\ninvite visitors to pause and notice quiet details:      worn edges from repeated use and tiny\ninventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the Supply Receipt goes beyond materials and specifications to the lives that\nintersected with it.      Kho quân nhu becomes a “coordinate of memory,” where people heard engines,\nfootsteps, and long silences before      life-or-death decisions. Rather than glorifying victory or\nassigning blame, the narrative turns toward compassion:      technology, tools, and images\nultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_21"
+    },
+    {
+      "name_vi": "Hộp lương khô",
+      "name_en": "Field Ration Tin",
+      "period": "1960s–1970s",
+      "location_hint": "Trong ba lô, chốt trực",
+      "tags": [
+        "ration",
+        "food"
+      ],
+      "paragraphs_vi": [
+        "Hộp lương khô xuất hiện trong bối cảnh 1960s–1970s. Khi đứng trước hiện vật này, bạn có thể cảm nhận\nrõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai màu theo năm\ntháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi tiết nhỏ:\ngóc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê. Từng dấu\nvết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Hộp lương khô không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là những thân\nphận đã đi qua nó.      Trong ba lô, chốt trực như một “tọa độ ký ức”: nơi người ta nghe tiếng động\ncơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì tô đậm\nchiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay hình\nảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự sống."
+      ],
+      "paragraphs_en": [
+        "Field Ration Tin emerged during 1960s–1970s. Standing before it, you can sense history’s breath:\nflaking paint, faded markings,      and serial numbers softening with time. In the museum, we often\ninvite visitors to pause and notice quiet details:      worn edges from repeated use and tiny\ninventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the Field Ration Tin goes beyond materials and specifications to the lives that\nintersected with it.      Trong ba lô, chốt trực becomes a “coordinate of memory,” where people\nheard engines, footsteps, and long silences before      life-or-death decisions. Rather than\nglorifying victory or assigning blame, the narrative turns toward compassion:      technology,\ntools, and images ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_22"
+    },
+    {
+      "name_vi": "Biển báo bom mìn",
+      "name_en": "UXO Warning Sign",
+      "period": "Hậu chiến",
+      "location_hint": "Vùng ô nhiễm bom mìn",
+      "tags": [
+        "postwar",
+        "safety"
+      ],
+      "paragraphs_vi": [
+        "Biển báo bom mìn xuất hiện trong bối cảnh Hậu chiến. Khi đứng trước hiện vật này, bạn có thể cảm\nnhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai màu theo\nnăm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi tiết\nnhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê. Từng\ndấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Biển báo bom mìn không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là những\nthân phận đã đi qua nó.      Vùng ô nhiễm bom mìn như một “tọa độ ký ức”: nơi người ta nghe tiếng\nđộng cơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì tô\nđậm chiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay hình\nảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự sống."
+      ],
+      "paragraphs_en": [
+        "UXO Warning Sign emerged during Hậu chiến. Standing before it, you can sense history’s breath:\nflaking paint, faded markings,      and serial numbers softening with time. In the museum, we often\ninvite visitors to pause and notice quiet details:      worn edges from repeated use and tiny\ninventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the UXO Warning Sign goes beyond materials and specifications to the lives that\nintersected with it.      Vùng ô nhiễm bom mìn becomes a “coordinate of memory,” where people heard\nengines, footsteps, and long silences before      life-or-death decisions. Rather than glorifying\nvictory or assigning blame, the narrative turns toward compassion:      technology, tools, and\nimages ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_23"
+    },
+    {
+      "name_vi": "Phần thân bom đã tháo ngòi",
+      "name_en": "Defused Bomb Casing",
+      "period": "Hậu chiến",
+      "location_hint": "Khu trưng bày ngoài trời",
+      "tags": [
+        "bomb",
+        "metal"
+      ],
+      "paragraphs_vi": [
+        "Phần thân bom đã tháo ngòi xuất hiện trong bối cảnh Hậu chiến. Khi đứng trước hiện vật này, bạn có\nthể cảm nhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai\nmàu theo năm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi\ntiết nhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê.\nTừng dấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Phần thân bom đã tháo ngòi không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là\nnhững thân phận đã đi qua nó.      Khu trưng bày ngoài trời như một “tọa độ ký ức”: nơi người ta\nnghe tiếng động cơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử.\nThay vì tô đậm chiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật\ndụng, hay hình ảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người\nvà sự sống."
+      ],
+      "paragraphs_en": [
+        "Defused Bomb Casing emerged during Hậu chiến. Standing before it, you can sense history’s breath:\nflaking paint, faded markings,      and serial numbers softening with time. In the museum, we often\ninvite visitors to pause and notice quiet details:      worn edges from repeated use and tiny\ninventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the Defused Bomb Casing goes beyond materials and specifications to the lives that\nintersected with it.      Khu trưng bày ngoài trời becomes a “coordinate of memory,” where people\nheard engines, footsteps, and long silences before      life-or-death decisions. Rather than\nglorifying victory or assigning blame, the narrative turns toward compassion:      technology,\ntools, and images ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_24"
+    },
+    {
+      "name_vi": "Mảnh kính vỡ cửa sổ",
+      "name_en": "Shattered Window Glass Fragment",
+      "period": "Nhiều giai đoạn",
+      "location_hint": "Khu dân cư bị ảnh hưởng",
+      "tags": [
+        "civilian",
+        "fragment"
+      ],
+      "paragraphs_vi": [
+        "Mảnh kính vỡ cửa sổ xuất hiện trong bối cảnh Nhiều giai đoạn. Khi đứng trước hiện vật này, bạn có\nthể cảm nhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai\nmàu theo năm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi\ntiết nhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê.\nTừng dấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Mảnh kính vỡ cửa sổ không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là những\nthân phận đã đi qua nó.      Khu dân cư bị ảnh hưởng như một “tọa độ ký ức”: nơi người ta nghe tiếng\nđộng cơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì tô\nđậm chiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay hình\nảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự sống."
+      ],
+      "paragraphs_en": [
+        "Shattered Window Glass Fragment emerged during Nhiều giai đoạn. Standing before it, you can sense\nhistory’s breath: flaking paint, faded markings,      and serial numbers softening with time. In the\nmuseum, we often invite visitors to pause and notice quiet details:      worn edges from repeated\nuse and tiny inventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the Shattered Window Glass Fragment goes beyond materials and specifications to the\nlives that intersected with it.      Khu dân cư bị ảnh hưởng becomes a “coordinate of memory,” where\npeople heard engines, footsteps, and long silences before      life-or-death decisions. Rather than\nglorifying victory or assigning blame, the narrative turns toward compassion:      technology,\ntools, and images ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_25"
+    },
+    {
+      "name_vi": "Radio gia đình",
+      "name_en": "Household Radio Set",
+      "period": "1960s–1970s",
+      "location_hint": "Phòng khách thời ấy",
+      "tags": [
+        "civilian",
+        "radio"
+      ],
+      "paragraphs_vi": [
+        "Radio gia đình xuất hiện trong bối cảnh 1960s–1970s. Khi đứng trước hiện vật này, bạn có thể cảm\nnhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai màu theo\nnăm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi tiết\nnhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê. Từng\ndấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Radio gia đình không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là những thân\nphận đã đi qua nó.      Phòng khách thời ấy như một “tọa độ ký ức”: nơi người ta nghe tiếng động cơ,\ntiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì tô đậm chiến\ncông hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay hình ảnh—cuối\ncùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự sống."
+      ],
+      "paragraphs_en": [
+        "Household Radio Set emerged during 1960s–1970s. Standing before it, you can sense history’s breath:\nflaking paint, faded markings,      and serial numbers softening with time. In the museum, we often\ninvite visitors to pause and notice quiet details:      worn edges from repeated use and tiny\ninventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the Household Radio Set goes beyond materials and specifications to the lives that\nintersected with it.      Phòng khách thời ấy becomes a “coordinate of memory,” where people heard\nengines, footsteps, and long silences before      life-or-death decisions. Rather than glorifying\nvictory or assigning blame, the narrative turns toward compassion:      technology, tools, and\nimages ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_26"
+    },
+    {
+      "name_vi": "Tờ rơi kêu gọi sơ tán",
+      "name_en": "Evacuation Leaflet",
+      "period": "Nhiều giai đoạn",
+      "location_hint": "Khu đô thị",
+      "tags": [
+        "civilian",
+        "leaflet"
+      ],
+      "paragraphs_vi": [
+        "Tờ rơi kêu gọi sơ tán xuất hiện trong bối cảnh Nhiều giai đoạn. Khi đứng trước hiện vật này, bạn có\nthể cảm nhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai\nmàu theo năm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi\ntiết nhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê.\nTừng dấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Tờ rơi kêu gọi sơ tán không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là\nnhững thân phận đã đi qua nó.      Khu đô thị như một “tọa độ ký ức”: nơi người ta nghe tiếng động\ncơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì tô đậm\nchiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay hình\nảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự sống."
+      ],
+      "paragraphs_en": [
+        "Evacuation Leaflet emerged during Nhiều giai đoạn. Standing before it, you can sense history’s\nbreath: flaking paint, faded markings,      and serial numbers softening with time. In the museum,\nwe often invite visitors to pause and notice quiet details:      worn edges from repeated use and\ntiny inventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the Evacuation Leaflet goes beyond materials and specifications to the lives that\nintersected with it.      Khu đô thị becomes a “coordinate of memory,” where people heard engines,\nfootsteps, and long silences before      life-or-death decisions. Rather than glorifying victory or\nassigning blame, the narrative turns toward compassion:      technology, tools, and images\nultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_27"
+    },
+    {
+      "name_vi": "Túi cứu thương nhỏ",
+      "name_en": "Small First-Aid Pouch",
+      "period": "1960s–1970s",
+      "location_hint": "Bên hông lính/nhân viên y tế",
+      "tags": [
+        "medical",
+        "kit"
+      ],
+      "paragraphs_vi": [
+        "Túi cứu thương nhỏ xuất hiện trong bối cảnh 1960s–1970s. Khi đứng trước hiện vật này, bạn có thể cảm\nnhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai màu theo\nnăm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi tiết\nnhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê. Từng\ndấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Túi cứu thương nhỏ không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là những\nthân phận đã đi qua nó.      Bên hông lính/nhân viên y tế như một “tọa độ ký ức”: nơi người ta nghe\ntiếng động cơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì\ntô đậm chiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay\nhình ảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự\nsống."
+      ],
+      "paragraphs_en": [
+        "Small First-Aid Pouch emerged during 1960s–1970s. Standing before it, you can sense history’s\nbreath: flaking paint, faded markings,      and serial numbers softening with time. In the museum,\nwe often invite visitors to pause and notice quiet details:      worn edges from repeated use and\ntiny inventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the Small First-Aid Pouch goes beyond materials and specifications to the lives\nthat intersected with it.      Bên hông lính/nhân viên y tế becomes a “coordinate of memory,” where\npeople heard engines, footsteps, and long silences before      life-or-death decisions. Rather than\nglorifying victory or assigning blame, the narrative turns toward compassion:      technology,\ntools, and images ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_28"
+    },
+    {
+      "name_vi": "Giày vải dã chiến",
+      "name_en": "Canvas Field Shoes",
+      "period": "1960s–1970s",
+      "location_hint": "Đường mòn, bìa rừng",
+      "tags": [
+        "uniform",
+        "footwear"
+      ],
+      "paragraphs_vi": [
+        "Giày vải dã chiến xuất hiện trong bối cảnh 1960s–1970s. Khi đứng trước hiện vật này, bạn có thể cảm\nnhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai màu theo\nnăm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi tiết\nnhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê. Từng\ndấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Giày vải dã chiến không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là những\nthân phận đã đi qua nó.      Đường mòn, bìa rừng như một “tọa độ ký ức”: nơi người ta nghe tiếng\nđộng cơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì tô\nđậm chiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay hình\nảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự sống."
+      ],
+      "paragraphs_en": [
+        "Canvas Field Shoes emerged during 1960s–1970s. Standing before it, you can sense history’s breath:\nflaking paint, faded markings,      and serial numbers softening with time. In the museum, we often\ninvite visitors to pause and notice quiet details:      worn edges from repeated use and tiny\ninventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the Canvas Field Shoes goes beyond materials and specifications to the lives that\nintersected with it.      Đường mòn, bìa rừng becomes a “coordinate of memory,” where people heard\nengines, footsteps, and long silences before      life-or-death decisions. Rather than glorifying\nvictory or assigning blame, the narrative turns toward compassion:      technology, tools, and\nimages ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_29"
+    },
+    {
+      "name_vi": "Bình toong",
+      "name_en": "Canteen",
+      "period": "1960s–1970s",
+      "location_hint": "Thắt lưng người lính",
+      "tags": [
+        "kit",
+        "water"
+      ],
+      "paragraphs_vi": [
+        "Bình toong xuất hiện trong bối cảnh 1960s–1970s. Khi đứng trước hiện vật này, bạn có thể cảm nhận rõ\nràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai màu theo năm\ntháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi tiết nhỏ:\ngóc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê. Từng dấu\nvết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Bình toong không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là những thân phận\nđã đi qua nó.      Thắt lưng người lính như một “tọa độ ký ức”: nơi người ta nghe tiếng động cơ,\ntiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì tô đậm chiến\ncông hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay hình ảnh—cuối\ncùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự sống."
+      ],
+      "paragraphs_en": [
+        "Canteen emerged during 1960s–1970s. Standing before it, you can sense history’s breath: flaking\npaint, faded markings,      and serial numbers softening with time. In the museum, we often invite\nvisitors to pause and notice quiet details:      worn edges from repeated use and tiny inventory\nstamps—each trace a chapter in a very real journey.",
+        "The story behind the Canteen goes beyond materials and specifications to the lives that intersected\nwith it.      Thắt lưng người lính becomes a “coordinate of memory,” where people heard engines,\nfootsteps, and long silences before      life-or-death decisions. Rather than glorifying victory or\nassigning blame, the narrative turns toward compassion:      technology, tools, and images\nultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_30"
+    },
+    {
+      "name_vi": "Bút máy và lọ mực",
+      "name_en": "Fountain Pen and Ink Bottle",
+      "period": "Nhiều giai đoạn",
+      "location_hint": "Bàn gỗ cũ",
+      "tags": [
+        "paper",
+        "writing"
+      ],
+      "paragraphs_vi": [
+        "Bút máy và lọ mực xuất hiện trong bối cảnh Nhiều giai đoạn. Khi đứng trước hiện vật này, bạn có thể\ncảm nhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã phai màu\ntheo năm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan sát chi\ntiết nhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình kiểm kê.\nTừng dấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Bút máy và lọ mực không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là những\nthân phận đã đi qua nó.      Bàn gỗ cũ như một “tọa độ ký ức”: nơi người ta nghe tiếng động cơ,\ntiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì tô đậm chiến\ncông hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay hình ảnh—cuối\ncùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự sống."
+      ],
+      "paragraphs_en": [
+        "Fountain Pen and Ink Bottle emerged during Nhiều giai đoạn. Standing before it, you can sense\nhistory’s breath: flaking paint, faded markings,      and serial numbers softening with time. In the\nmuseum, we often invite visitors to pause and notice quiet details:      worn edges from repeated\nuse and tiny inventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the Fountain Pen and Ink Bottle goes beyond materials and specifications to the\nlives that intersected with it.      Bàn gỗ cũ becomes a “coordinate of memory,” where people heard\nengines, footsteps, and long silences before      life-or-death decisions. Rather than glorifying\nvictory or assigning blame, the narrative turns toward compassion:      technology, tools, and\nimages ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_31"
+    },
+    {
+      "name_vi": "Tấm ảnh gia đình bạc màu",
+      "name_en": "Faded Family Photograph",
+      "period": "Nhiều giai đoạn",
+      "location_hint": "Ví tiền hoặc túi áo",
+      "tags": [
+        "photography",
+        "personal"
+      ],
+      "paragraphs_vi": [
+        "Tấm ảnh gia đình bạc màu xuất hiện trong bối cảnh Nhiều giai đoạn. Khi đứng trước hiện vật này, bạn\ncó thể cảm nhận rõ ràng      hơi thở của lịch sử: lớp sơn tróc, vết trầy mờ, và những ký hiệu đã\nphai màu theo năm tháng. Ở bảo tàng,      chúng tôi thường mời du khách dừng lại một chút để quan\nsát chi tiết nhỏ: góc cạnh bị mòn vì sử dụng nhiều,      những con số khắc chìm thể hiện quá trình\nkiểm kê. Từng dấu vết đều kể về một hành trình thực sự đã diễn ra.",
+        "Câu chuyện phía sau Tấm ảnh gia đình bạc màu không chỉ nằm ở mặt kỹ thuật hay chất liệu, mà còn là\nnhững thân phận đã đi qua nó.      Ví tiền hoặc túi áo như một “tọa độ ký ức”: nơi người ta nghe\ntiếng động cơ, tiếng bước chân, và cả những phút giây im lặng      trước quyết định sinh tử. Thay vì\ntô đậm chiến công hay quy kết, câu chuyện hướng về bài học nhân ái: công nghệ,      vật dụng, hay\nhình ảnh—cuối cùng cũng trở thành lời nhắc để chúng ta chọn hòa bình, tôn trọng con người và sự\nsống."
+      ],
+      "paragraphs_en": [
+        "Faded Family Photograph emerged during Nhiều giai đoạn. Standing before it, you can sense history’s\nbreath: flaking paint, faded markings,      and serial numbers softening with time. In the museum,\nwe often invite visitors to pause and notice quiet details:      worn edges from repeated use and\ntiny inventory stamps—each trace a chapter in a very real journey.",
+        "The story behind the Faded Family Photograph goes beyond materials and specifications to the lives\nthat intersected with it.      Ví tiền hoặc túi áo becomes a “coordinate of memory,” where people\nheard engines, footsteps, and long silences before      life-or-death decisions. Rather than\nglorifying victory or assigning blame, the narrative turns toward compassion:      technology,\ntools, and images ultimately ask us to choose peace and respect for human life."
+      ],
+      "audio_cues": [
+        "room_tone_low",
+        "soft_steps",
+        "paper_rustle"
+      ],
+      "safety_notes": "Không chạm vào hiện vật; giữ trật tự và tôn trọng không gian trưng bày.",
+      "id": "art_32"
+    }
+  ],
+  "witness_accounts": [
+    {
+      "id": "wit_01",
+      "role_vi": "Bác sĩ tình nguyện",
+      "role_en": "Volunteer Doctor",
+      "account_vi": "Một bác sĩ nhớ lại những đêm dài ở trạm quân y dã chiến, nơi ông và đồng đội thay băng, khâu vết\nthương và động viên bệnh nhân vượt qua sợ hãi.",
+      "account_en": "A doctor recalls long nights at a field clinic, where colleagues dressed wounds and spoke gently to\ncalm fear.",
+      "ambience": [
+        "room_tone_low",
+        "paper_rustle"
+      ]
+    },
+    {
+      "id": "wit_02",
+      "role_vi": "Phóng viên ảnh",
+      "role_en": "Photojournalist",
+      "account_vi": "Một phóng viên cho biết mỗi lần bấm máy là một lần đấu tranh nội tâm: làm sao để kể sự thật nhưng\nkhông làm tổn thương nhân vật trong ảnh.",
+      "account_en": "A photographer confides that every shutter click is an inner struggle: telling the truth without\nhurting the subject.",
+      "ambience": [
+        "room_tone_low",
+        "soft_wind"
+      ]
+    },
+    {
+      "id": "wit_03",
+      "role_vi": "Người mẹ nơi vùng giao tranh",
+      "role_en": "Mother from a contested area",
+      "account_vi": "Bà nhớ tiếng trẻ con nín thở khi còi báo động hú lên, rồi bật khóc khi đèn tắt và căn bếp tắt lửa.",
+      "account_en": "She remembers children holding their breath during sirens, then crying when the lights and kitchen\nfire went out.",
+      "ambience": [
+        "room_tone_low",
+        "paper_rustle"
+      ]
+    },
+    {
+      "id": "wit_04",
+      "role_vi": "Kỹ thuật viên rà phá bom mìn",
+      "role_en": "UXO Clearance Technician",
+      "account_vi": "Ông kể về những ngày hậu chiến gỡ mìn, mỗi bước đi đều dựa vào kinh nghiệm, bình tĩnh, và sự tập\ntrung tuyệt đối.",
+      "account_en": "He describes postwar demining: each step requires experience, calm, and absolute focus.",
+      "ambience": [
+        "room_tone_low",
+        "soft_wind"
+      ]
+    },
+    {
+      "id": "wit_05",
+      "role_vi": "Giáo viên tiểu học",
+      "role_en": "Primary School Teacher",
+      "account_vi": "Cô kể về lũ trẻ lần đầu trở lại lớp, bỡ ngỡ với tiếng trống trường và những cuốn vở mới thơm mùi\ngiấy.",
+      "account_en": "She tells of children returning to class, listening to the school drum and opening new notebooks.",
+      "ambience": [
+        "room_tone_low",
+        "paper_rustle"
+      ]
+    },
+    {
+      "id": "wit_06",
+      "role_vi": "Cựu tù nhân",
+      "role_en": "Former Prisoner",
+      "account_vi": "Ông bước chậm qua mô hình chuồng cọp, nhắc rằng ký ức đau đớn vẫn có thể hóa thành nghị lực sống\ntích cực.",
+      "account_en": "He walks past the tiger-cage replica and says painful memories can turn into positive resolve.",
+      "ambience": [
+        "room_tone_low",
+        "soft_wind"
+      ]
+    },
+    {
+      "id": "wit_07",
+      "role_vi": "Y tá chiến trường",
+      "role_en": "Field Nurse",
+      "account_vi": "Chị nói đôi bàn tay phải vừa khéo léo vừa kiên định, bởi đôi khi một câu nói dịu dàng có tác dụng\nnhư liều thuốc.",
+      "account_en": "She says hands must be steady and kind; sometimes a gentle word heals like medicine.",
+      "ambience": [
+        "room_tone_low",
+        "paper_rustle"
+      ]
+    },
+    {
+      "id": "wit_08",
+      "role_vi": "Thợ sửa radio",
+      "role_en": "Radio Repairer",
+      "account_vi": "Anh nhớ tiếng lách tách của đài khi bắt được sóng yếu, mang tin tức đến cho một xóm nhỏ.",
+      "account_en": "He remembers a radio crackling into weak signal, bringing news to a tiny neighborhood.",
+      "ambience": [
+        "room_tone_low",
+        "soft_wind"
+      ]
+    },
+    {
+      "id": "wit_09",
+      "role_vi": "Nạn nhân hóa chất",
+      "role_en": "Chemical Exposure Survivor",
+      "account_vi": "Chị chia sẻ về hành trình điều trị dài lâu, mong con cái có tương lai sáng hơn và không ai lặp lại\nsai lầm cũ.",
+      "account_en": "She shares a long path of treatment, hoping her children see brighter futures and that old mistakes\nare never repeated.",
+      "ambience": [
+        "room_tone_low",
+        "paper_rustle"
+      ]
+    },
+    {
+      "id": "wit_10",
+      "role_vi": "Người lính gác kho",
+      "role_en": "Depot Guard",
+      "account_vi": "Ông kể mình từng ghi chép từng thùng hàng tiếp tế bằng bút máy và thước kẻ, mong không bỏ sót một\ndòng nào.",
+      "account_en": "He recalls tallying supply crates with a fountain pen and ruler, determined not to miss a single\nline.",
+      "ambience": [
+        "room_tone_low",
+        "soft_wind"
+      ]
+    }
+  ],
+  "soundscape": {
+    "outdoor": [
+      "city_breeze",
+      "distant_traffic",
+      "kids_far"
+    ],
+    "ground_floor": [
+      "room_tone_low",
+      "soft_steps",
+      "paper_rustle"
+    ],
+    "floor_1": [
+      "room_tone_low",
+      "heartbeat_slow",
+      "murmur_soft"
+    ],
+    "floor_2": [
+      "room_tone_low",
+      "birds_soft",
+      "gentle_music"
+    ]
+  },
+  "peace_reflection": {
+    "vi": "Khi rời khỏi bảo tàng, mong bạn mang theo một điều giản dị: sự trân trọng dành cho sự sống. Những\nchứng tích bạn vừa      thấy không phải để khơi lại nỗi đau, mà để nhắc rằng hòa bình cần được gieo\nvà chăm sóc mỗi ngày. Một lời nói tử tế,      một hành động tôn trọng, một cái nắm tay—đều có thể là\nviên gạch nhỏ lát nên con đường bình yên.",
+    "en": "As you leave, carry something simple: a respect for life. These exhibits are not displayed to reopen\nwounds but to remind      us that peace must be planted and nurtured daily. A kind word, a\nrespectful gesture, a held hand—each can be a small step      toward a more peaceful path."
+  },
+  "training_metadata": {
+    "voice_style": "V3 - Friendly, youthful, companion-like",
+    "pace": "1.0x default; slow down in sensitive rooms (Agent Orange, prisons)",
+    "pitch": "Neutral-to-warm; slight lift during friendly greetings",
+    "pauses": "Short natural pauses between sentences; longer before emotional lines",
+    "pronunciation_hints": {
+      "vi": [
+        "Da cam (za-kam)",
+        "Côn Đảo (kon-dao)",
+        "Trảng Bàng (trang-bang)"
+      ],
+      "en": [
+        "Saigon (sigh-gon)",
+        "Geneva (juh-NEE-vuh)"
+      ]
+    },
+    "safety": [
+      "Avoid political advocacy; stay factual and humane.",
+      "Use content warnings before distressing exhibits.",
+      "Invite visitors to rest if they feel overwhelmed."
+    ]
+  }
+}

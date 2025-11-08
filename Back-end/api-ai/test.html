@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RAG Museum AI — Frontend Tester</title>
+  <style>
+    :root{
+      --bg:#0b1220; --card:#0f172a; --muted:#94a3b8; --text:#e2e8f0; --accent:#22d3ee; --accent2:#a78bfa; --ok:#10b981; --warn:#f59e0b; --err:#ef4444;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; background:linear-gradient(180deg,#0b1220,#111827 70%);
+      color:var(--text); font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
+      min-height:100vh;
+    }
+    .wrap{max-width:1100px;margin:32px auto;padding:0 16px}
+    .title{font-size:28px;font-weight:800;letter-spacing:.3px;display:flex;align-items:center;gap:10px}
+    .title .tag{font-size:12px;padding:2px 8px;border:1px solid #334155;border-radius:999px;color:var(--muted)}
+    .card{background:linear-gradient(180deg,#0f172a,#0b1220);border:1px solid #1f2937;border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.25);margin:16px 0}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .col{flex:1;min-width:260px}
+    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+    input, select, button, textarea{
+      width:100%;padding:12px 12px;border-radius:12px;border:1px solid #334155;background:#0b1220;
+      color:var(--text);outline:none;transition:.2s;
+    }
+    input:focus, select:focus, textarea:focus{border-color:#475569;box-shadow:0 0 0 2px rgba(71,85,105,.35)}
+    textarea{resize:vertical;min-height:120px}
+    button{cursor:pointer;background:linear-gradient(135deg,#22d3ee,#a78bfa);border:none;font-weight:700}
+    button.secondary{background:#0b1220;border:1px solid #334155}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    .answer{white-space:pre-wrap;background:#0b1220;border:1px solid #334155;border-radius:12px;padding:14px}
+    .pill{display:inline-flex;gap:6px;align-items:center;background:#0b1220;border:1px solid #334155;border-radius:999px;padding:6px 10px;margin:4px 6px 0 0;color:#cbd5e1}
+    .muted{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+    .small{font-size:12px;color:#94a3b8}
+    .ok{color:var(--ok)}.warn{color:var(--warn)}.err{color:var(--err)}
+    code, pre{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace}
+    .kbd{border:1px solid #334155;border-bottom-width:2px;padding:0 6px;border-radius:6px;color:#cbd5e1}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="title">RAG Museum AI <span class="tag">Frontend Tester</span></div>
+
+    <div class="card">
+      <div class="row">
+        <div class="col">
+          <label>API URL</label>
+          <input id="api" value="http://localhost:8000/api/ask" />
+        </div>
+        <div class="col">
+          <label>Top-k (nguồn tham chiếu)</label>
+          <input id="topk" type="number" min="1" max="12" value="6" />
+        </div>
+        <div class="col">
+          <label>Max tokens</label>
+          <input id="maxtok" type="number" min="128" max="4096" value="600" />
+        </div>
+      </div>
+      <div class="row" style="margin-top:6px">
+        <div class="col">
+          <label>Ngôn ngữ câu hỏi (tự phát hiện)</label>
+          <select id="lang">
+            <option value="auto">Auto detect</option>
+            <option value="vi">Vietnamese</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+        <div class="col">
+          <label>&nbsp;</label>
+          <button onclick="saveCfg()">💾 Lưu cấu hình</button>
+        </div>
+        <div class="col">
+          <label>&nbsp;</label>
+          <button class="secondary" onclick="health()">🔍 Kiểm tra /api/health</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <label>Câu hỏi</label>
+      <textarea id="q" placeholder="Ví dụ: Kể cho tôi nghe câu chuyện về chiếc trực thăng UH-1?"></textarea>
+      <div class="actions" style="margin-top:10px">
+        <button onclick="ask()">🚀 Hỏi API</button>
+        <button class="secondary" onclick="reindex()">🧱 Reindex</button>
+        <button class="secondary" onclick="sample('napalm')">📌 Mẫu: Ảnh Em bé Napalm</button>
+        <button class="secondary" onclick="sample('uh1')">📌 Mẫu: Trực thăng UH-1</button>
+        <button class="secondary" onclick="sample('floor1')">📌 Mẫu: Tầng 1 nói về gì?</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="muted">Trả lời</div>
+          <div id="status" class="small"></div>
+        </div>
+        <div id="ans" class="answer"></div>
+        <div id="cites"></div>
+      </div>
+      <div class="card">
+        <div class="muted">Raw JSON</div>
+        <pre id="raw" class="answer" style="overflow:auto;max-height:480px"></pre>
+      </div>
+    </div>
+
+    <div class="card small">
+      <b>Mẹo:</b> Nhấn <span class="kbd">Alt</span> + <span class="kbd">Enter</span> để gửi nhanh.
+    </div>
+  </div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function saveCfg(){
+  const cfg = { api: $('api').value, topk: $('topk').value, maxtok: $('maxtok').value, lang: $('lang').value };
+  localStorage.setItem('rag_cfg', JSON.stringify(cfg));
+  toast('Đã lưu cấu hình.');
+}
+function loadCfg(){
+  const raw = localStorage.getItem('rag_cfg');
+  if(!raw) return;
+  try{
+    const c = JSON.parse(raw);
+    if(c.api) $('api').value = c.api;
+    if(c.topk) $('topk').value = c.topk;
+    if(c.maxtok) $('maxtok').value = c.maxtok;
+    if(c.lang) $('lang').value = c.lang;
+  }catch(e){}
+}
+function toast(msg){
+  $('status').textContent = msg;
+  setTimeout(()=>$('status').textContent='', 2000);
+}
+async function ask(){
+  const url = $('api').value.trim();
+  const q = $('q').value.trim();
+  const top_k = parseInt($('topk').value||'6',10);
+  const max_tokens = parseInt($('maxtok').value||'600', 10);
+  if(!q) return toast('Nhập câu hỏi');
+  $('ans').textContent = 'Đang hỏi API...';
+  $('cites').innerHTML='';
+  $('raw').textContent='';
+  try{
+    const res = await fetch(url, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({question:q, top_k, max_tokens})
+    });
+    const js = await res.json();
+    $('raw').textContent = JSON.stringify(js, null, 2);
+    if(js.error){ $('ans').innerHTML = '<span class="err">Lỗi: '+js.error+'</span>'; return; }
+    $('ans').textContent = js.answer || '(không có trả lời)';
+    const cites = (js.citations||[]).map(c=>`<span class="pill">${(c.name||'context')} · ${(c.score||0).toFixed(3)}</span>`).join('');
+    $('cites').innerHTML = `<div class="small"><b>Nguồn tham chiếu:</b> ${cites||'(none)'}</div>`;
+  }catch(e){
+    $('ans').innerHTML = '<span class="err">Lỗi mạng: '+e.message+'</span>';
+  }
+}
+async function health(){
+  const base = $('api').value.replace(/\/api\/ask.*$/,'/api/health');
+  try{
+    const res = await fetch(base);
+    const js = await res.json();
+    $('raw').textContent = JSON.stringify(js,null,2);
+    $('ans').innerHTML = `<span class="ok">/api/health OK</span>`;
+  }catch(e){
+    $('ans').innerHTML = '<span class="err">Không gọi được /api/health: '+e.message+'</span>';
+  }
+}
+async function reindex(){
+  const base = $('api').value.replace(/\/api\/ask.*$/,'/api/reindex');
+  $('ans').textContent = 'Đang reindex...';
+  try{
+    const res = await fetch(base, {method:'POST'});
+    const js = await res.json();
+    $('raw').textContent = JSON.stringify(js,null,2);
+    $('ans').innerHTML = `<span class="ok">Reindex xong (${js.chunks||0} chunks)</span>`;
+  }catch(e){
+    $('ans').innerHTML = '<span class="err">Reindex lỗi: '+e.message+'</span>';
+  }
+}
+
+function sample(type){
+  const bank = {
+    napalm: 'Kể cho tôi nghe câu chuyện về bức ảnh Em bé Napalm?',
+    uh1: 'Chiếc trực thăng UH-1 có ý nghĩa gì trong bảo tàng?',
+    floor1: 'Tầng 1 trưng bày những gì?'
+  };
+  $('q').value = bank[type] || '';
+}
+
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' && e.altKey){ ask(); }
+});
+loadCfg();
+</script>
+</body>
+</html>
