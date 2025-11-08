@@ -40,35 +40,66 @@
 </script>
 
 {#if loading}
-  <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-    {#each Array(6) as _}
-      <div class="h-44 rounded-xl bg-gray-100 animate-pulse"></div>
-    {/each}
+  <div class="container mx-auto px-4 py-8">
+    <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      {#each Array(6) as _}
+        <div class="h-80 rounded-3xl bg-linear-to-br from-gray-100 to-gray-50 animate-pulse shadow-soft"></div>
+      {/each}
+    </div>
   </div>
 {:else if error}
-  <div class="text-red-600">{error}</div>
+  <div class="container mx-auto px-4 py-8">
+    <div class="rounded-3xl bg-red-50 border-2 border-red-200 p-6 text-red-700 shadow-soft">
+      <p class="font-medium">{error}</p>
+    </div>
+  </div>
 {:else}
-  <div class="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-    {#each items as item}
-      <article class="group rounded-2xl border overflow-hidden bg-white hover:shadow-lg transition">
-        <button class="block w-full text-left" on:click={() => clickItem(item)}>
-          {#if Array.isArray(item.hinh_anh)}
-            <img src={item.hinh_anh[0]} alt={item.ten} class="w-full h-44 object-cover" loading="lazy" />
-          {:else}
-            <img src={item.hinh_anh} alt={item.ten} class="w-full h-44 object-cover" loading="lazy" />
-          {/if}
-          <div class="p-4">
-            <h3 class="font-medium text-gray-900 group-hover:text-blue-600 transition">
-              {item.ten}
-            </h3>
-            {#if item.mo_ta}
-              <p class="text-sm text-gray-600 mt-1 line-clamp-2">
-                {item.mo_ta}
-              </p>
-            {/if}
-          </div>
-        </button>
-      </article>
-    {/each}
+  <div class="container mx-auto px-4 py-8">
+    <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      {#each items as item}
+        <article class="group relative rounded-3xl overflow-hidden bg-white shadow-soft hover:shadow-fluffy transition-all duration-300 hover:-translate-y-1">
+          <button class="block w-full text-left" on:click={() => clickItem(item)}>
+            <div class="relative overflow-hidden">
+              {#if Array.isArray(item.hinh_anh)}
+                <img
+                  src={item.hinh_anh[0]}
+                  alt={item.ten}
+                  class="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-105"
+                  loading="lazy"
+                />
+              {:else}
+                <img
+                  src={item.hinh_anh}
+                  alt={item.ten}
+                  class="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-105"
+                  loading="lazy"
+                />
+              {/if}
+              <div class="absolute inset-0 bg-linear-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </div>
+            <div class="p-5">
+              <h3 class="font-semibold text-lg text-gray-900 group-hover:text-indigo-600 transition-colors duration-200 mb-2">
+                {item.ten}
+              </h3>
+              {#if item.mo_ta}
+                <p class="text-sm text-gray-600 leading-relaxed line-clamp-2">
+                  {item.mo_ta}
+                </p>
+              {/if}
+            </div>
+          </button>
+        </article>
+      {/each}
+    </div>
   </div>
 {/if}
+
+<style>
+  .shadow-soft {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  }
+
+  .shadow-fluffy {
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.08);
+  }
+</style>

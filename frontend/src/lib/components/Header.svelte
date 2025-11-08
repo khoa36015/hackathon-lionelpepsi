@@ -145,7 +145,7 @@
       </div>
 
       <!-- Desktop Nav -->
-      <nav class="hidden md:flex items-center gap-1">
+      <nav class="md:flex items-center gap-1">
         {#each navItems as item}
           <button
             class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-black/5 dark:hover:bg-white/10 transition"
@@ -166,21 +166,12 @@
               class="group inline-flex items-center gap-2 rounded-lg px-3 py-2 focus:outline-none focus-visible:ring ring-offset-2 ring-neutral-300 dark:ring-neutral-600 hover:bg-black/5 dark:hover:bg-white/10 transition"
               aria-haspopup="menu"
               aria-expanded={accountOpen}
+              on:click={() => (accountOpen = !accountOpen)}
             >
-            {#if accountOpen}
-              <div
-                bind:this={accountMenuRef}
-                id="account-menu"
-                role="menu"
-                aria-label="Menu tài khoản"
-                transition:fadeScale|local={{ start: 0.98, duration: prefersReduced ? 0 : 120 }}
-                class="absolute right-0 mt-2 w-56 rounded-xl border border-black/5 dark:border-white/10 bg-white dark:bg-neutral-900 shadow-lg overflow-hidden"
-              >
+              <span class="text-sm font-medium">{$username}</span>
               <svg class="size-4 opacity-70 group-hover:opacity-100 transition" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                 <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.71a.75.75 0 1 1 1.06 1.06l-4.24 4.24a.75.75 0 0 1-1.06 0L5.25 8.29a.75.75 0 0 1-.02-1.08z" clip-rule="evenodd"/>
               </svg>
-            </div>
-            {/if}
             </button>
 
             {#if accountOpen}
@@ -257,9 +248,9 @@
         <div class="h-px bg-neutral-200 dark:bg-neutral-700 my-2" aria-hidden="true"></div>
 
         {#if $isLoggedIn}
-          <div class="rounded-xl bg-black/[0.02] dark:bg-white/[0.04] p-2">
+          <div class="rounded-xl bg-black/2 dark:bg-white/4 p-2">
             <div class="flex items-center gap-2 px-2 py-1.5">
-              <div class="size-7 rounded-full bg-gradient-to-tr from-fuchsia-500 to-amber-400"></div>
+              <div class="size-7 rounded-full bg-linear-to-tr from-fuchsia-500 to-amber-400"></div>
               <div class="text-sm font-semibold">{$username}</div>
             </div>
             <div class="mt-1 grid grid-cols-2 gap-1">
