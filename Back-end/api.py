@@ -32,51 +32,7 @@ def db_conn(db_name):
         database=db_name
     )
 
-# ---------- AUTH ----------
-@app.route("/api/register", methods=["POST"])
-def register():
-    data = request.get_json() or {}
-    u, p = data.get("username"), data.get("password")
-    if not u or not p:
-        return jsonify({"message": "Missing username or password"}), 400
-    conn = db_conn("authen"); cur = conn.cursor(dictionary=True)
-    cur.execute("SELECT * FROM users WHERE username=%s", (u,))
-    if cur.fetchone():
-        return jsonify({"message": "Account exists"}), 400
-    hashed = bcrypt.generate_password_hash(p).decode()
-    cur.execute("INSERT INTO users(username,password) VALUES(%s,%s)", (u, hashed))
-    conn.commit(); cur.close(); conn.close()
-    return jsonify({"message": "Registered!"}), 201
 
-@app.route("/api/login", methods=["POST"])
-def login():
-    data = request.get_json() or {}
-    u, p = data.get("username"), data.get("password")
-    if not u or not p:
-        return jsonify({"message": "Missing username or password"}), 400
-    conn = db_conn("authen"); cur = conn.cursor(dictionary=True)
-    cur.execute("SELECT * FROM users WHERE username=%s", (u,))
-    user = cur.fetchone()
-    cur.close(); conn.close()
-    if user and bcrypt.check_password_hash(user["password"], p):
-        session.clear()
-        session.permanent = True
-        session.update({"logged_in": True, "username": u, "user_id": user["id"]})
-        return jsonify({"message": "Logged in", "isLoggedIn": True, "username": u})
-    return jsonify({"message": "Wrong credentials"}), 401
-
-@app.route("/api/check-session")
-def check_session():
-    if session.get("logged_in"):
-        return jsonify({"isLoggedIn": True, "username": session["username"]})
-    return jsonify({"isLoggedIn": False}), 401
-
-@app.route("/api/logout", methods=["POST"])
-def logout():
-    if not session.get("logged_in"):
-        return jsonify({"message": "Not logged in"}), 401
-    session.clear()
-    return jsonify({"message": "Logged out", "isLoggedIn": False})
 
 # ---------- FEEDBACK ----------
 @app.route("/api/feedback", methods=["POST"])
