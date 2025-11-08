@@ -151,7 +151,33 @@ def search_artifacts():
 
     return jsonify(results)
 
+API_KEY = "50fb31ce1941d76978a0369cbf302a89"
 
+# Hàm lấy thời tiết hiện tại ở TP.HCM
+def get_current_weather():
+    url = (
+        f"https://api.openweathermap.org/data/2.5/weather?"
+        f"q=Ho%20Chi%20Minh,VN&appid={API_KEY}&units=metric&lang=vi"
+    )
+    res = requests.get(url)
+    return res.json()
+
+@app.route("/api/weather/current", methods=["GET"])
+def current_weather():
+    try:
+        data = get_current_weather()
+        # Lọc bớt dữ liệu, chỉ trả thông tin chính
+        result = {
+            "thanh_pho": data.get("name"),
+            "mo_ta": data["weather"][0]["description"],
+            "nhiet_do": data["main"]["temp"],
+            "cam_nhan": data["main"]["feels_like"],
+            "do_am": data["main"]["humidity"],
+            "toc_do_gio": data["wind"]["speed"],
+        }
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 # ---------- MAIN ----------
 if __name__ == "__main__":
     app.run(debug=True, port=3000, use_reloader=False,host='0.0.0.0')
