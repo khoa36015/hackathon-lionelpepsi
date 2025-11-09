@@ -10,6 +10,8 @@ import mysql.connector
 import secrets
 import urllib.parse
 import requests  # ✅ cần cho OpenWeather
+import json
+import os
 # Dữ liệu bảo tàng
 from data import  bao_tang_chung_tich  # ✅ bạn đã có file data.py
 
@@ -17,6 +19,18 @@ from data import  bao_tang_chung_tich  # ✅ bạn đã có file data.py
 PHAN_LOAI = bao_tang_chung_tich.get("phan_loai", {})
 TEN_BAO_TANG = bao_tang_chung_tich.get("ten", "Bảo tàng Chứng tích Chiến tranh")
 DIA_CHI_BAO_TANG = bao_tang_chung_tich.get("dia_chi", "Không rõ địa chỉ")
+
+# Load extended artifacts from data.json
+EXTENDED_ARTIFACTS = []
+DATA_JSON_PATH = os.path.join(os.path.dirname(__file__), "data.json")
+try:
+    with open(DATA_JSON_PATH, "r", encoding="utf-8") as f:
+        data_json = json.load(f)
+        EXTENDED_ARTIFACTS = data_json.get("extended_artifacts", [])
+        print(f"[INFO] Loaded {len(EXTENDED_ARTIFACTS)} extended artifacts from data.json")
+except Exception as e:
+    print(f"[WARNING] Could not load data.json: {e}")
+    EXTENDED_ARTIFACTS = []
 
 # ======================== CONFIG ========================
 # ---- DB AUTH (giữ như file của bạn) ----
@@ -395,24 +409,128 @@ def ticket_qr():
     })
 
 # ======================== TOURS API ========================
-# Define location categories based on museum sections
-TOUR_LOCATIONS = [
-    {"name": "Khu Trưng Bày Trong Nhà", "count": 5, "description": "Các hiện vật và ảnh lịch sử trong nhà"},
-    {"name": "Khu Trưng Bày Ngoài Trời", "count": 6, "description": "Vũ khí và phương tiện quân sự"},
-    {"name": "Khu Trưng Bày Ảnh Quốc Tế", "count": 4, "description": "Ảnh từ phóng viên chiến trường quốc tế"},
-    {"name": "Phòng Trà Tân", "count": 3, "description": "Hiện vật tra tấn và tù binh"},
-]
+# Generate locations from data.json extended_artifacts
+def get_locations_from_artifacts():
+    """Extract unique locations from extended_artifacts location_hint"""
+    locations_map = {}
+    
+    # Map location_hint to standardized location names
+    location_mapping = {
+        "trên bầu trời và tại các bãi đáp dã chiến": "Khu Trưng Bày Ngoài Trời",
+        "dọc các trục đường chiến lược": "Khu Trưng Bày Ngoài Trời",
+        "trảng bàng, tây ninh": "Khu Trưng Bày Ảnh Quốc Tế",
+        "khu mô phỏng nhà tù": "Phòng Trà Tân",
+        "khu trưng bày nạn nhân": "Khu Trưng Bày Trong Nhà",
+        "vùng đồng bằng và rừng thấp": "Khu Trưng Bày Ngoài Trời",
+        "bên vai phóng viên trên chiến trường": "Khu Trưng Bày Ảnh Quốc Tế",
+        "điểm liên lạc tiền phương": "Khu Trưng Bày Trong Nhà",
+        "phòng chỉ huy dã chiến": "Khu Trưng Bày Trong Nhà",
+        "ba lô và túi áo ngực": "Khu Trưng Bày Trong Nhà",
+        "hòm thư dã chiến": "Khu Trưng Bày Trong Nhà",
+        "trên chiến trường và chốt chặn": "Khu Trưng Bày Ngoài Trời",
+        "cổng đơn vị/điểm kiểm soát": "Khu Trưng Bày Ngoài Trời",
+        "trạm quân y dã chiến": "Khu Trưng Bày Trong Nhà",
+        "hành lang bệnh xá dã chiến": "Khu Trưng Bày Trong Nhà",
+        "trận địa pháo": "Khu Trưng Bày Ngoài Trời",
+        "hàng rào phòng thủ": "Khu Trưng Bày Ngoài Trời",
+        "công sự dã chiến": "Khu Trưng Bày Ngoài Trời",
+        "tại doanh trại và ngoài chiến trường": "Khu Trưng Bày Ngoài Trời",
+        "trên tay áo, túi áo": "Khu Trưng Bày Trong Nhà",
+        "kho quân nhu": "Khu Trưng Bày Trong Nhà",
+        "trong ba lô, chốt trực": "Khu Trưng Bày Trong Nhà",
+        "vùng ô nhiễm bom mìn": "Khu Trưng Bày Ngoài Trời",
+        "khu trưng bày ngoài trời": "Khu Trưng Bày Ngoài Trời",
+        "phòng khách thời ấy": "Khu Trưng Bày Trong Nhà",
+        "khu đô thị": "Khu Trưng Bày Ảnh Quốc Tế",
+        "bên hông lính/nhân viên y tế": "Khu Trưng Bày Trong Nhà",
+        "đường mòn, bìa rừng": "Khu Trưng Bày Ngoài Trời",
+        "thắt lưng người lính": "Khu Trưng Bày Trong Nhà",
+        "bàn gỗ cũ": "Khu Trưng Bày Trong Nhà",
+        "ví tiền hoặc túi áo": "Khu Trưng Bày Trong Nhà",
+    }
+    
+    # Standard locations
+    standard_locations = [
+        "Khu Trưng Bày Trong Nhà",
+        "Khu Trưng Bày Ngoài Trời",
+        "Khu Trưng Bày Ảnh Quốc Tế",
+        "Phòng Trà Tân"
+    ]
+    
+    # Count artifacts per location
+    for artifact in EXTENDED_ARTIFACTS:
+        location_hint = artifact.get("location_hint", "").lower()
+        location = None
+        
+        # Find matching location
+        for hint, loc in location_mapping.items():
+            if hint in location_hint:
+                location = loc
+                break
+        
+        # Default to indoor if no match
+        if not location:
+            location = "Khu Trưng Bày Trong Nhà"
+        
+        if location not in locations_map:
+            locations_map[location] = 0
+        locations_map[location] += 1
+    
+    # Also count from PHAN_LOAI
+    for photo in PHAN_LOAI.get("anh", []):
+        location = "Khu Trưng Bày Ảnh Quốc Tế" if "quốc tế" in photo.get("ten", "").lower() or "phóng viên" in photo.get("ten", "").lower() else "Khu Trưng Bày Trong Nhà"
+        if location not in locations_map:
+            locations_map[location] = 0
+        locations_map[location] += 1
+    
+    for artifact in PHAN_LOAI.get("di_vat", []):
+        name_lower = artifact.get("ten", "").lower()
+        if any(kw in name_lower for kw in ["máy bay", "xe tăng", "trực thăng"]):
+            location = "Khu Trưng Bày Ngoài Trời"
+        elif "tra tấn" in name_lower or "tù binh" in name_lower:
+            location = "Phòng Trà Tân"
+        else:
+            location = "Khu Trưng Bày Trong Nhà"
+        
+        if location not in locations_map:
+            locations_map[location] = 0
+        locations_map[location] += 1
+    
+    # Create location list
+    locations = []
+    descriptions = {
+        "Khu Trưng Bày Trong Nhà": "Các hiện vật và ảnh lịch sử trong nhà",
+        "Khu Trưng Bày Ngoài Trời": "Vũ khí và phương tiện quân sự",
+        "Khu Trưng Bày Ảnh Quốc Tế": "Ảnh từ phóng viên chiến trường quốc tế",
+        "Phòng Trà Tân": "Hiện vật tra tấn và tù binh"
+    }
+    
+    for loc in standard_locations:
+        locations.append({
+            "name": loc,
+            "count": locations_map.get(loc, 0),
+            "description": descriptions.get(loc, "")
+        })
+    
+    return locations
+
+TOUR_LOCATIONS = get_locations_from_artifacts()
 
 @app.route("/api/tours/locations", methods=["GET"])
 def get_tour_locations():
     """Get all unique locations from photos and artifacts"""
     try:
+        # Refresh locations
+        global TOUR_LOCATIONS
+        TOUR_LOCATIONS = get_locations_from_artifacts()
         return jsonify({
             "ok": True,
             "locations": TOUR_LOCATIONS
         })
     except Exception as e:
         print(f"Error getting locations: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({"ok": False, "error": "Lỗi khi lấy địa điểm"}), 500
 
 @app.route("/api/tours/location-info", methods=["POST"])
@@ -470,7 +588,7 @@ Trả lời bằng tiếng Việt, tập trung vào ý nghĩa lịch sử và nh
 
 @app.route("/api/tours/items-by-location", methods=["POST"])
 def get_items_by_location():
-    """Get photos and artifacts from selected locations"""
+    """Get photos and artifacts from selected locations using data.json"""
     data = request.get_json(silent=True) or {}
     locations = data.get("locations", [])
 
@@ -480,43 +598,105 @@ def get_items_by_location():
         return jsonify({"ok": False, "error": "Thiếu danh sách địa điểm"}), 400
 
     try:
-        all_photos = PHAN_LOAI.get("anh", [])
-        all_artifacts = PHAN_LOAI.get("di_vat", [])
-
-        print(f"[DEBUG] Total photos: {len(all_photos)}, artifacts: {len(all_artifacts)}")
-
-        # Return all photos and artifacts (since we don't have location field in data)
-        # Add location field based on item type
+        # Location mapping (same as in get_locations_from_artifacts)
+        location_mapping = {
+            "trên bầu trời và tại các bãi đáp dã chiến": "Khu Trưng Bày Ngoài Trời",
+            "dọc các trục đường chiến lược": "Khu Trưng Bày Ngoài Trời",
+            "trảng bàng, tây ninh": "Khu Trưng Bày Ảnh Quốc Tế",
+            "khu mô phỏng nhà tù": "Phòng Trà Tân",
+            "khu trưng bày nạn nhân": "Khu Trưng Bày Trong Nhà",
+            "vùng đồng bằng và rừng thấp": "Khu Trưng Bày Ngoài Trời",
+            "bên vai phóng viên trên chiến trường": "Khu Trưng Bày Ảnh Quốc Tế",
+            "điểm liên lạc tiền phương": "Khu Trưng Bày Trong Nhà",
+            "phòng chỉ huy dã chiến": "Khu Trưng Bày Trong Nhà",
+            "ba lô và túi áo ngực": "Khu Trưng Bày Trong Nhà",
+            "hòm thư dã chiến": "Khu Trưng Bày Trong Nhà",
+            "trên chiến trường và chốt chặn": "Khu Trưng Bày Ngoài Trời",
+            "cổng đơn vị/điểm kiểm soát": "Khu Trưng Bày Ngoài Trời",
+            "trạm quân y dã chiến": "Khu Trưng Bày Trong Nhà",
+            "hành lang bệnh xá dã chiến": "Khu Trưng Bày Trong Nhà",
+            "trận địa pháo": "Khu Trưng Bày Ngoài Trời",
+            "hàng rào phòng thủ": "Khu Trưng Bày Ngoài Trời",
+            "công sự dã chiến": "Khu Trưng Bày Ngoài Trời",
+            "tại doanh trại và ngoài chiến trường": "Khu Trưng Bày Ngoài Trời",
+            "trên tay áo, túi áo": "Khu Trưng Bày Trong Nhà",
+            "kho quân nhu": "Khu Trưng Bày Trong Nhà",
+            "trong ba lô, chốt trực": "Khu Trưng Bày Trong Nhà",
+            "vùng ô nhiễm bom mìn": "Khu Trưng Bày Ngoài Trời",
+            "khu trưng bày ngoài trời": "Khu Trưng Bày Ngoài Trời",
+            "phòng khách thời ấy": "Khu Trưng Bày Trong Nhà",
+            "khu đô thị": "Khu Trưng Bày Ảnh Quốc Tế",
+            "bên hông lính/nhân viên y tế": "Khu Trưng Bày Trong Nhà",
+            "đường mòn, bìa rừng": "Khu Trưng Bày Ngoài Trời",
+            "thắt lưng người lính": "Khu Trưng Bày Trong Nhà",
+            "bàn gỗ cũ": "Khu Trưng Bày Trong Nhà",
+            "ví tiền hoặc túi áo": "Khu Trưng Bày Trong Nhà",
+        }
+        
+        def get_location_from_hint(location_hint):
+            """Map location_hint to standardized location"""
+            location_hint_lower = location_hint.lower()
+            for hint, loc in location_mapping.items():
+                if hint in location_hint_lower:
+                    return loc
+            return "Khu Trưng Bày Trong Nhà"  # Default
+        
+        # Process extended artifacts from data.json
+        artifacts = []
+        artifact_id_counter = 1000  # Start from 1000 to avoid conflicts
+        
+        # Create a map of artifact data_json_id to artifact for lookup
+        artifact_map = {}
+        for artifact in EXTENDED_ARTIFACTS:
+            artifact_map[artifact.get("id", "")] = artifact
+        
+        for artifact in EXTENDED_ARTIFACTS:
+            location_hint = artifact.get("location_hint", "")
+            location = get_location_from_hint(location_hint)
+            
+            if location in locations:
+                artifact_data = {
+                    "id": artifact_id_counter,
+                    "ten": artifact.get("name_vi", ""),
+                    "mo_ta": artifact.get("paragraphs_vi", [""])[0][:200] if artifact.get("paragraphs_vi") else "",
+                    "hinh_anh": None,  # Extended artifacts may not have image paths
+                    "dia_diem": location,
+                    "period": artifact.get("period", ""),
+                    "location_hint": location_hint,
+                    "tags": artifact.get("tags", []),
+                    "data_json_id": artifact.get("id", ""),
+                    "artifact_index": artifact_id_counter - 1000  # Store index for retrieval
+                }
+                artifacts.append(artifact_data)
+                artifact_id_counter += 1
+        
+        # Also include artifacts from PHAN_LOAI
+        all_artifacts_old = PHAN_LOAI.get("di_vat", [])
+        for artifact in all_artifacts_old:
+            artifact_copy = artifact.copy()
+            name_lower = artifact.get("ten", "").lower()
+            if any(kw in name_lower for kw in ["máy bay", "xe tăng", "trực thăng"]):
+                artifact_copy["dia_diem"] = "Khu Trưng Bày Ngoài Trời"
+            elif "tra tấn" in name_lower or "tù binh" in name_lower:
+                artifact_copy["dia_diem"] = "Phòng Trà Tân"
+            else:
+                artifact_copy["dia_diem"] = "Khu Trưng Bày Trong Nhà"
+            
+            if artifact_copy["dia_diem"] in locations:
+                artifacts.append(artifact_copy)
+        
+        # Process photos from PHAN_LOAI
         photos = []
+        all_photos = PHAN_LOAI.get("anh", [])
         for photo in all_photos:
             photo_copy = photo.copy()
-            # Assign location based on photo type/name
             if "quốc tế" in photo.get("ten", "").lower() or "phóng viên" in photo.get("ten", "").lower():
                 photo_copy["dia_diem"] = "Khu Trưng Bày Ảnh Quốc Tế"
             else:
                 photo_copy["dia_diem"] = "Khu Trưng Bày Trong Nhà"
-
-            print(f"[DEBUG] Photo '{photo.get('ten')}' -> {photo_copy['dia_diem']}, in locations: {photo_copy['dia_diem'] in locations}")
-
+            
             if photo_copy["dia_diem"] in locations:
                 photos.append(photo_copy)
-
-        # Assign location to artifacts
-        artifacts = []
-        for artifact in all_artifacts:
-            artifact_copy = artifact.copy()
-            # Assign location based on artifact type
-            if any(keyword in artifact.get("ten", "").lower() for keyword in ["máy bay", "xe tăng", "trực thăng"]):
-                artifact_copy["dia_diem"] = "Khu Trưng Bày Ngoài Trời"
-            elif "tra tấn" in artifact.get("ten", "").lower() or "tù binh" in artifact.get("ten", "").lower():
-                artifact_copy["dia_diem"] = "Phòng Trà Tân"
-            else:
-                artifact_copy["dia_diem"] = "Khu Trưng Bày Trong Nhà"
-
-            print(f"[DEBUG] Artifact '{artifact.get('ten')}' -> {artifact_copy['dia_diem']}, in locations: {artifact_copy['dia_diem'] in locations}")
-
-            if artifact_copy["dia_diem"] in locations:
-                artifacts.append(artifact_copy)
 
         print(f"[DEBUG] Filtered photos: {len(photos)}, artifacts: {len(artifacts)}")
 
@@ -617,7 +797,50 @@ def get_my_tours():
 
 @app.route("/api/tours/<int:tour_id>", methods=["GET"])
 def get_tour_detail(tour_id):
-    """Get tour details with full item information"""
+    """Get tour details with full item information from data.json and PHAN_LOAI"""
+    # Location mapping helper function (same as in get_items_by_location)
+    location_mapping_detail = {
+        "trên bầu trời và tại các bãi đáp dã chiến": "Khu Trưng Bày Ngoài Trời",
+        "dọc các trục đường chiến lược": "Khu Trưng Bày Ngoài Trời",
+        "trảng bàng, tây ninh": "Khu Trưng Bày Ảnh Quốc Tế",
+        "khu mô phỏng nhà tù": "Phòng Trà Tân",
+        "khu trưng bày nạn nhân": "Khu Trưng Bày Trong Nhà",
+        "vùng đồng bằng và rừng thấp": "Khu Trưng Bày Ngoài Trời",
+        "bên vai phóng viên trên chiến trường": "Khu Trưng Bày Ảnh Quốc Tế",
+        "điểm liên lạc tiền phương": "Khu Trưng Bày Trong Nhà",
+        "phòng chỉ huy dã chiến": "Khu Trưng Bày Trong Nhà",
+        "ba lô và túi áo ngực": "Khu Trưng Bày Trong Nhà",
+        "hòm thư dã chiến": "Khu Trưng Bày Trong Nhà",
+        "trên chiến trường và chốt chặn": "Khu Trưng Bày Ngoài Trời",
+        "cổng đơn vị/điểm kiểm soát": "Khu Trưng Bày Ngoài Trời",
+        "trạm quân y dã chiến": "Khu Trưng Bày Trong Nhà",
+        "hành lang bệnh xá dã chiến": "Khu Trưng Bày Trong Nhà",
+        "trận địa pháo": "Khu Trưng Bày Ngoài Trời",
+        "hàng rào phòng thủ": "Khu Trưng Bày Ngoài Trời",
+        "công sự dã chiến": "Khu Trưng Bày Ngoài Trời",
+        "tại doanh trại và ngoài chiến trường": "Khu Trưng Bày Ngoài Trời",
+        "trên tay áo, túi áo": "Khu Trưng Bày Trong Nhà",
+        "kho quân nhu": "Khu Trưng Bày Trong Nhà",
+        "trong ba lô, chốt trực": "Khu Trưng Bày Trong Nhà",
+        "vùng ô nhiễm bom mìn": "Khu Trưng Bày Ngoài Trời",
+        "khu trưng bày ngoài trời": "Khu Trưng Bày Ngoài Trời",
+        "phòng khách thời ấy": "Khu Trưng Bày Trong Nhà",
+        "khu đô thị": "Khu Trưng Bày Ảnh Quốc Tế",
+        "bên hông lính/nhân viên y tế": "Khu Trưng Bày Trong Nhà",
+        "đường mòn, bìa rừng": "Khu Trưng Bày Ngoài Trời",
+        "thắt lưng người lính": "Khu Trưng Bày Trong Nhà",
+        "bàn gỗ cũ": "Khu Trưng Bày Trong Nhà",
+        "ví tiền hoặc túi áo": "Khu Trưng Bày Trong Nhà",
+    }
+    
+    def get_location_from_hint_detail(location_hint):
+        """Map location_hint to standardized location"""
+        location_hint_lower = location_hint.lower()
+        for hint, loc in location_mapping_detail.items():
+            if hint in location_hint_lower:
+                return loc
+        return "Khu Trưng Bày Trong Nhà"  # Default
+    
     try:
         with get_conn() as conn, conn.cursor() as cur:
             # Get tour info
@@ -640,32 +863,69 @@ def get_tour_detail(tour_id):
             """, (tour_id,))
             items = cur.fetchall()
 
-            # Fetch full details for each item
+            # Fetch full details for each item from PHAN_LOAI and EXTENDED_ARTIFACTS
             detailed_items = []
             for item in items:
-                if item["item_type"] == "photo":
-                    cur.execute("""
-                        SELECT id, ten_anh as name, mo_ta as description, hinh_anh as image,
-                               nam_chup as year, dia_diem as location
-                        FROM anh WHERE id=%s
-                    """, (item["item_id"],))
-                    detail = cur.fetchone()
-                    if detail:
-                        detail["type"] = "photo"
-                        detail["order"] = item["order_index"]
-                        detailed_items.append(detail)
-                elif item["item_type"] == "artifact":
-                    cur.execute("""
-                        SELECT id, ten_vat as name, mo_ta as description, hinh_anh as image,
-                               nguon_goc as origin, thoi_gian as period
-                        FROM vat WHERE id=%s
-                    """, (item["item_id"],))
-                    detail = cur.fetchone()
-                    if detail:
-                        detail["type"] = "artifact"
-                        detail["order"] = item["order_index"]
-                        detailed_items.append(detail)
+                item_type = item["item_type"]
+                item_id = item["item_id"]
+                order_index = item["order_index"]
+                
+                detail = None
+                
+                if item_type == "photo":
+                    # Find in PHAN_LOAI photos
+                    for photo in PHAN_LOAI.get("anh", []):
+                        if photo.get("id") == item_id:
+                            detail = {
+                                "id": photo.get("id"),
+                                "name": photo.get("ten", ""),
+                                "description": photo.get("mo_ta", ""),
+                                "image": photo.get("hinh_anh", ""),
+                                "type": "photo",
+                                "order": order_index
+                            }
+                            break
+                
+                elif item_type == "artifact":
+                    # First check EXTENDED_ARTIFACTS (IDs >= 1000)
+                    if item_id >= 1000:
+                        artifact_idx = item_id - 1000
+                        if 0 <= artifact_idx < len(EXTENDED_ARTIFACTS):
+                            artifact = EXTENDED_ARTIFACTS[artifact_idx]
+                            detail = {
+                                "id": item_id,
+                                "name": artifact.get("name_vi", ""),
+                                "ten": artifact.get("name_vi", ""),  # Also include 'ten' for compatibility
+                                "description": artifact.get("paragraphs_vi", [""])[0] if artifact.get("paragraphs_vi") else "",
+                                "mo_ta": artifact.get("paragraphs_vi", [""])[0] if artifact.get("paragraphs_vi") else "",
+                                "image": None,
+                                "period": artifact.get("period", ""),
+                                "location_hint": artifact.get("location_hint", ""),
+                                "dia_diem": get_location_from_hint_detail(artifact.get("location_hint", "")),  # Map to location
+                                "tags": artifact.get("tags", []),
+                                "type": "artifact",
+                                "order": order_index
+                            }
+                    else:
+                        # Find in PHAN_LOAI artifacts
+                        for artifact in PHAN_LOAI.get("di_vat", []):
+                            if artifact.get("id") == item_id:
+                                detail = {
+                                    "id": artifact.get("id"),
+                                    "name": artifact.get("ten", ""),
+                                    "description": artifact.get("mo_ta", ""),
+                                    "image": artifact.get("hinh_anh", ""),
+                                    "type": "artifact",
+                                    "order": order_index
+                                }
+                                break
+                
+                if detail:
+                    detailed_items.append(detail)
 
+            # Sort by order
+            detailed_items.sort(key=lambda x: x.get("order", 0))
+            
             tour["items"] = detailed_items
             if tour.get("created_at"):
                 tour["created_at"] = tour["created_at"].strftime("%Y-%m-%d %H:%M:%S")
