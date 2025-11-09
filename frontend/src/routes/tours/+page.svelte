@@ -4,7 +4,8 @@
   import { cubicOut } from 'svelte/easing';
   import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
-  import { checkSession, getTourLocations, getLocationInfo, getItemsByLocation, createTour, getMyTours } from '$lib/api';
+  import { checkSession, getTourLocations, getLocationInfo, getItemsByLocation, createTour, getMyTours, getTourDetail } from '$lib/api';
+  import TourDiagram from '$lib/components/TourDiagram.svelte';
 
   let isLoggedIn = false;
   let username = '';
@@ -33,10 +34,14 @@
   // My tours
   let myTours = [];
   let loadingTours = false;
+  let selectedTourDetail = null;
+  let viewingDiagram = false;
+  let loadingTourDetail = false;
 
   // UI state
   let activeTab = 'create'; // 'create' | 'my-tours'
   let createStep = 1; // 1: chọn địa điểm, 2: chọn items
+  let showPreviewDiagram = false; // Show diagram preview when creating tour
 
   onMount(async () => {
     if (!browser) return;
@@ -228,6 +233,53 @@
       day: 'numeric'
     });
   }
+
+  async function viewTourDiagram(tourId) {
+    loadingTourDetail = true;
+    viewingDiagram = true;
+    try {
+      const result = await getTourDetail(tourId);
+      if (result.ok && result.tour) {
+        selectedTourDetail = result.tour;
+      } else {
+        error = result.error || 'Không thể tải chi tiết lộ trình';
+      }
+    } catch (err) {
+      console.error('Failed to load tour detail:', err);
+      error = 'Không thể kết nối với server';
+    } finally {
+      loadingTourDetail = false;
+    }
+  }
+
+  function closeDiagram() {
+    viewingDiagram = false;
+    selectedTourDetail = null;
+  }
+
+  function togglePreviewDiagram() {
+    showPreviewDiagram = !showPreviewDiagram;
+  }
+
+  // Get items for preview diagram
+  $: previewItems = selectedItems.map((item, index) => {
+    let found = null;
+    if (item.type === 'photo') {
+      found = photos.find(p => p.id === item.id);
+    } else if (item.type === 'artifact') {
+      found = artifacts.find(a => a.id === item.id);
+    }
+    
+    if (found) {
+      return {
+        ...found,
+        type: item.type,
+        order: index + 1,
+        dia_diem: found.dia_diem || 'Không xác định'
+      };
+    }
+    return null;
+  }).filter(Boolean);
 </script>
 
 <svelte:head>
@@ -535,6 +587,28 @@
                 {/if}
           </div>
 
+              <!-- Preview Diagram Toggle -->
+              {#if selectedItems.length > 0}
+                <div class="bg-[#2a2a2a] rounded-xl p-4 border border-[#4a4a4a]">
+                  <button
+                    on:click={togglePreviewDiagram}
+                    class="w-full flex items-center justify-between text-white hover:text-[#c4a574] transition-colors"
+                  >
+                    <span class="font-semibold flex items-center gap-2">
+                      <span>📊</span>
+                      <span>{showPreviewDiagram ? 'Ẩn' : 'Xem'} Sơ Đồ Lịch Trình</span>
+                    </span>
+                    <span class="text-2xl">{showPreviewDiagram ? '▲' : '▼'}</span>
+                  </button>
+                  
+                  {#if showPreviewDiagram}
+                    <div class="mt-4 border-t border-[#4a4a4a] pt-4">
+                      <TourDiagram tourItems={previewItems} tourName={tourName || 'Lịch trình mới'} />
+                    </div>
+                  {/if}
+                </div>
+              {/if}
+
               <!-- Action Buttons -->
               <div class="flex justify-between items-center animate-scaleIn" style="animation-delay: 0.2s;">
                 <button
@@ -545,19 +619,21 @@
                   <span>Quay Lại</span>
                 </button>
 
-                <button
-                  on:click={handleCreateTour}
-                  disabled={creating || selectedItems.length === 0}
-                  class="bg-[#c4a574] hover:bg-[#d4b584] text-[#1a1a1a] font-bold py-4 px-12 rounded-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-3 text-lg"
-                >
-                  {#if creating}
-                    <div class="w-6 h-6 border-2 border-[#1a1a1a] border-t-transparent rounded-full animate-spin"></div>
-                    <span>Đang tạo...</span>
-                  {:else}
-                    <span>🚀</span>
-                    <span>Tạo Lộ Trình</span>
-                  {/if}
-                </button>
+                <div class="flex gap-4">
+                  <button
+                    on:click={handleCreateTour}
+                    disabled={creating || selectedItems.length === 0}
+                    class="bg-[#c4a574] hover:bg-[#d4b584] text-[#1a1a1a] font-bold py-4 px-12 rounded-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-3 text-lg"
+                  >
+                    {#if creating}
+                      <div class="w-6 h-6 border-2 border-[#1a1a1a] border-t-transparent rounded-full animate-spin"></div>
+                      <span>Đang tạo...</span>
+                    {:else}
+                      <span>🚀</span>
+                      <span>Tạo Lộ Trình</span>
+                    {/if}
+                  </button>
+                </div>
               </div>
             </div>
           {/if}
@@ -597,16 +673,61 @@
                   {#if tour.description}
                     <p class="text-gray-400 mb-4">{tour.description}</p>
                   {/if}
-                  <div class="flex items-center justify-between text-sm">
+                  <div class="flex items-center justify-between text-sm mb-4">
                     <span class="text-[#c4a574]">📍 {tour.items?.length || 0} điểm</span>
                     <span class="text-gray-500">{formatDate(tour.created_at)}</span>
                   </div>
+                  <button
+                    on:click={() => viewTourDiagram(tour.id)}
+                    class="w-full bg-[#c4a574] hover:bg-[#d4b584] text-[#1a1a1a] font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+                  >
+                    <span>📊</span>
+                    <span>Xem Sơ Đồ</span>
+                  </button>
                 </div>
               {/each}
             </div>
           {/if}
         </div>
       {/if}
+    </div>
+  {/if}
+
+  <!-- Diagram Modal -->
+  {#if viewingDiagram}
+    <div 
+      class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+      on:click={closeDiagram}
+      role="button"
+      tabindex="0"
+      on:keydown={(e) => e.key === 'Escape' && closeDiagram()}
+    >
+      <div 
+        class="bg-[#1a1a1a] rounded-2xl p-8 max-w-6xl w-full max-h-[90vh] overflow-y-auto border-2 border-[#c4a574]"
+        on:click|stopPropagation
+      >
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+            <span>📊</span>
+            <span>Sơ Đồ Lịch Trình: {selectedTourDetail?.tour_name || 'Lịch trình'}</span>
+          </h2>
+          <button
+            on:click={closeDiagram}
+            class="text-gray-400 hover:text-white text-2xl font-bold w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#2a2a2a] transition-colors"
+          >
+            ×
+          </button>
+        </div>
+        
+        {#if loadingTourDetail}
+          <div class="text-center py-12">
+            <div class="w-12 h-12 border-4 border-[#c4a574] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+            <p class="text-gray-400">Đang tải sơ đồ...</p>
+          </div>
+        {:else if selectedTourDetail?.items}
+          <TourDiagram tourItems={selectedTourDetail.items} tourName={selectedTourDetail.tour_name} />
+        {/if}
+      </div>
     </div>
   {/if}
 </div>

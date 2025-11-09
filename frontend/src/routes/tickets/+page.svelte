@@ -100,13 +100,9 @@
       
       if (result.ok) {
         success = 'Mua vé thành công!';
-        hasTicket = true;
-        ticketInfo = {
-          code: result.ticket_code,
-          purchaseDate: result.purchase_date,
-          amountPaid: result.amount_paid
-        };
         bankPassword = '';
+        // Reload ticket status to get latest ticket info
+        await loadTicketStatus();
       } else {
         error = result.error || 'Có lỗi xảy ra';
       }
@@ -261,6 +257,91 @@
             {success}
           </div>
         {/if}
+        
+        <!-- Purchase New Ticket Section -->
+        <div class="mt-8 bg-gradient-to-br from-[#3a3a3a] to-[#2a2a2a] rounded-2xl p-8 shadow-2xl border border-[#4a4a4a] animate-scaleIn">
+          <h2 class="text-2xl font-bold text-[#c4a574] mb-6 text-center">
+            🛒 Mua Vé Mới
+          </h2>
+          <p class="text-gray-400 text-center mb-6">
+            Bạn có thể mua vé mới bất cứ lúc nào. Vé mới sẽ thay thế vé hiện tại.
+          </p>
+          
+          <form on:submit|preventDefault={handlePurchase} class="space-y-6">
+            <!-- Bank Account Selection -->
+            <div>
+              <label class="block text-gray-300 font-semibold mb-3">
+                🏦 Chọn Tài Khoản Ngân Hàng
+              </label>
+              <select
+                bind:value={selectedAccount}
+                class="w-full bg-[#1a1a1a] border border-[#4a4a4a] text-white rounded-lg px-4 py-3 focus:border-[#c4a574] focus:ring-2 focus:ring-[#c4a574]/50 focus:outline-none transition-all duration-300"
+                required
+              >
+                {#each bankAccounts as account}
+                  <option value={account.account_number}>
+                    {account.account_number} - {account.name} ({formatCurrency(account.balance)})
+                  </option>
+                {/each}
+              </select>
+            </div>
+            
+            <!-- Bank Password -->
+            <div>
+              <label class="block text-gray-300 font-semibold mb-3">
+                🔒 Smart OTP
+              </label>
+              <div class="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  bind:value={bankPassword}
+                  placeholder="Nhập mật khẩu (demo: 123456)"
+                  class="w-full bg-[#1a1a1a] border border-[#4a4a4a] text-white rounded-lg px-4 py-3 pr-12 focus:border-[#c4a574] focus:ring-2 focus:ring-[#c4a574]/50 focus:outline-none transition-all duration-300"
+                  required
+                />
+                <button
+                  type="button"
+                  on:click={() => showPassword = !showPassword}
+                  class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#c4a574] transition-colors"
+                >
+                  {#if showPassword}
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                    </svg>
+                  {:else}
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  {/if}
+                </button>
+              </div>
+            </div>
+            
+            <!-- Error Message -->
+            {#if error}
+              <div class="bg-red-500/20 border border-red-500 text-red-400 px-4 py-3 rounded-lg animate-slideInUp">
+                ⚠️ {error}
+              </div>
+            {/if}
+            
+            <!-- Submit Button -->
+            <button
+              type="submit"
+              disabled={purchasing}
+              class="w-full bg-[#c4a574] hover:bg-[#d4b584] text-[#1a1a1a] font-bold py-4 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            >
+              {#if purchasing}
+                <span class="flex items-center justify-center gap-2">
+                  <div class="w-5 h-5 border-2 border-[#1a1a1a] border-t-transparent rounded-full animate-smoothSpin"></div>
+                  Đang xử lý...
+                </span>
+              {:else}
+                💳 Mua Vé Mới - 50,000đ
+              {/if}
+            </button>
+          </form>
+        </div>
       </div>
     {:else}
       <!-- Purchase Form -->
