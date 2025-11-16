@@ -159,7 +159,7 @@
         {:else if currentStep === 'error'}
           <div class="space-y-4">
             <div class="bg-red-500/20 border border-red-500 text-red-400 px-4 py-3 rounded-lg">
-              ⚠️ {error}
+               {error}
             </div>
 
             <div class="text-center">
@@ -255,7 +255,7 @@
             
             <div class="bg-[#c4a574]/10 border border-[#c4a574]/30 rounded-lg p-4">
               <p class="text-gray-300 text-sm">
-                ✅ Check-in thành công lúc <span class="font-semibold text-[#c4a574]">{checkinTime}</span>
+                 Check-in thành công lúc <span class="font-semibold text-[#c4a574]">{checkinTime}</span>
               </p>
             </div>
             
@@ -263,7 +263,7 @@
               on:click={startQuiz}
               class="w-full bg-[#c4a574] hover:bg-[#d4b584] text-[#1a1a1a] font-bold py-4 rounded-lg transition-all duration-300 transform hover:scale-105"
             >
-              🎯 Bắt Đầu Quiz
+               Bắt Đầu Quiz
             </button>
           </div>
         
@@ -271,7 +271,7 @@
           <div class="space-y-6 animate-fadeIn">
             <div class="bg-[#c4a574]/10 border border-[#c4a574]/30 rounded-lg p-4 mb-6">
               <p class="text-gray-300 text-sm text-center">
-                📝 Trả lời đúng để nhận điểm thưởng!
+                 Trả lời đúng để nhận điểm thưởng!
               </p>
             </div>
             
@@ -301,7 +301,7 @@
             
             {#if error}
               <div class="bg-red-500/20 border border-red-500 text-red-400 px-4 py-3 rounded-lg">
-                ⚠️ {error}
+                 {error}
               </div>
             {/if}
             
@@ -316,7 +316,7 @@
                   Đang xử lý...
                 </span>
               {:else}
-                ✅ Nộp Bài
+                 Nộp Bài
               {/if}
             </button>
           </div>

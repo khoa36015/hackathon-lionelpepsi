@@ -60,8 +60,8 @@
         recognition.onresult = (event) => {
           const speechResult = event.results[0][0].transcript;
           transcript = speechResult;
-          console.log('✅ Nhận diện thành công:', speechResult);
-          debugInfo = `✅ Đã nghe: "${speechResult}"`;
+          console.log(' Nhận diện thành công:', speechResult);
+          debugInfo = ` Đã nghe: "${speechResult}"`;
           handleUserQuestion(speechResult);
         };
 
@@ -87,11 +87,11 @@
         };
 
         recognition.onend = () => {
-          console.log('🎤 Kết thúc ghi âm');
+          console.log(' Kết thúc ghi âm');
           isRecording = false;
           if (state === 'listening') {
             state = 'processing';
-            debugInfo = '⏳ Đang xử lý...';
+            debugInfo = ' Đang xử lý...';
           }
         };
       } else {
@@ -263,22 +263,22 @@
       }
 
       const data = await response.json();
-      console.log('📦 FPT.AI Direct Response data:', data);
+      console.log(' FPT.AI Direct Response data:', data);
 
       if (data.error === 0 && data.async) {
         const audioUrl = data.async;
-        console.log('✅ FPT.AI audio URL:', audioUrl);
+        console.log(' FPT.AI audio URL:', audioUrl);
         await playAudioFromUrl(audioUrl, onEnd);
       } else {
-        console.error('❌ FPT.AI TTS returned error:', data);
-        debugInfo = `❌ FPT.AI error: ${data.message || 'Unknown error'}`;
+        console.error(' FPT.AI TTS returned error:', data);
+        debugInfo = ` FPT.AI error: ${data.message || 'Unknown error'}`;
         speakWithBrowser(text, onEnd);
       }
 
     } catch (error) {
-      console.error('❌ Error calling FPT.AI TTS:', error);
-      console.error('❌ Error details:', error.message, error.stack);
-      debugInfo = `❌ Lỗi kết nối FPT.AI: ${error.message}`;
+      console.error(' Error calling FPT.AI TTS:', error);
+      console.error(' Error details:', error.message, error.stack);
+      debugInfo = ` Lỗi kết nối FPT.AI: ${error.message}`;
       speakWithBrowser(text, onEnd);
     }
   }
@@ -286,44 +286,44 @@
   async function playAudioFromUrl(audioUrl, onEnd = null) {
     try {
       // Show loading indicator
-      debugInfo = `⏳ Đang tải audio từ FPT.AI...`;
+      debugInfo = ` Đang tải audio từ FPT.AI...`;
 
       // Wait for audio to be ready with retry logic
       const isReady = await waitForAudioReady(audioUrl, 8000); // Wait up to 8 seconds
 
       if (!isReady) {
-        console.warn('⚠️ Audio not ready after 8 seconds, trying to play anyway...');
+        console.warn(' Audio not ready after 8 seconds, trying to play anyway...');
       }
 
       // Play audio from URL
       const audio = new Audio(audioUrl);
 
       audio.onloadeddata = () => {
-        console.log('✅ Audio loaded successfully');
-        debugInfo = `🔊 Đang phát giọng đọc...`;
+        console.log(' Audio loaded successfully');
+        debugInfo = ` Đang phát giọng đọc...`;
       };
 
       audio.onended = () => {
-        console.log('✅ Audio playback ended');
-        debugInfo = `✅ Hoàn thành`;
+        console.log(' Audio playback ended');
+        debugInfo = ` Hoàn thành`;
         state = 'initial'; // Reset to initial state when done
         if (onEnd) onEnd();
       };
 
       audio.onerror = (error) => {
-        console.error('❌ Audio playback error:', error);
-        debugInfo = `❌ Lỗi phát audio`;
+        console.error(' Audio playback error:', error);
+        debugInfo = ` Lỗi phát audio`;
         state = 'initial'; // Reset to initial state on error
         throw new Error('Audio playback failed');
       };
 
       // Try to play
       await audio.play();
-      console.log('🔊 Audio playing...');
+      console.log(' Audio playing...');
 
     } catch (err) {
-      console.error('❌ Failed to play audio:', err);
-      debugInfo = `❌ Không thể phát audio: ${err.message}`;
+      console.error(' Failed to play audio:', err);
+      debugInfo = ` Không thể phát audio: ${err.message}`;
       throw err; // Re-throw to trigger fallback
     }
   }
@@ -336,7 +336,7 @@
       try {
         const response = await fetch(url, { method: 'HEAD' });
         if (response.ok) {
-          console.log('✅ Audio file is ready');
+          console.log(' Audio file is ready');
           return true;
         }
       } catch (e) {
@@ -347,7 +347,7 @@
       await new Promise(resolve => setTimeout(resolve, checkInterval));
     }
 
-    console.log('⚠️ Audio file not ready after', maxWait, 'ms, trying anyway...');
+    console.log(' Audio file not ready after', maxWait, 'ms, trying anyway...');
     return false;
   }
 
@@ -356,15 +356,15 @@
     if (!browser) return;
 
     if (!synthesis) {
-      console.error('❌ Browser TTS không khả dụng');
+      console.error(' Browser TTS không khả dụng');
       if (onEnd) onEnd();
       return;
     }
 
     // MUST have Vietnamese voice - no fallback to English
     if (availableVietnameseVoices.length === 0) {
-      console.error('❌ Không có giọng tiếng Việt trong trình duyệt');
-      debugInfo = '❌ Không có giọng tiếng Việt';
+      console.error(' Không có giọng tiếng Việt trong trình duyệt');
+      debugInfo = ' Không có giọng tiếng Việt';
       if (onEnd) onEnd();
       return;
     }
@@ -377,12 +377,12 @@
     // ONLY use Vietnamese voices - NO English fallback
     if (selectedBrowserVoice && selectedBrowserVoice.lang.startsWith('vi')) {
       currentUtterance.voice = selectedBrowserVoice;
-      console.log('🔊 Sử dụng giọng đã chọn:', selectedBrowserVoice.name);
+      console.log(' Sử dụng giọng đã chọn:', selectedBrowserVoice.name);
     } else {
       // Force use first Vietnamese voice
       currentUtterance.voice = availableVietnameseVoices[0];
       selectedBrowserVoice = availableVietnameseVoices[0];
-      console.log('🔊 Sử dụng giọng tiếng Việt:', availableVietnameseVoices[0].name);
+      console.log(' Sử dụng giọng tiếng Việt:', availableVietnameseVoices[0].name);
     }
 
     currentUtterance.rate = 0.9; // Slightly slower for better clarity
@@ -390,8 +390,8 @@
     currentUtterance.volume = 1.0;
 
     currentUtterance.onend = () => {
-      console.log('✅ Browser TTS hoàn thành');
-      debugInfo = '✅ Hoàn thành';
+      console.log(' Browser TTS hoàn thành');
+      debugInfo = ' Hoàn thành';
       state = 'initial'; // Reset to initial state when done speaking
       if (onEnd) onEnd();
     };
@@ -522,7 +522,7 @@
   async function handleUserQuestion(question) {
     state = 'processing';
     errorMessage = '';
-    debugInfo = '🔄 Đang kết nối với AI...';
+    debugInfo = ' Đang kết nối với AI...';
 
     try {
       // Choose endpoint based on agent type
@@ -553,7 +553,7 @@
         // Don't throw here, just log - maybe server is slow to start
       }
 
-      debugInfo = '📡 Đang gửi câu hỏi đến AI...';
+      debugInfo = ' Đang gửi câu hỏi đến AI...';
       
       const res = await fetch(endpoint, {
         method: 'POST',
@@ -608,11 +608,11 @@
       console.log('Speaking AI response:', aiResponse);
 
       state = 'speaking';
-      debugInfo = '🔊 Đang phát giọng đọc...';
+      debugInfo = ' Đang phát giọng đọc...';
       speak(aiResponse, () => {
         // After AI finishes speaking, return to initial state
         state = 'initial';
-        debugInfo = '✅ Hoàn thành';
+        debugInfo = ' Hoàn thành';
       });
 
     } catch (error) {
@@ -632,7 +632,7 @@
       
       errorMessage = errorMsg;
       state = 'error';
-      debugInfo = '❌ Lỗi kết nối AI';
+      debugInfo = ' Lỗi kết nối AI';
     }
   }
 
@@ -656,7 +656,7 @@
   function handleNo() {
     // Don't allow closing while speaking or listening
     if (state === 'speaking' || state === 'listening') {
-      debugInfo = '⚠️ Vui lòng đợi hoàn thành';
+      debugInfo = ' Vui lòng đợi hoàn thành';
       return;
     }
 
@@ -668,7 +668,7 @@
   function handleClose() {
     // Don't allow closing while speaking or listening
     if (state === 'speaking' || state === 'listening') {
-      debugInfo = '⚠️ Vui lòng đợi AI nói xong hoặc dừng ghi âm';
+      debugInfo = ' Vui lòng đợi AI nói xong hoặc dừng ghi âm';
       return;
     }
 
@@ -721,7 +721,7 @@
           <!-- Vietnamese Voice Selection (FPT.AI) -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              🎤 Chọn giọng đọc tiếng Việt
+               Chọn giọng đọc tiếng Việt
             </label>
             <select
               bind:value={selectedFptVoice}
@@ -734,7 +734,7 @@
               {/each}
             </select>
             <p class="text-xs text-gray-500 mt-1">
-              ✨ Giọng đọc tự nhiên từ FPT.AI
+               Giọng đọc tự nhiên từ FPT.AI
             </p>
           </div>
 
@@ -742,7 +742,7 @@
           {#if availableVietnameseVoices.length > 0}
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
-                🔊 Giọng dự phòng (Trình duyệt)
+                 Giọng dự phòng (Trình duyệt)
               </label>
               <select
                 bind:value={selectedBrowserVoice}
@@ -765,7 +765,7 @@
             class="w-full px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition text-sm font-medium"
             on:click={() => speak('Xin chào! Đây là giọng đọc tiếng Việt từ FPT.AI.')}
           >
-            🔊 Nghe thử giọng đọc
+             Nghe thử giọng đọc
           </button>
         </div>
       {/if}
@@ -774,7 +774,7 @@
     {#if state === 'initial'}
       <div class="text-center space-y-4 animate-fadeIn">
         <p class="text-gray-600 mb-4 text-lg animate-slideInUp">
-          💬 Bạn muốn hỏi gì về <span class="font-semibold text-indigo-600">{itemName}</span>?
+           Bạn muốn hỏi gì về <span class="font-semibold text-indigo-600">{itemName}</span>?
         </p>
         <p class="text-sm text-gray-500 mb-4 animate-slideInUp" style="animation-delay: 0.1s;">
           Bạn có thể hỏi về lịch sử, đặc điểm, hoặc bất kỳ điều gì bạn tò mò!
@@ -785,14 +785,14 @@
             class="px-6 py-3 bg-indigo-600 text-white rounded-full font-semibold hover:bg-indigo-700 hover:shadow-lg transform hover:scale-105 transition-all duration-300 shadow-smooth animate-slideInUp"
             style="animation-delay: 0.2s;"
           >
-            🎤 Nói
+             Nói
           </button>
           <button
             on:click={toggleTextInput}
             class="px-6 py-3 bg-green-600 text-white rounded-full font-semibold hover:bg-green-700 hover:shadow-lg transform hover:scale-105 transition-all duration-300 animate-slideInUp"
             style="animation-delay: 0.25s;"
           >
-            ⌨️ Gõ
+             Gõ
           </button>
           <button
             on:click={handleNo}
@@ -810,7 +810,7 @@
               type="text"
               bind:value={textInput}
               placeholder="Nhập câu hỏi của bạn..."
-              class="w-full px-4 py-3 border-2 border-gray-300 text-white rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none transition-all duration-300"
+              class="w-full px-4 py-3 border-2 border-gray-300 text-white    rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none transition-all duration-300"
               on:keypress={(e) => e.key === 'Enter' && handleTextSubmit()}
             />
             <button
@@ -838,13 +838,13 @@
         </div>
         <p class="text-lg font-semibold text-gray-900 animate-slideInUp">🎤 Đang lắng nghe...</p>
         <p class="text-sm text-gray-600 animate-slideInUp" style="animation-delay: 0.1s;">Hãy nói câu hỏi của bạn</p>
-        <p class="text-xs text-yellow-600 font-medium animate-slideInUp" style="animation-delay: 0.2s;">⚠️ Không thể đóng khi đang ghi âm</p>
+        <p class="text-xs text-yellow-600 font-medium animate-slideInUp" style="animation-delay: 0.2s;"> Không thể đóng khi đang ghi âm</p>
         <button
           on:click={stopListening}
           class="mt-4 px-6 py-3 bg-red-600 text-white rounded-full font-semibold hover:bg-red-700 hover:shadow-lg transform hover:scale-105 transition-all duration-300 animate-slideInUp"
           style="animation-delay: 0.3s;"
         >
-          ⏹️ Dừng ghi âm
+           Dừng ghi âm
         </button>
       </div>
     {/if}
@@ -869,7 +869,7 @@
             <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z" />
           </svg>
         </div>
-        <p class="text-lg font-semibold text-gray-900 animate-slideInUp">🔊 Đang phát giọng đọc...</p>
+        <p class="text-lg font-semibold text-gray-900 animate-slideInUp"> Đang phát giọng đọc...</p>
         <p class="text-sm text-gray-500 animate-slideInUp" style="animation-delay: 0.1s;">Vui lòng đợi AI nói xong</p>
         {#if aiResponse}
           <div class="mt-4 p-4 bg-green-50 rounded-lg text-left animate-scaleIn shadow-smooth">
@@ -883,7 +883,7 @@
           class="mt-4 px-6 py-3 bg-red-600 text-white rounded-full font-semibold hover:bg-red-700 hover:shadow-lg transform hover:scale-105 transition-all duration-300 animate-slideInUp"
           style="animation-delay: 0.2s;"
         >
-          ⏹️ Dừng giọng đọc
+           Dừng giọng đọc
         </button>
       </div>
     {/if}
@@ -935,7 +935,7 @@
     <!-- Debug Info -->
     <div class="mt-6 pt-4 border-t border-gray-200">
       <details class="text-xs text-gray-500">
-        <summary class="cursor-pointer hover:text-gray-700 font-medium">🔍 Debug Info</summary>
+        <summary class="cursor-pointer hover:text-gray-700 font-medium"> Debug Info</summary>
         <div class="mt-2 space-y-1 text-left bg-gray-50 p-3 rounded">
           <p><strong>State:</strong> {state}</p>
           <p><strong>Mode:</strong> {isGeneralAgent ? '🌐 General AI (Tất cả câu hỏi)' : '🏛️ Museum AI (Bảo tàng)'}</p>

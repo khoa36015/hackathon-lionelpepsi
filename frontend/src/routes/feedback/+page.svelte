@@ -151,7 +151,7 @@
       <!-- Feedback Form -->
       <div class="bg-gradient-to-br from-[#3a3a3a] to-[#2a2a2a] rounded-2xl p-8 shadow-2xl border border-[#4a4a4a] animate-scaleIn" style="animation-delay: 0.2s;">
         <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-          <span class="text-3xl">✍️</span>
+          <span class="text-3xl"></span>
           Gửi Feedback Mới
         </h2>
 
@@ -245,7 +245,7 @@
               <div class="w-5 h-5 border-2 border-[#1a1a1a] border-t-transparent rounded-full animate-spin"></div>
               <span>Đang gửi...</span>
             {:else}
-              <span>📤</span>
+      
               <span>Gửi Feedback</span>
             {/if}
           </button>
