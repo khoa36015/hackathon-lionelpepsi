@@ -521,6 +521,8 @@
 
   async function handleUserQuestion(question) {
     state = 'processing';
+    errorMessage = '';
+    debugInfo = '🔄 Đang kết nối với AI...';
 
     try {
       // Choose endpoint based on agent type
@@ -535,19 +537,43 @@
         mode: isGeneralAgent ? 'general' : 'museum'
       });
 
+      // Check if AI server is reachable first (skip if it takes too long)
+      try {
+        const healthCheckPromise = fetch(`${API_AI}/health`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+          signal: AbortSignal.timeout(3000) // 3 second timeout for health check
+        });
+        const healthCheck = await healthCheckPromise;
+        if (!healthCheck.ok) {
+          console.warn('Health check returned non-OK status:', healthCheck.status);
+        }
+      } catch (healthError) {
+        console.warn('Health check failed (will still try main request):', healthError);
+        // Don't throw here, just log - maybe server is slow to start
+      }
+
+      debugInfo = '📡 Đang gửi câu hỏi đến AI...';
+      
       const res = await fetch(endpoint, {
         method: 'POST',
         // Don't send credentials to AI API (different port, no auth needed)
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message })
+        body: JSON.stringify({ message }),
+        signal: AbortSignal.timeout(30000) // 30 second timeout
       });
 
       console.log('AI Response status:', res.status, res.statusText);
 
       if (!res.ok) {
-        const errorText = await res.text();
-        console.error('AI API error response:', errorText);
-        throw new Error(`Không thể kết nối với AI (${res.status})`);
+        let errorText = '';
+        try {
+          errorText = await res.text();
+          console.error('AI API error response:', errorText);
+        } catch (e) {
+          errorText = `HTTP ${res.status}: ${res.statusText}`;
+        }
+        throw new Error(`Không thể kết nối với AI (${res.status}): ${errorText}`);
       }
 
       const data = await res.json();
@@ -582,15 +608,31 @@
       console.log('Speaking AI response:', aiResponse);
 
       state = 'speaking';
+      debugInfo = '🔊 Đang phát giọng đọc...';
       speak(aiResponse, () => {
         // After AI finishes speaking, return to initial state
         state = 'initial';
+        debugInfo = '✅ Hoàn thành';
       });
 
     } catch (error) {
       console.error('Error querying AI:', error);
-      errorMessage = `Không thể truy vấn AI: ${error.message}`;
+      
+      // Provide helpful error messages
+      let errorMsg = '';
+      if (error.name === 'AbortError' || error.message.includes('timeout')) {
+        errorMsg = 'AI server không phản hồi kịp thời. Vui lòng thử lại sau.';
+      } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+        errorMsg = 'Không thể kết nối với AI server. Vui lòng kiểm tra:\n1. AI API server có đang chạy trên port 8000 không?\n2. Kiểm tra kết nối mạng';
+      } else if (error.message.includes('CORS')) {
+        errorMsg = 'Lỗi CORS. Vui lòng kiểm tra cấu hình CORS của AI server.';
+      } else {
+        errorMsg = `Không thể truy vấn AI: ${error.message}`;
+      }
+      
+      errorMessage = errorMsg;
       state = 'error';
+      debugInfo = '❌ Lỗi kết nối AI';
     }
   }
 

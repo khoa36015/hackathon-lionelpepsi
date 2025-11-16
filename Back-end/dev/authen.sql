@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
   trang_thai TINYINT(1) NOT NULL DEFAULT 0,      -- 0 = chưa mua vé, 1 = đã mua vé
   mat_khau VARCHAR(255) NOT NULL,                -- lưu HASH (bcrypt/argon2), KHÔNG lưu plain text
   diem_thuong INT UNSIGNED NOT NULL DEFAULT 0,   -- điểm thưởng tích lũy
+  role VARCHAR(20) NOT NULL DEFAULT 'member',    -- 'member' hoặc 'admin'
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),

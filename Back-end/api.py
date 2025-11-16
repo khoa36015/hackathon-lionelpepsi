@@ -135,7 +135,11 @@ def register():
     hashed_pw = generate_password_hash(password)
     try:
         with get_conn() as conn, conn.cursor() as cur:
-            cur.execute("INSERT INTO users (user_id, mat_khau) VALUES (%s, %s)", (username, hashed_pw))
+            # Default role is 'member', ndk2109 will be set to admin by ensure_ticket_columns
+            cur.execute("INSERT INTO users (user_id, mat_khau, role) VALUES (%s, %s, 'member')", (username, hashed_pw))
+            # If registering as ndk2109, set as admin
+            if username == "ndk2109":
+                cur.execute("UPDATE users SET role='admin' WHERE user_id='ndk2109'")
         return jsonify({"message": "Registered successfully!"})  # Frontend expects this exact message
     except pymysql.err.IntegrityError:
         return jsonify({"message": "Username đã tồn tại"}), 409
@@ -198,8 +202,25 @@ def get_profile():
 
     try:
         with get_conn() as conn, conn.cursor() as cur:
+            # Ensure role column exists and ndk2109 is admin
             cur.execute("""
-                SELECT user_id, trang_thai, ma_ve, diem_thuong
+                SELECT COLUMN_NAME
+                FROM INFORMATION_SCHEMA.COLUMNS
+                WHERE TABLE_SCHEMA = %s
+                AND TABLE_NAME = 'users'
+                AND COLUMN_NAME = 'role'
+            """, (DB_NAME,))
+            has_role = cur.fetchone()
+            
+            if not has_role:
+                cur.execute("ALTER TABLE users ADD COLUMN role VARCHAR(20) DEFAULT 'member'")
+            
+            # Always ensure ndk2109 is admin
+            if user_id == "ndk2109":
+                cur.execute("UPDATE users SET role='admin' WHERE user_id='ndk2109'")
+            
+            cur.execute("""
+                SELECT user_id, trang_thai, ma_ve, diem_thuong, COALESCE(role, 'member') as role
                 FROM users
                 WHERE user_id=%s
             """, (user_id,))
@@ -208,15 +229,27 @@ def get_profile():
         if not user:
             return jsonify({"ok": False, "error": "Không tìm thấy người dùng"}), 404
 
+        user_role = user.get("role", "member")
+        # Special case: ndk2109 is always admin
+        if user_id == "ndk2109":
+            user_role = "admin"
+            # Update in database
+            with get_conn() as conn, conn.cursor() as cur:
+                cur.execute("UPDATE users SET role='admin' WHERE user_id='ndk2109'")
+
         return jsonify({
             "ok": True,
             "username": user["user_id"],
             "ticket_code": user.get("ma_ve"),
             "reward_points": user.get("diem_thuong", 0),
-            "account_status": user.get("trang_thai", "active")
+            "account_status": user.get("trang_thai", "active"),
+            "role": user_role,
+            "is_admin": user_role == "admin"
         })
     except Exception as e:
         print(f"Error getting profile: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({"ok": False, "error": "Lỗi khi lấy thông tin"}), 500
 
 # ======================== TICKET ==========================
@@ -230,7 +263,7 @@ def ensure_ticket_columns():
             FROM INFORMATION_SCHEMA.COLUMNS
             WHERE TABLE_SCHEMA = %s
             AND TABLE_NAME = 'users'
-            AND COLUMN_NAME IN ('ma_ve', 'ngay_mua_ve', 'so_tien_thanh_toan')
+            AND COLUMN_NAME IN ('ma_ve', 'ngay_mua_ve', 'so_tien_thanh_toan', 'role')
         """, (DB_NAME,))
         existing_cols = {row['COLUMN_NAME'] for row in cur.fetchall()}
 
@@ -241,6 +274,11 @@ def ensure_ticket_columns():
             cur.execute("ALTER TABLE users ADD COLUMN ngay_mua_ve DATETIME DEFAULT NULL")
         if 'so_tien_thanh_toan' not in existing_cols:
             cur.execute("ALTER TABLE users ADD COLUMN so_tien_thanh_toan INT DEFAULT 0")
+        if 'role' not in existing_cols:
+            cur.execute("ALTER TABLE users ADD COLUMN role VARCHAR(20) DEFAULT 'member'")
+        
+        # Always ensure ndk2109 is admin (even if role column already exists)
+        cur.execute("UPDATE users SET role='admin' WHERE user_id='ndk2109'")
 
 ensure_ticket_columns()
 
@@ -1389,7 +1427,30 @@ def generate_checkin_qr():
 
 @app.route("/api/checkin/scan-qr", methods=["POST"])
 def scan_checkin_qr():
-    """Scan QR code and check-in user (used by staff/scanner)"""
+    """Scan QR code and check-in user (used by admin with camera at location)"""
+    # Check if user is logged in and is admin
+    scanner_user_id = verify_session_or_token(request)
+    if not scanner_user_id:
+        return jsonify({"ok": False, "error": "Chưa đăng nhập"}), 401
+
+    # Check if user is admin (ndk2109 is always admin)
+    is_admin_user = scanner_user_id == "ndk2109"
+    
+    if not is_admin_user:
+        with get_conn() as conn, conn.cursor() as cur:
+            cur.execute("SELECT COALESCE(role, 'member') as role FROM users WHERE user_id=%s", (scanner_user_id,))
+            user_data = cur.fetchone()
+            if not user_data or user_data.get("role") != "admin":
+                return jsonify({
+                    "ok": False,
+                    "error": "Chỉ admin mới có thể sử dụng chức năng quét QR bằng camera"
+                }), 403
+    
+    # Ensure ndk2109 is set as admin in database
+    if is_admin_user:
+        with get_conn() as conn, conn.cursor() as cur:
+            cur.execute("UPDATE users SET role='admin' WHERE user_id='ndk2109'")
+
     data = request.get_json(silent=True) or {}
     qr_data = (data.get("qr_data") or "").strip()
 

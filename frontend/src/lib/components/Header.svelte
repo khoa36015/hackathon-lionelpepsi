@@ -8,12 +8,13 @@
   import Modal from '$lib/components/Modal.svelte';
   import AuthForm from '$lib/components/Auth.svelte';
   import VoiceInteractionModal from '$lib/components/VoiceInteractionModal.svelte';
-  import { checkSession, logout } from '$lib/api';
+  import { checkSession, logout, getProfile } from '$lib/api';
 
   // State đăng nhập
   const username = writable(null);
   const isLoggedIn = writable(false);
   const rewardPoints = writable(0);
+  const isAdmin = writable(false);
 
   // UI state
   let mobileOpen = false;      // mở menu mobile
@@ -27,16 +28,13 @@
   let mobileMenuRef;
   let headerRef;
 
-  // Load user profile to get reward points
+  // Load user profile to get reward points and admin status
   async function loadUserProfile() {
     try {
-      const res = await fetch('http://localhost:3000/api/profile', {
-        method: 'GET',
-        credentials: 'include'
-      });
-      const data = await res.json();
+      const data = await getProfile();
       if (data.ok) {
         rewardPoints.set(data.reward_points || 0);
+        isAdmin.set(data.is_admin === true);
       }
     } catch (e) {
       console.error('Failed to load profile:', e);
@@ -237,6 +235,12 @@
                 <div class="p-1">
                   <a role="menuitem" tabindex="0" href="/profile"
                      class="block rounded px-3 py-2 text-sm text-[#c4a574] hover:bg-[#3a3a3a] hover:text-white transition">Hồ sơ</a>
+                  {#if $isAdmin}
+                    <a role="menuitem" tabindex="0" href="/admin-scan"
+                       class="block rounded px-3 py-2 text-sm text-[#c4a574] hover:bg-[#3a3a3a] hover:text-white transition">
+                      📷 Quét QR Code
+                    </a>
+                  {/if}
                   <button role="menuitem" class="w-full text-left rounded px-3 py-2 text-sm text-[#c4a574] hover:bg-[#3a3a3a] hover:text-white transition"
                           on:click={handleLogout}>Đăng xuất</button>
                 </div>
@@ -326,6 +330,11 @@
             </div>
             <div class="mt-2 space-y-1">
               <button class="w-full text-left rounded px-3 py-2 text-sm text-[#c4a574] hover:bg-[#4a4a4a] hover:text-white transition" on:click={() => navTo('/profile')}>Hồ sơ</button>
+              {#if $isAdmin}
+                <button class="w-full text-left rounded px-3 py-2 text-sm text-[#c4a574] hover:bg-[#4a4a4a] hover:text-white transition" on:click={() => navTo('/admin-scan')}>
+                  📷 Quét QR Code
+                </button>
+              {/if}
               <button class="w-full text-left rounded px-3 py-2 text-sm text-[#c4a574] hover:bg-[#4a4a4a] hover:text-white transition" on:click={handleLogout}>Đăng xuất</button>
             </div>
           </div>

@@ -3,7 +3,7 @@
   import { fade, fly } from 'svelte/transition';
   import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
-  import { checkSession } from '$lib/api';
+  import { checkSession, getProfile } from '$lib/api';
 
   let loading = true;
   let isLoggedIn = false;
@@ -11,7 +11,8 @@
     username: '',
     ticketCode: '',
     rewardPoints: 0,
-    accountStatus: ''
+    accountStatus: '',
+    isAdmin: false
   };
 
   onMount(async () => {
@@ -46,7 +47,8 @@
           username: data.username,
           ticketCode: data.ticket_code || 'Chưa mua vé',
           rewardPoints: data.reward_points || 0,
-          accountStatus: data.account_status || 'active'
+          accountStatus: data.account_status || 'active',
+          isAdmin: data.is_admin === true
         };
       }
     } catch (err) {
@@ -84,10 +86,15 @@
             <h1 class="text-3xl font-bold text-white mb-2">
               {userInfo.username}
             </h1>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
               <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400 border border-green-500/30">
                 Tài khoản hoạt động
               </span>
+              {#if userInfo.isAdmin}
+                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-400 border border-purple-500/30">
+                  👑 Admin
+                </span>
+              {/if}
               <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[#c4a574]/20 text-[#c4a574] border border-[#c4a574]/30">
                 ⭐ {userInfo.rewardPoints} điểm thưởng
               </span>
@@ -213,6 +220,19 @@
                 <div class="text-xs text-gray-400">Quản lý vé tham quan</div>
               </div>
             </a>
+            
+            {#if userInfo.isAdmin}
+              <a 
+                href="/admin-scan"
+                class="flex items-center gap-3 p-4 rounded-lg bg-[#1a1a1a] hover:bg-[#4a4a4a] border border-[#4a4a4a] hover:border-[#c4a574] transition-all group md:col-span-3"
+              >
+                <span class="text-3xl">📷</span>
+                <div>
+                  <div class="text-white font-semibold group-hover:text-[#c4a574] transition-colors">Quét QR Code - Admin</div>
+                  <div class="text-xs text-gray-400">Quét QR code của khách để xác nhận check-in</div>
+                </div>
+              </a>
+            {/if}
           </div>
         </div>
       </div>

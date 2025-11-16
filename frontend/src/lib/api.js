@@ -31,6 +31,14 @@ export async function checkSession() {
   return await res.json();
 }
 
+export async function getProfile() {
+  const res = await fetch(`${API_AUTH}/profile`, {
+    method: 'GET',
+    credentials: 'include'
+  });
+  return await res.json();
+}
+
 export async function logout() {
   const res = await fetch(`${API_AUTH}/logout`, {
     method: 'POST',
