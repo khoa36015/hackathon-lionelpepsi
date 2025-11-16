@@ -6,5 +6,5 @@ echo.
 python app.py
 pause
 
-cd api-ai 
-python app.py
+cd ..
+python api.py
