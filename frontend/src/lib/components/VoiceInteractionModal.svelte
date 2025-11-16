@@ -810,7 +810,7 @@
               type="text"
               bind:value={textInput}
               placeholder="Nhập câu hỏi của bạn..."
-              class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none transition-all duration-300"
+              class="w-full px-4 py-3 border-2 border-gray-300 text-white rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none transition-all duration-300"
               on:keypress={(e) => e.key === 'Enter' && handleTextSubmit()}
             />
             <button
