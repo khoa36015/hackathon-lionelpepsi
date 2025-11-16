@@ -299,7 +299,7 @@
       <!-- Header -->
       <div class="text-center mb-12">
         <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 animate-slideDown">
-          🗺️ Lộ Trình Tham Quan
+           Lộ Trình Tham Quan
         </h1>
         <p class="text-gray-400 text-lg animate-slideDown" style="animation-delay: 0.1s;">
           Tạo lộ trình riêng để khám phá các di vật và ảnh lịch sử hào hùng
@@ -369,7 +369,7 @@
             <!-- Step 1: Select Locations -->
             <div class="bg-gradient-to-br from-[#3a3a3a] to-[#2a2a2a] rounded-2xl p-8 shadow-2xl border border-[#4a4a4a] animate-scaleIn">
               <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                <span class="text-3xl">📍</span>
+                <span class="text-3xl"></span>
                 Chọn Địa Điểm Tham Quan
               </h2>
 
@@ -425,7 +425,7 @@
 
                 <div class="mt-8 flex items-center justify-between bg-[#c4a574]/10 border border-[#c4a574]/30 rounded-lg p-4">
                   <p class="text-gray-300 flex items-center gap-2">
-                    <span class="text-xl">✅</span>
+                    <span class="text-xl"></span>
                     <span>Đã chọn: <strong class="text-[#c4a574]">{selectedLocations.length}</strong> địa điểm</span>
                   </p>
                   <button
@@ -477,7 +477,7 @@
 
                   <div class="bg-[#c4a574]/10 border border-[#c4a574]/30 rounded-lg p-4">
                     <p class="text-gray-300 text-sm flex items-center gap-2">
-                      <span class="text-xl">📍</span>
+                      <span class="text-xl"></span>
                       <span>Địa điểm: <strong class="text-[#c4a574]">{selectedLocations.join(', ')}</strong></span>
                     </p>
                     <p class="text-gray-300 text-sm flex items-center gap-2 mt-2">
@@ -532,7 +532,7 @@
                                 <div class="p-4">
                                   <h4 class="text-white font-semibold mb-1 line-clamp-2">{photo.ten || 'Ảnh lịch sử'}</h4>
                                   {#if photo.dia_diem}
-                                    <p class="text-gray-400 text-sm">📍 {photo.dia_diem}</p>
+                                    <p class="text-gray-400 text-sm"> {photo.dia_diem}</p>
                                   {/if}
                                 </div>
                                 {#if isSelected('photo', photo.id)}
@@ -569,7 +569,7 @@
                                 <div class="p-4">
                                   <h4 class="text-white font-semibold mb-1 line-clamp-2">{artifact.ten || 'Di vật lịch sử'}</h4>
                                   {#if artifact.dia_diem}
-                                    <p class="text-gray-400 text-sm">📍 {artifact.dia_diem}</p>
+                                    <p class="text-gray-400 text-sm"> {artifact.dia_diem}</p>
                                   {/if}
                                 </div>
                                 {#if isSelected('artifact', artifact.id)}
@@ -629,7 +629,7 @@
                       <div class="w-6 h-6 border-2 border-[#1a1a1a] border-t-transparent rounded-full animate-spin"></div>
                       <span>Đang tạo...</span>
                     {:else}
-                      <span>🚀</span>
+                      <span></span>
                       <span>Tạo Lộ Trình</span>
                     {/if}
                   </button>
@@ -653,7 +653,7 @@
             </div>
           {:else if myTours.length === 0}
             <div class="text-center py-12">
-              <div class="text-6xl mb-4">🗺️</div>
+              <div class="text-6xl mb-4"></div>
               <p class="text-gray-400 text-lg mb-4">Bạn chưa có lộ trình nào</p>
               <button
                 on:click={() => activeTab = 'create'}
@@ -674,7 +674,7 @@
                     <p class="text-gray-400 mb-4">{tour.description}</p>
                   {/if}
                   <div class="flex items-center justify-between text-sm mb-4">
-                    <span class="text-[#c4a574]">📍 {tour.items?.length || 0} điểm</span>
+                    <span class="text-[#c4a574]"> {tour.items?.length || 0} điểm</span>
                     <span class="text-gray-500">{formatDate(tour.created_at)}</span>
                   </div>
                   <button
@@ -804,4 +804,5 @@
     overflow: hidden;
   }
 </style>
+
 
