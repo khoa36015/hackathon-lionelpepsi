@@ -22,7 +22,7 @@ DIA_CHI_BAO_TANG = bao_tang_chung_tich.get("dia_chi", "Không rõ địa chỉ")
 
 # Load extended artifacts from data.json
 EXTENDED_ARTIFACTS = []
-DATA_JSON_PATH = os.path.join(os.path.dirname(__file__), "data.json")
+DATA_JSON_PATH = os.path.join(os.path.dirname(__file__), "")
 try:
     with open(DATA_JSON_PATH, "r", encoding="utf-8") as f:
         data_json = json.load(f)
@@ -450,7 +450,7 @@ def get_locations_from_artifacts():
         "trên bầu trời và tại các bãi đáp dã chiến": "Khu Trưng Bày Ngoài Trời",
         "dọc các trục đường chiến lược": "Khu Trưng Bày Ngoài Trời",
         "trảng bàng, tây ninh": "Khu Trưng Bày Ảnh Quốc Tế",
-        "khu mô phỏng nhà tù": "Phòng Trà Tân",
+        "khu mô phỏng nhà tù": "Phòng Tra Tấn",
         "khu trưng bày nạn nhân": "Khu Trưng Bày Trong Nhà",
         "vùng đồng bằng và rừng thấp": "Khu Trưng Bày Ngoài Trời",
         "bên vai phóng viên trên chiến trường": "Khu Trưng Bày Ảnh Quốc Tế",
@@ -485,7 +485,7 @@ def get_locations_from_artifacts():
         "Khu Trưng Bày Trong Nhà",
         "Khu Trưng Bày Ngoài Trời",
         "Khu Trưng Bày Ảnh Quốc Tế",
-        "Phòng Trà Tân"
+        "Phòng Tra Tấn"
     ]
     
     # Count artifacts per location
@@ -519,7 +519,7 @@ def get_locations_from_artifacts():
         if any(kw in name_lower for kw in ["máy bay", "xe tăng", "trực thăng"]):
             location = "Khu Trưng Bày Ngoài Trời"
         elif "tra tấn" in name_lower or "tù binh" in name_lower:
-            location = "Phòng Trà Tân"
+            location = "Phòng Tra Tấn"
         else:
             location = "Khu Trưng Bày Trong Nhà"
         
@@ -533,7 +533,7 @@ def get_locations_from_artifacts():
         "Khu Trưng Bày Trong Nhà": "Các hiện vật và ảnh lịch sử trong nhà",
         "Khu Trưng Bày Ngoài Trời": "Vũ khí và phương tiện quân sự",
         "Khu Trưng Bày Ảnh Quốc Tế": "Ảnh từ phóng viên chiến trường quốc tế",
-        "Phòng Trà Tân": "Hiện vật tra tấn và tù binh"
+        "Phòng Tra Tấn": "Hiện vật tra tấn và tù binh"
     }
     
     for loc in standard_locations:
@@ -634,7 +634,7 @@ def get_items_by_location():
             "trên bầu trời và tại các bãi đáp dã chiến": "Khu Trưng Bày Ngoài Trời",
             "dọc các trục đường chiến lược": "Khu Trưng Bày Ngoài Trời",
             "trảng bàng, tây ninh": "Khu Trưng Bày Ảnh Quốc Tế",
-            "khu mô phỏng nhà tù": "Phòng Trà Tân",
+            "khu mô phỏng nhà tù": "Phòng Tra Tấn",
             "khu trưng bày nạn nhân": "Khu Trưng Bày Trong Nhà",
             "vùng đồng bằng và rừng thấp": "Khu Trưng Bày Ngoài Trời",
             "bên vai phóng viên trên chiến trường": "Khu Trưng Bày Ảnh Quốc Tế",
@@ -709,7 +709,7 @@ def get_items_by_location():
             if any(kw in name_lower for kw in ["máy bay", "xe tăng", "trực thăng"]):
                 artifact_copy["dia_diem"] = "Khu Trưng Bày Ngoài Trời"
             elif "tra tấn" in name_lower or "tù binh" in name_lower:
-                artifact_copy["dia_diem"] = "Phòng Trà Tân"
+                artifact_copy["dia_diem"] = "Phòng Tra Tấn"
             else:
                 artifact_copy["dia_diem"] = "Khu Trưng Bày Trong Nhà"
             
@@ -834,7 +834,7 @@ def get_tour_detail(tour_id):
         "trên bầu trời và tại các bãi đáp dã chiến": "Khu Trưng Bày Ngoài Trời",
         "dọc các trục đường chiến lược": "Khu Trưng Bày Ngoài Trời",
         "trảng bàng, tây ninh": "Khu Trưng Bày Ảnh Quốc Tế",
-        "khu mô phỏng nhà tù": "Phòng Trà Tân",
+        "khu mô phỏng nhà tù": "Phòng Tra Tấn",
         "khu trưng bày nạn nhân": "Khu Trưng Bày Trong Nhà",
         "vùng đồng bằng và rừng thấp": "Khu Trưng Bày Ngoài Trời",
         "bên vai phóng viên trên chiến trường": "Khu Trưng Bày Ảnh Quốc Tế",

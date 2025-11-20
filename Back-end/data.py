@@ -10,7 +10,7 @@ bao_tang_chung_tich = {
                 "id": 6,
                 "ten": "Ảnh nạn nhân chất độc da cam/dioxin",
                 "mo_ta": "Bộ sưu tập ảnh ghi lại hậu quả thảm khốc của chất độc da cam, minh chứng cho di chứng chiến tranh.",
-                "hinh_anh": "/anhnannhanchatdoc.jpg"
+                "hinh_anh": "/tremaudacam.jpg"
             },
             {
                 "id": 7,
@@ -19,16 +19,58 @@ bao_tang_chung_tich = {
                 "hinh_anh": "/anhembenapalm.jpg"
             },
             {
-                "id": 8,
-                "ten": "Khu trưng bày mô phỏng 'chuồng cọp'",
-                "mo_ta": "Tái hiện phòng tra tấn chính trị khắc nghiệt, thể hiện tính phi nhân của chiến tranh.",
-                "hinh_anh": ["/khutrungbayphongtratan.jpg", "/khutrungbayphongtratan-2.jpg"]
-            },
-            {
                 "id": 15,
                 "ten": "Ảnh phóng viên chiến trường quốc tế",
                 "mo_ta": "Bộ ảnh ghi lại hiện thực tàn khốc của chiến tranh và đời sống người dân Việt Nam, nhiều ảnh đoạt giải Pulitzer.",
                 "hinh_anh": "/anhphongvienchientruongquocte.jpg"
+            },
+            {
+                "id": 16,
+                "ten": "Ảnh Đại tướng Võ Nguyên Giáp",
+                "mo_ta": "Ảnh Đại tướng Võ Nguyên Giáp.",
+                "hinh_anh": "/anhDaiTuongVoNguyenGiap.jpg"
+            },
+            {
+                "id": 17,
+                "ten": "Bản đồ rải chất độc da cam",
+                "mo_ta": "Bản đồ rải chất độc da cam.",
+                "hinh_anh": "/bandoraichatdoc.jpg"
+            },
+            {
+                "id": 18,
+                "ten": "Bản đồ tác chiến",
+                "mo_ta": "Bản đồ tác chiến.",
+                "hinh_anh": "/bandotacchien.jpg"
+            },
+            {
+                "id": 20,
+                "ten": "Biểu tình tại mỹ",
+                "mo_ta": "Biểu tình tại mỹ.",
+                "hinh_anh": "/bieutinhtaimy.jpg"
+            },
+            {
+                "id": 22,
+                "ten": "Bức ảnh so sánh 3 lần chiến tranh mỹ",
+                "mo_ta": "Bức ảnh so sánh 3 lần chiến tranh mỹ.",
+                "hinh_anh": "/bucanhsosanhchientranhmy.jpg"
+            },
+            {
+                "id": 24,
+                "ten": "Ảnh trẻ mắc dioxin",
+                "mo_ta": "Ảnh trẻ mắc dioxin.",
+                "hinh_anh": "/dioxin.jpg"
+            },
+            {
+                "id": 25,
+                "ten": "Ảnh Anh hùng Nguyễn Văn Trỗi",
+                "mo_ta": "Ảnh Anh hùng Nguyễn Văn Trỗi.",
+                "hinh_anh": "/hinhanhNguyenVanTroi.jpg"
+            },
+            {
+                "id": 26,
+                "ten": "Lời thú tội của lính mỹ",
+                "mo_ta": "Lời thú tội của lính mỹ.",
+                "hinh_anh": "/loithutoicualinhMy.jpg"
             }
         ],
         "di_vat": [
@@ -61,6 +103,12 @@ bao_tang_chung_tich = {
                 "ten": "Máy bay A-1 Skyraider",
                 "mo_ta": "Máy bay tấn công mặt đất chạy bằng động cơ piston.",
                 "hinh_anh": "/maybaya-1skyraider.jpg"
+            },
+            {
+                "id": 8,
+                "ten": "Khu trưng bày tra tấn mô phỏng 'chuồng cọp'",
+                "mo_ta": "Tái hiện phòng tra tấn chính trị khắc nghiệt, thể hiện tính phi nhân của chiến tranh.",
+                "hinh_anh": "/khutrungbayphongtratan.jpg"
             },
             {
                 "id": 9,
@@ -97,6 +145,30 @@ bao_tang_chung_tich = {
                 "ten": "Áp phích phản chiến quốc tế",
                 "mo_ta": "Poster và khẩu hiệu phản chiến từ các nước ủng hộ Việt Nam như Mỹ, Nhật, Pháp, Cuba.",
                 "hinh_anh": "/apphichphanchienquocte.jpg"
+            },
+            {
+                "id": 19,
+                "ten": "Bản Tuyên ngôn độc lập",
+                "mo_ta": "Bản Tuyên ngôn độc lập.",
+                "hinh_anh": "/bantuyenngondoclap.jpg"
+            },
+            {
+                "id": 21,
+                "ten": "Bom tự chế",
+                "mo_ta": "Bom tự chế.",
+                "hinh_anh": "/bomtuche.jpg"
+            },
+            {
+                "id": 23,
+                "ten": "PRC-77",
+                "mo_ta": "PRC-77.",
+                "hinh_anh": "/PRC-77.jpg"
+            },
+            {
+                "id": 27,
+                "ten": 'Tượng "Bà Mẹ"',
+                "mo_ta": 'Tượng "Bà Mẹ".',
+                "hinh_anh": "/tuongbame.jpg"
             }
         ]
     }
