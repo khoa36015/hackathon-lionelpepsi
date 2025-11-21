@@ -8,8 +8,4 @@ sentence-transformers
 pydantic
 tiktoken
 PyYAML
-
-# Nếu bạn dùng TTS của FPT (HTTP API)
-# Không cần SDK, chỉ dùng requests
-
-# Nếu bạn dùng rag_core tự viết → không cần thêm gì khác
+google-cloud-texttospeech>=2.16.3

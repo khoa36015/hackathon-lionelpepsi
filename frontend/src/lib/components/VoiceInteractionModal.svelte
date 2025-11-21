@@ -26,21 +26,62 @@
   // Vietnamese-only voice settings
   let showVoiceSettings = false;
 
-  // FPT.AI TTS voices (Vietnamese only)
-  let fptVoices = [
-    { code: 'banmai', name: 'Nữ Bắc (Ban Mai)', gender: 'female', region: 'north' },
-    { code: 'lannhi', name: 'Nữ Nam (Lan Nhi)', gender: 'female', region: 'south' },
-    { code: 'leminh', name: 'Nam Bắc (Lê Minh)', gender: 'male', region: 'north' },
-    { code: 'myan', name: 'Nữ Trung (Mỹ An)', gender: 'female', region: 'central' },
-    { code: 'thuminh', name: 'Nữ Bắc (Thu Minh)', gender: 'female', region: 'north' },
-    { code: 'giahuy', name: 'Nam Trung (Gia Huy)', gender: 'male', region: 'central' },
-    { code: 'linhsan', name: 'Nữ Nam (Linh San)', gender: 'female', region: 'south' }
-  ];
-  let selectedFptVoice = 'banmai'; // Default voice
+  // Google Cloud TTS voices (fetched from backend)
+  let cloudVoices = [];
+  let selectedCloudVoice = null;
+  let isLoadingVoices = true;
+  let voiceLoadError = '';
 
   // Browser TTS fallback (Vietnamese only)
   let availableVietnameseVoices = [];
   let selectedBrowserVoice = null;
+
+  // Track active audio playback (Google Cloud response)
+  let activeAudio = null;
+  let activeAudioUrl = null;
+
+  async function fetchBackendVoices() {
+    if (!browser) return;
+
+    try {
+      isLoadingVoices = true;
+      voiceLoadError = '';
+
+      const res = await fetch(`${API_AI}/tts/voices`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      const data = await res.json();
+      cloudVoices = data?.voices || [];
+
+      if (!selectedCloudVoice && cloudVoices.length > 0) {
+        selectedCloudVoice = cloudVoices[0].code;
+      }
+    } catch (error) {
+      console.error('❌ Không thể tải danh sách giọng đọc:', error);
+      voiceLoadError = 'Không thể tải danh sách giọng đọc từ Google Cloud. Sử dụng giọng trình duyệt.';
+      cloudVoices = [];
+    } finally {
+      isLoadingVoices = false;
+    }
+  }
+
+  function cleanupActiveAudio() {
+    if (activeAudio) {
+      activeAudio.pause();
+      activeAudio.currentTime = 0;
+      activeAudio = null;
+    }
+    if (activeAudioUrl && typeof URL !== 'undefined') {
+      URL.revokeObjectURL(activeAudioUrl);
+      activeAudioUrl = null;
+    }
+  }
 
   // Initialize speech recognition and synthesis (Vietnamese only)
   onMount(() => {
@@ -107,6 +148,9 @@
         synthesis.onvoiceschanged = loadVietnameseVoices;
       }
     }
+
+    // Load Google Cloud voices
+    fetchBackendVoices();
 
     // Don't auto-play - let user control when to start
   });
@@ -179,176 +223,118 @@
   }
 
   async function speak(text, onEnd = null) {
-    // Always try FPT.AI first for Vietnamese
+    // Always try Google Cloud TTS first for Vietnamese
     try {
-      await speakWithFptAi(text, onEnd);
+      await speakWithGoogleTts(text, onEnd);
     } catch (error) {
-      console.error('❌ FPT.AI failed, using browser TTS:', error);
+      console.error('❌ Google Cloud TTS failed, using browser TTS:', error);
       speakWithBrowser(text, onEnd);
     }
   }
 
-  async function speakWithFptAi(text, onEnd = null) {
+  async function speakWithGoogleTts(text, onEnd = null) {
     // Only run in browser
     if (!browser) return;
 
     try {
-      console.log('🎤 Using FPT.AI TTS with voice:', selectedFptVoice);
+      const voiceToUse = selectedCloudVoice || cloudVoices[0]?.code || 'vi-VN-Neural2-A';
+
+      console.log('🎤 Using Google Cloud TTS with voice:', voiceToUse);
       console.log('📝 Text to speak:', text);
       console.log('📏 Text length:', text.length, 'characters');
 
       // Set state to speaking
       state = 'speaking';
-      debugInfo = `⏳ Đang tạo giọng đọc từ FPT.AI...`;
+      debugInfo = `⏳ Đang tạo giọng đọc từ Google Cloud...`;
 
-      // Check text length (FPT.AI limit is 5000 chars)
+      // Check text length (limit is 5000 chars)
       if (text.length > 5000) {
         console.warn('⚠️ Text too long, truncating to 5000 chars');
         text = text.substring(0, 5000);
       }
 
-      // Try backend endpoint first
-      try {
-        console.log('🔄 Trying backend TTS endpoint...');
-        const backendResponse = await fetch(`${API_AI}/tts`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            text: text,
-            voice: selectedFptVoice,
-            speed: 0
-          })
-        });
-
-        console.log('📡 Backend TTS Response status:', backendResponse.status);
-
-        if (backendResponse.ok) {
-          const backendData = await backendResponse.json();
-          console.log('📦 Backend TTS Response data:', backendData);
-
-          if (backendData.success && backendData.audio_url) {
-            const audioUrl = backendData.audio_url;
-            console.log('✅ Got audio URL from backend:', audioUrl);
-            await playAudioFromUrl(audioUrl, onEnd);
-            return;
-          }
-        }
-
-        console.warn('⚠️ Backend TTS failed, trying direct FPT.AI call...');
-      } catch (backendError) {
-        console.warn('⚠️ Backend TTS error:', backendError.message);
-        console.log('🔄 Falling back to direct FPT.AI call...');
-      }
-
-      // Fallback: Call FPT.AI directly
-      const response = await fetch('https://api.fpt.ai/hmi/tts/v5', {
+      console.log('🔄 Calling backend TTS endpoint (Google Cloud)...');
+      const backendResponse = await fetch(`${API_AI}/tts`, {
         method: 'POST',
-        headers: {
-          'api_key': '8OuJvLUvBBfqok7MkamxBelt4yb3JHWF',
-          'voice': selectedFptVoice,
-          'speed': '0'
-        },
-        body: text
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text,
+          voice: voiceToUse,
+          speaking_rate: 1.0,
+          pitch: 0.0,
+          audio_format: 'mp3'
+        })
       });
 
-      console.log('📡 FPT.AI Direct Response status:', response.status);
+      console.log('📡 Backend TTS response status:', backendResponse.status);
 
-      if (!response.ok) {
-        console.error('❌ FPT.AI TTS failed with status:', response.status);
-        const errorText = await response.text();
-        console.error('❌ Error response:', errorText);
-        debugInfo = `❌ FPT.AI lỗi, chuyển sang giọng trình duyệt`;
-        speakWithBrowser(text, onEnd);
+      const backendData = await backendResponse.json();
+      console.log('📦 Backend TTS response data:', backendData);
+
+      if (backendResponse.ok && backendData.success && backendData.audio_content) {
+        await playAudioFromBase64(
+          backendData.audio_content,
+          backendData.audio_mime_type || 'audio/mpeg',
+          onEnd
+        );
         return;
       }
 
-      const data = await response.json();
-      console.log(' FPT.AI Direct Response data:', data);
-
-      if (data.error === 0 && data.async) {
-        const audioUrl = data.async;
-        console.log(' FPT.AI audio URL:', audioUrl);
-        await playAudioFromUrl(audioUrl, onEnd);
-      } else {
-        console.error(' FPT.AI TTS returned error:', data);
-        debugInfo = ` FPT.AI error: ${data.message || 'Unknown error'}`;
-        speakWithBrowser(text, onEnd);
-      }
-
+      const errorMessage = backendData.error || 'Unknown TTS error';
+      console.error('❌ Google Cloud TTS returned error:', errorMessage);
+      debugInfo = `❌ Google Cloud TTS lỗi: ${errorMessage}`;
+      throw new Error(errorMessage);
     } catch (error) {
-      console.error(' Error calling FPT.AI TTS:', error);
-      console.error(' Error details:', error.message, error.stack);
-      debugInfo = ` Lỗi kết nối FPT.AI: ${error.message}`;
-      speakWithBrowser(text, onEnd);
+      console.error('❌ Error calling Google Cloud TTS:', error);
+      debugInfo = `❌ Lỗi kết nối Google Cloud: ${error.message}`;
+      throw error;
     }
   }
 
-  async function playAudioFromUrl(audioUrl, onEnd = null) {
+  async function playAudioFromBase64(audioContent, mimeType = 'audio/mpeg', onEnd = null) {
     try {
-      // Show loading indicator
-      debugInfo = ` Đang tải audio từ FPT.AI...`;
+      debugInfo = `🔊 Đang phát giọng đọc từ Google Cloud...`;
 
-      // Wait for audio to be ready with retry logic
-      const isReady = await waitForAudioReady(audioUrl, 8000); // Wait up to 8 seconds
-
-      if (!isReady) {
-        console.warn(' Audio not ready after 8 seconds, trying to play anyway...');
+      const byteCharacters = atob(audioContent);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
       }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: mimeType });
 
-      // Play audio from URL
-      const audio = new Audio(audioUrl);
+      cleanupActiveAudio();
+      activeAudioUrl = URL.createObjectURL(blob);
+      activeAudio = new Audio(activeAudioUrl);
 
-      audio.onloadeddata = () => {
-        console.log(' Audio loaded successfully');
-        debugInfo = ` Đang phát giọng đọc...`;
+      activeAudio.onloadeddata = () => {
+        console.log('✅ Audio loaded successfully');
       };
 
-      audio.onended = () => {
-        console.log(' Audio playback ended');
-        debugInfo = ` Hoàn thành`;
-        state = 'initial'; // Reset to initial state when done
+      activeAudio.onended = () => {
+        console.log('✅ Audio playback ended');
+        cleanupActiveAudio();
+        debugInfo = `✅ Hoàn thành`;
+        state = 'initial';
         if (onEnd) onEnd();
       };
 
-      audio.onerror = (error) => {
-        console.error(' Audio playback error:', error);
-        debugInfo = ` Lỗi phát audio`;
-        state = 'initial'; // Reset to initial state on error
+      activeAudio.onerror = (error) => {
+        console.error('❌ Audio playback error:', error);
+        cleanupActiveAudio();
+        debugInfo = `❌ Lỗi phát audio`;
+        state = 'initial';
         throw new Error('Audio playback failed');
       };
 
-      // Try to play
-      await audio.play();
-      console.log(' Audio playing...');
-
+      await activeAudio.play();
+      console.log('🔊 Audio playing...');
     } catch (err) {
-      console.error(' Failed to play audio:', err);
-      debugInfo = ` Không thể phát audio: ${err.message}`;
-      throw err; // Re-throw to trigger fallback
+      console.error('❌ Failed to play audio:', err);
+      cleanupActiveAudio();
+      debugInfo = `❌ Không thể phát audio: ${err.message}`;
+      throw err;
     }
-  }
-
-  async function waitForAudioReady(url, maxWait = 5000) {
-    const startTime = Date.now();
-    const checkInterval = 500; // Check every 500ms
-
-    while (Date.now() - startTime < maxWait) {
-      try {
-        const response = await fetch(url, { method: 'HEAD' });
-        if (response.ok) {
-          console.log(' Audio file is ready');
-          return true;
-        }
-      } catch (e) {
-        // Ignore errors, keep trying
-      }
-
-      // Wait before next check
-      await new Promise(resolve => setTimeout(resolve, checkInterval));
-    }
-
-    console.log(' Audio file not ready after', maxWait, 'ms, trying anyway...');
-    return false;
   }
 
   function speakWithBrowser(text, onEnd = null) {
@@ -417,12 +403,8 @@
       synthesis.cancel();
     }
 
-    // Stop any audio playback (FPT.AI)
-    const audioElements = document.querySelectorAll('audio');
-    audioElements.forEach(audio => {
-      audio.pause();
-      audio.currentTime = 0;
-    });
+    // Stop Google Cloud audio playback
+    cleanupActiveAudio();
 
     // Reset state
     if (state === 'speaking') {
@@ -718,24 +700,32 @@
 
       {#if showVoiceSettings}
         <div class="mt-4 space-y-3 bg-gray-50 p-4 rounded-lg">
-          <!-- Vietnamese Voice Selection (FPT.AI) -->
+          <!-- Vietnamese Voice Selection (Google Cloud TTS) -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-               Chọn giọng đọc tiếng Việt
+               Chọn giọng đọc tiếng Việt (Google Cloud)
             </label>
-            <select
-              bind:value={selectedFptVoice}
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              {#each fptVoices as voice}
-                <option value={voice.code}>
-                  {voice.name}
-                </option>
-              {/each}
-            </select>
-            <p class="text-xs text-gray-500 mt-1">
-               Giọng đọc tự nhiên từ FPT.AI
-            </p>
+            {#if isLoadingVoices}
+              <p class="text-sm text-gray-500">Đang tải danh sách giọng đọc...</p>
+            {:else if voiceLoadError}
+              <p class="text-sm text-red-600">{voiceLoadError}</p>
+            {:else if cloudVoices.length > 0}
+              <select
+                bind:value={selectedCloudVoice}
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                {#each cloudVoices as voice}
+                  <option value={voice.code}>
+                    {voice.name}
+                  </option>
+                {/each}
+              </select>
+              <p class="text-xs text-gray-500 mt-1">
+                 Giọng đọc Neural tự nhiên từ Google Cloud
+              </p>
+            {:else}
+              <p class="text-sm text-gray-500">Chưa có giọng đọc nào khả dụng.</p>
+            {/if}
           </div>
 
           <!-- Browser Vietnamese Voice Fallback -->
@@ -755,7 +745,7 @@
                 {/each}
               </select>
               <p class="text-xs text-gray-500 mt-1">
-                Sử dụng khi FPT.AI không khả dụng
+                Sử dụng khi Google Cloud TTS không khả dụng
               </p>
             </div>
           {/if}
@@ -763,7 +753,8 @@
           <!-- Test Voice Button -->
           <button
             class="w-full px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition text-sm font-medium"
-            on:click={() => speak('Xin chào! Đây là giọng đọc tiếng Việt từ FPT.AI.')}
+            on:click={() => speak('Xin chào! Đây là giọng đọc tiếng Việt từ Google Cloud Text to Speech.')}
+            disabled={isLoadingVoices}
           >
              Nghe thử giọng đọc
           </button>

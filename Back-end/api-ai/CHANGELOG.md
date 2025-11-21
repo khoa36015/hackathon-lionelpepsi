@@ -33,7 +33,7 @@ Sự kiện: Tết Mậu Thân 1968, Hiệp định Paris 1973, Giải phóng S�
 - ✅ Chỉ giữ lại tiếng Việt (vi-VN)
 
 **Cải Thiện TTS:**
-- ✅ Luôn ưu tiên FPT.AI TTS (giọng tự nhiên)
+- ✅ Luôn ưu tiên Google Cloud Text-to-Speech (giọng Neural tự nhiên)
 - ✅ Fallback sang browser TTS (chỉ giọng tiếng Việt)
 - ✅ Tự động chọn giọng tiếng Việt từ trình duyệt
 - ✅ Thêm debug info chi tiết
@@ -77,7 +77,7 @@ A: "A-37 Dragonfly là máy bay tấn công hạng nhẹ của Mỹ, được ph
 
 ### Backend
 - ✅ `Back-end/api-ai/app.py` - System prompt + few-shot examples
-- ✅ `Back-end/api-ai/fpt_tts.py` - TTS module (đã có)
+- ✅ `Back-end/api-ai/google_tts.py` - Google Cloud TTS module
 - ✅ `Back-end/api-ai/test_natural_responses.py` - Test script mới
 - ✅ `Back-end/api-ai/test_conversational.py` - Test script mới
 
@@ -144,7 +144,7 @@ npm run dev
 - ✅ Kể chuyện sinh động, có cảm xúc
 
 ### 2. Giọng Đọc Tiếng Việt 100%
-- ✅ Ưu tiên FPT.AI (7 giọng tự nhiên)
+- ✅ Ưu tiên Google Cloud TTS (giọng Neural tự nhiên)
 - ✅ Fallback browser TTS (chỉ giọng tiếng Việt)
 - ✅ Không còn giọng tiếng Anh
 - ✅ Không còn bị lặp
@@ -189,7 +189,7 @@ python app.py
 
 **Kiểm tra:**
 1. Mở Console (F12)
-2. Xem log: "🎤 Using FPT.AI TTS..."
+2. Xem log: "🎤 Using Google Cloud TTS..."
 3. Nếu lỗi → Xem error message
 4. Gửi error cho developer
 
@@ -202,8 +202,9 @@ python app.py
 
 ## 📝 Notes
 
-- FPT.AI API key: `8OuJvLUvBBfqok7MkamxBelt4yb3JHWF`
-- Giới hạn: 100,000 ký tự/tháng
+- Cần bật Google Cloud Text-to-Speech API
+- Cấp quyền bằng service account (`GOOGLE_TTS_CREDENTIALS_*`)
+- Giới hạn: 5,000 ký tự / request (theo Google Cloud)
 - Fallback: Browser TTS (unlimited)
 - Language: Vietnamese only (vi-VN)
 

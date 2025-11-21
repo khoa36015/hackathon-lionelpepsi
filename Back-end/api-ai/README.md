@@ -66,12 +66,46 @@ RAG_LLM_MODEL=openai/gpt-4o-mini
 DATASET_PATH=./data/war_remnants_ai_training_v3.json
 HOST=0.0.0.0
 PORT=8000
+
+# Google Cloud Text-to-Speech
+# Provide ONE of these credential options
+# GOOGLE_TTS_CREDENTIALS_PATH=/path/to/service-account.json
+# GOOGLE_TTS_CREDENTIALS_JSON={"type":"service_account",...}
+# GOOGLE_TTS_CREDENTIALS_BASE64=eyAidHlwZSI6ICJzZXJ2aWNlX2FjY291bnQiLCAuLi4gfQ==
+GOOGLE_TTS_DEFAULT_VOICE=vi-VN-Neural2-A
+GOOGLE_TTS_AUDIO_FORMAT=mp3
+
+# Vertex AI Gemini (optional)
+VERTEX_API_KEY=your-vertex-rest-api-key
+VERTEX_GEMINI_MODEL=publishers/google/models/gemini-2.5-flash-lite
 ```
+
+### Google Cloud Text-to-Speech Setup
+1. Create or reuse a Google Cloud project and enable the **Text-to-Speech API**.
+2. Create a service account with the *Text-to-Speech Admin* (or more limited) role.
+3. Download the JSON key and provide it to the app using **one** of:
+   - `GOOGLE_TTS_CREDENTIALS_PATH` → filesystem path to the JSON file
+   - `GOOGLE_TTS_CREDENTIALS_JSON` → inline JSON (useful for hosted envs)
+   - `GOOGLE_TTS_CREDENTIALS_BASE64` → base64-encoded JSON string
+4. (Optional) change `GOOGLE_TTS_DEFAULT_VOICE` or `GOOGLE_TTS_AUDIO_FORMAT`.
 
 ## 5) Troubleshooting
 - If you see: `OPENROUTER_API_KEY is missing` → check `.env`
 - Slow first response? It may be building the embedding index (`vectorstore/`).
 - Change embedding model: set `EMB_MODEL` env: `sentence-transformers/all-MiniLM-L6-v2` (default).
+
+## 5bis) Vertex AI Gemini Proxy (Optional)
+- `POST /api/vertex-chat`
+  ```bash
+  curl -X POST http://localhost:8000/api/vertex-chat \
+    -H "Content-Type: application/json" \
+    -d '{
+      "prompt": "Explain how AI works in a few words",
+      "generation_config": { "temperature": 0.4 }
+    }'
+  ```
+- Requires `VERTEX_API_KEY` and (optionally) `VERTEX_GEMINI_MODEL` in `.env`.
+- Returns `{ "success": true, "text": "...", "model": "...", "raw": { ... } }`
 
 ## 6) Security Notes
 - This project avoids political advocacy; answers are grounded in dataset content.

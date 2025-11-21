@@ -46,10 +46,10 @@ if (selectedBrowserVoice && selectedBrowserVoice.lang.startsWith('vi')) {
 
 #### **Set State khi Bắt Đầu Nói:**
 ```javascript
-async function speakWithFptAi(text, onEnd = null) {
+async function speakWithGoogleTts(text, onEnd = null) {
   // ✅ Set state to speaking
   state = 'speaking';
-  debugInfo = `⏳ Đang tạo giọng đọc từ FPT.AI...`;
+  debugInfo = `⏳ Đang tạo giọng đọc từ Google Cloud...`;
   // ...
 }
 
@@ -149,7 +149,7 @@ function stopSpeaking() {
     synthesis.cancel();
   }
   
-  // ✅ Stop any audio playback (FPT.AI)
+  // ✅ Stop any audio playback (Google Cloud)
   const audioElements = document.querySelectorAll('audio');
   audioElements.forEach(audio => {
     audio.pause();

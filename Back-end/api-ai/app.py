@@ -3,12 +3,17 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
 from rag_core import retrieve, ensure_index
-from fpt_tts import synthesize_speech, get_available_voices
+from google_tts import synthesize_speech, get_available_voices
 
 # === Load environment ===
 load_dotenv()
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "").strip()
 RAG_LLM_MODEL = os.getenv("RAG_LLM_MODEL", "openai/gpt-4o-mini").strip()
+VERTEX_API_KEY = os.getenv("VERTEX_API_KEY", "").strip()
+VERTEX_GEMINI_MODEL = os.getenv(
+    "VERTEX_GEMINI_MODEL",
+    "publishers/google/models/gemini-2.5-flash-lite",
+).strip()
 HOST = os.getenv("HOST", "0.0.0.0")
 PORT = int(os.getenv("PORT", "8000"))
 
@@ -138,6 +143,80 @@ def call_openrouter(messages, max_tokens=600, temperature=0.3):
     except Exception as e:
         return f"❌ Lỗi gọi OpenRouter: {str(e)}"
 
+
+def call_vertex_gemini(prompt: str, generation_config=None):
+    """
+    Call Vertex AI Gemini via REST API (non-streaming).
+    """
+    if not VERTEX_API_KEY:
+        return {
+            "success": False,
+            "error": "VERTEX_API_KEY is not configured. Add it to your .env file.",
+        }
+
+    if not prompt or len(prompt.strip()) == 0:
+        return {"success": False, "error": "Prompt must not be empty."}
+
+    endpoint = (
+        f"https://aiplatform.googleapis.com/v1/{VERTEX_GEMINI_MODEL}:generateContent"
+        f"?key={VERTEX_API_KEY}"
+    )
+
+    payload = {
+        "contents": [
+            {
+                "role": "user",
+                "parts": [
+                    {
+                        "text": prompt,
+                    }
+                ],
+            }
+        ]
+    }
+
+    if generation_config:
+        payload["generationConfig"] = generation_config
+
+    headers = {"Content-Type": "application/json"}
+
+    try:
+        response = requests.post(
+            endpoint,
+            headers=headers,
+            json=payload,
+            timeout=60,
+        )
+
+        if not response.ok:
+            return {
+                "success": False,
+                "error": f"Vertex AI {response.status_code}: {response.text}",
+            }
+
+        data = response.json()
+        candidates = data.get("candidates", [])
+        text_chunks = []
+        for candidate in candidates:
+            parts = candidate.get("content", {}).get("parts", [])
+            for part in parts:
+                if "text" in part:
+                    text_chunks.append(part["text"])
+
+        combined_text = "\n".join(text_chunks).strip()
+
+        return {
+            "success": True,
+            "model": VERTEX_GEMINI_MODEL,
+            "text": combined_text or "(empty response)",
+            "raw": data,
+        }
+    except Exception as exc:
+        return {
+            "success": False,
+            "error": f"Vertex AI request failed: {exc}",
+        }
+
 @app.route("/api/health", methods=["GET", "OPTIONS"])
 def health():
     return jsonify({"status": "ok", "model": RAG_LLM_MODEL})
@@ -238,42 +317,50 @@ def reindex():
 @app.route("/api/tts", methods=["POST", "OPTIONS"])
 def text_to_speech():
     """
-    Convert text to speech using FPT.AI
-    Request body: { "text": "...", "voice": "banmai", "speed": 0 }
+    Convert text to speech using Google Cloud Text-to-Speech.
+    Request body:
+    {
+        "text": "...",
+        "voice": "vi-VN-Neural2-A",
+        "speaking_rate": 1.0,
+        "pitch": 0.0,
+        "audio_format": "mp3"
+    }
     """
     if request.method == "OPTIONS":
         return jsonify({"status": "ok"}), 200
 
     data = request.get_json(force=True)
     text = data.get("text", "").strip()
-    voice = data.get("voice", "banmai")
-    speed = int(data.get("speed", 0))
+    voice = data.get("voice")
+    speaking_rate = float(data.get("speaking_rate", 1.0))
+    pitch = float(data.get("pitch", 0.0))
+    audio_format = data.get("audio_format", "mp3")
 
     if not text:
         return jsonify({"error": "Missing 'text' field"}), 400
 
-    result = synthesize_speech(text, voice=voice, speed=speed)
+    result = synthesize_speech(
+        text,
+        voice=voice,
+        speaking_rate=speaking_rate,
+        pitch=pitch,
+        audio_format=audio_format,
+    )
 
-    if result.get("success"):
-        return jsonify(result), 200
-    else:
-        return jsonify(result), 500
+    status_code = 200 if result.get("success") else 500
+    return jsonify(result), status_code
 
 @app.route("/api/tts/voices", methods=["GET", "OPTIONS"])
 def list_voices():
     """
-    Get list of available Vietnamese voices
+    Get list of available Vietnamese Google Cloud voices.
     """
     if request.method == "OPTIONS":
         return jsonify({"status": "ok"}), 200
 
     voices = get_available_voices()
-    return jsonify({
-        "voices": [
-            {"code": code, "name": name}
-            for code, name in voices.items()
-        ]
-    })
+    return jsonify({"voices": voices})
 
 @app.route("/api/ask-general", methods=["POST", "OPTIONS"])
 def ask_general():
@@ -311,6 +398,34 @@ def ask_general():
         import traceback
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/vertex-chat", methods=["POST", "OPTIONS"])
+def vertex_chat():
+    """
+    Lightweight proxy to Vertex AI Gemini for general questions.
+    Body:
+    {
+        "prompt": "Explain how AI works in a few words",
+        "generation_config": {
+            "temperature": 0.4,
+            "maxOutputTokens": 1024
+        }
+    }
+    """
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"}), 200
+
+    data = request.get_json(force=True)
+    prompt = (data.get("prompt") or data.get("question") or "").strip()
+    generation_config = data.get("generation_config")
+
+    if not prompt:
+        return jsonify({"success": False, "error": "Missing 'prompt' field."}), 400
+
+    result = call_vertex_gemini(prompt, generation_config=generation_config)
+    status_code = 200 if result.get("success") else 500
+    return jsonify(result), status_code
 
 if __name__ == "__main__":
     print(f"🚀 Running on http://{HOST}:{PORT}")

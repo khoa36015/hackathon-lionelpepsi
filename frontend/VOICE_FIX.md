@@ -205,7 +205,7 @@ debugInfo = `❌ ${errorMsg}`;
 - **Browser support:** Chrome, Edge, Safari (latest versions)
 - **Language:** Vietnamese only (vi-VN)
 - **Microphone:** Required for speech recognition
-- **Internet:** Required for FPT.AI TTS (fallback to browser TTS if offline)
+- **Internet:** Required for Google Cloud TTS (fallback to browser TTS if offline)
 
 ## ✅ Checklist
 
